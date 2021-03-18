@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">DarkWeather</string>
+    <string name="title_activity_main_weather_card">MainWeatherCard</string>
+</resources>
