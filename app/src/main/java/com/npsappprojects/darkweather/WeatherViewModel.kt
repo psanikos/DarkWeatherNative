@@ -80,7 +80,7 @@ fun getLastLocation(context: Context){
 }
 
     fun getNameFromCoordinates(context: Context,latitude:Double,longitude:Double,completion:(String)->Unit){
-        val addresses: List<Address>
+        val addresses: List<Address>?
         val geocoder: Geocoder = Geocoder(context, Locale.getDefault())
 
         addresses = geocoder.getFromLocation(
@@ -90,15 +90,20 @@ fun getLastLocation(context: Context){
         )
 
 
-        val address: String =
-            addresses[0].getAddressLine(0) // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+//        val address: String =
+//            addresses[0].getAddressLine(0) // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
 
-        val city: String = addresses[0].getLocality()
-        val state: String = addresses[0].getAdminArea()
-        val country: String = addresses[0].getCountryName()
-        val postalCode: String = addresses[0].getPostalCode()
-        val knownName: String = addresses[0].getFeatureName() //
-        completion(city)
+        if (addresses != null && addresses[0] != null){
+            val city: String = addresses[0].locality
+//        val state: String = addresses[0].getAdminArea()
+//        val country: String = addresses[0].getCountryName()
+//        val postalCode: String = addresses[0].getPostalCode()
+//        val knownName: String = addresses[0].getFeatureName() //
+            completion(city)
+        }
+          else {
+              completion("My location")
+          }
     }
 
 
