@@ -232,20 +232,20 @@ data class DataX(
 
 fun getWeatherColor(input: String): Color {
     return when (input) {
-        "clear-day" -> Color(-0xa24c0c)
-        "clear-night" -> Color(-0x9e6942)
-        "rain" -> Color(-0xfae09e)
-        "snow" -> Color(-0x331d11)
-        "sleet" -> Color(-0x491313)
-        "wind" -> Color(-0x827360)
-        "fog" -> Color(-0xb19b8c)
-        "cloudy" -> Color(-0x9e907e)
-        "partly-cloudy-day" -> Color(-0x9e6942)
-        "partly-cloudy-night" -> Color(-0xca9874)
-        "hail" -> Color(-0x9ca993)
-        "thunderstorm" -> Color(-0xfddac0)
-        "tornado" -> Color(-0x8ac5f3)
-        else -> Color(-0xa24c0c)
+        "clear-day" -> Color(0xFF26b1f6)
+        "clear-night" -> Color(0xFF183050)
+        "rain" -> Color(0xFF305c81)
+        "snow" -> Color(0xFFbadbe3)
+        "sleet" -> Color(0xFFc5e1e8)
+        "wind" -> Color(0xFF90a699)
+        "fog" -> Color(0xFF85a588)
+        "cloudy" -> Color(0xFF77807a)
+        "partly-cloudy-day" -> Color(0xFF1d4c70)
+        "partly-cloudy-night" -> Color(0xFF1d4c57)
+        "hail" -> Color(0xFFc5e1e8)
+        "thunderstorm" -> Color(0xFF130c36)
+        "tornado" -> Color(0xFF1e1640)
+        else -> Color(0xFF18a9c9)
     }
 }
 

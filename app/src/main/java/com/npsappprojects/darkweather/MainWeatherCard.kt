@@ -9,6 +9,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -16,7 +17,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -32,7 +32,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Air
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
-import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -43,14 +42,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.npsappprojects.darkweather.ui.theme.blue_500
+import com.npsappprojects.darkweather.ui.theme.blue_grey_200
 import com.npsappprojects.darkweather.ui.theme.blue_grey_500
 import com.npsappprojects.darkweather.ui.theme.red_800
 import kotlinx.coroutines.delay
@@ -61,40 +61,26 @@ import java.time.format.DateTimeFormatter
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 
-//locationData:WeatherResponse
+
 @Composable
 fun MainWeatherCard(locationData:WeatherResponse,locationName:String,isCurrent:Boolean){
    Surface(modifier = Modifier.fillMaxSize(),color = getWeatherColor("clear-night"),
        contentColor = Color.White) {
 
- LazyColumn(modifier = Modifier.fillMaxSize(),horizontalAlignment = Alignment.CenterHorizontally) {
-   item {
-       Row(
-           modifier = Modifier
-               .padding(horizontal = 20.dp, vertical = 40.dp)
-               .fillMaxWidth(), horizontalArrangement = Arrangement.Center,
-           verticalAlignment = Alignment.CenterVertically
-       ) {
-           Icon(Icons.Filled.LocationOn, contentDescription = "", modifier = Modifier.size(34.dp))
-           Text(text = locationName, style = MaterialTheme.typography.h1)
-       }
-   }
+ LazyColumn(modifier = Modifier.fillMaxSize(),horizontalAlignment = Alignment.CenterHorizontally
+     ,contentPadding = PaddingValues(top = 20.dp)) {
+
      item {
-         Image(
-             painter = painterResource(id = getWeatherIcon(locationData.currently.icon!!)), contentDescription = "",
-             modifier = Modifier
-                 .height(200.dp)
-                 .width(200.dp)
-                 .padding(vertical = 20.dp)
-         )
-     }
-     item {
-         Text(
-             text = "${locationData.currently.temperature!!.roundToInt()}°",
-             style = MaterialTheme.typography.h1.copy(fontSize = 50.sp),
-             modifier = Modifier
-                 .padding(horizontal = 20.dp, vertical = 10.dp)
-         )
+         Box(modifier = Modifier.padding(vertical = 10.dp)) {
+             Image(
+                 painter = painterResource(id = getWeatherIcon(locationData.currently.icon!!)),
+                 contentDescription = "",
+                 modifier = Modifier
+                     .height(180.dp)
+                     .width(180.dp)
+
+             )
+         }
      }
      item {
          Text(
@@ -106,10 +92,19 @@ fun MainWeatherCard(locationData:WeatherResponse,locationName:String,isCurrent:B
          )
      }
      item {
+         Text(
+             text = "${locationData.currently.temperature!!.roundToInt()}°",
+             style = MaterialTheme.typography.h1,
+             modifier = Modifier
+                 .padding(horizontal = 20.dp, vertical = 10.dp)
+         )
+     }
+
+     item {
          Row(
              modifier = Modifier
                  .fillMaxWidth()
-                 .padding(vertical = 10.dp),
+                 .padding(vertical = 20.dp),
              horizontalArrangement = Arrangement.SpaceEvenly,
 
              ) {
@@ -131,30 +126,50 @@ fun MainWeatherCard(locationData:WeatherResponse,locationName:String,isCurrent:B
                  Spacer(modifier = Modifier.width(5.dp))
                  Text(text = "${(100*locationData.daily.data[0].precipProbability!!).roundToInt()}%", style = MaterialTheme.typography.body1)
              }
+             Row() {
+                 Icon(Icons.Filled.Air, contentDescription = "")
+                 Spacer(modifier = Modifier.width(5.dp))
+                 Text(text = "${locationData.currently.windSpeed!!.roundToInt()} km/h", style = MaterialTheme.typography.body1)
+             }
          }
      }
      item {
-         LazyRow(modifier = Modifier.padding(16.dp)) {
+         LazyRow(modifier = Modifier
+             .padding(16.dp)
+             .padding(vertical = 20.dp)) {
              items(locationData.hourly.data.count()) {
                  locationData.hourly.data.forEach {
                      Box(
                          modifier = Modifier
-                             .height(100.dp)
-                             .width(60.dp)
+                             .height(140.dp)
+                             .width(100.dp)
+                             .padding(end = 10.dp)
+                             .background(
+                                 brush = Brush.verticalGradient(
+                                     colors = listOf(
+                                         Color.White.copy(
+                                             alpha = 0.3f
+                                         ), Color.White.copy(alpha = 0.1f)
+                                     )
+                                 ), shape = RoundedCornerShape(20)
+                             ),
+                         contentAlignment = Alignment.Center
+
                      ) {
                          Column(
                              modifier = Modifier.fillMaxSize(),
                              verticalArrangement = Arrangement.SpaceEvenly,
-                             horizontalAlignment = Alignment.CenterHorizontally
+                             horizontalAlignment = Alignment.CenterHorizontally,
+
                          ) {
 
-                             Text(DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.ofInstant(Instant.ofEpochMilli(1000*it.time!!.toLong()), ZoneId.systemDefault())), style = MaterialTheme.typography.caption)
+                             Text(DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.ofInstant(Instant.ofEpochMilli(1000*it.time!!.toLong()), ZoneId.systemDefault())), style = MaterialTheme.typography.caption.copy(color = Color.LightGray))
                              Image(
                                  painter = painterResource(id = getWeatherIcon(it.icon!!)),
                                  contentDescription = "",
                                  modifier = Modifier
-                                     .height(45.dp)
-                                     .width(45.dp)
+                                     .height(50.dp)
+                                     .width(50.dp)
                                      .padding(vertical = 5.dp)
                              )
                              Text("${it.temperature!!.roundToInt()}°", style = MaterialTheme.typography.body2)
@@ -165,79 +180,95 @@ fun MainWeatherCard(locationData:WeatherResponse,locationName:String,isCurrent:B
          }
      }
      item {
-         Text(
-             "Today ${locationData.daily.data[0].temperatureMax!!.roundToInt()}° max temperature at ${DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.ofInstant(Instant.ofEpochMilli(1000*locationData.daily.data[0].apparentTemperatureMaxTime!!.toLong()), ZoneId.systemDefault()))} and ${locationData.daily.data[0].temperatureMin!!.roundToInt()}° min temperature at ${DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.ofInstant(Instant.ofEpochMilli(1000*locationData.daily.data[0].apparentTemperatureMinTime!!.toLong()), ZoneId.systemDefault()))}.",
-             style = MaterialTheme.typography.body2,
-             textAlign = TextAlign.Center,
-             modifier = Modifier.padding(horizontal = 16.dp,vertical = 20.dp)
-         )
+         Spacer(modifier = Modifier.height(40.dp))
      }
      item {
-         Box(modifier = Modifier.fillMaxWidth()) {
-             Column(modifier = Modifier.fillMaxWidth()) {
-                 Row(
-                     modifier = Modifier
-                         .padding(horizontal = 16.dp, vertical = 10.dp)
-                         .fillMaxWidth(),
-                     horizontalArrangement = Arrangement.SpaceBetween
-                 ) {
-                     Text("Wind", style = MaterialTheme.typography.body2)
-                     Text("${locationData.currently.windSpeed!!.roundToLong()}km/h", style = MaterialTheme.typography.body2)
+   Surface(
+       color = Color.White.copy(alpha = 0.1F)
+   ) {
+       Column(modifier = Modifier
+           .fillMaxWidth()
+           .padding(vertical = 10.dp, horizontal = 16.dp)) {
+           Text(
+               "Today ${locationData.daily.data[0].temperatureMax!!.roundToInt()}° max temperature at ${DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.ofInstant(Instant.ofEpochMilli(1000*locationData.daily.data[0].apparentTemperatureMaxTime!!.toLong()), ZoneId.systemDefault()))} and ${locationData.daily.data[0].temperatureMin!!.roundToInt()}° min temperature at ${DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.ofInstant(Instant.ofEpochMilli(1000*locationData.daily.data[0].apparentTemperatureMinTime!!.toLong()), ZoneId.systemDefault()))}.",
+               style = MaterialTheme.typography.body2,
+               textAlign = TextAlign.Center,
+               modifier = Modifier.padding(horizontal = 16.dp,vertical = 20.dp)
+           )
+
+           Box(modifier = Modifier.fillMaxWidth()) {
+               Column(modifier = Modifier.fillMaxWidth()) {
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth(0.5F)
+                        .height(80.dp),
+                    verticalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    Text("Wind", style = MaterialTheme.typography.body2.copy(color = Color.LightGray))
+                    Text("${locationData.currently.windSpeed!!.roundToLong()}km/h", style = MaterialTheme.typography.body1)
+                }
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth(0.5F)
+                        .height(80.dp),
+                    verticalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    Text("Humidity", style = MaterialTheme.typography.body2.copy(color = Color.LightGray))
+                    Text("${(100*locationData.currently.humidity!!).roundToInt()}%", style = MaterialTheme.typography.body1)
+                }
+            }
+            Row(modifier = Modifier.fillMaxWidth()) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth(0.5F)
+                        .height(80.dp),
+                    verticalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    Text("UV Index", style = MaterialTheme.typography.body2.copy(color = Color.LightGray))
+                    Text("${locationData.currently.uvIndex}", style = MaterialTheme.typography.body1)
+                }
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth(0.5F)
+                        .height(80.dp),
+                    verticalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    Text("Feels like", style = MaterialTheme.typography.body2.copy(color = Color.LightGray))
+                    Text("${locationData.currently.apparentTemperature!!.roundToInt()}°", style = MaterialTheme.typography.body1)
+                }
+            }
+                 Row(modifier = Modifier.fillMaxWidth()){
+                     Column(
+                         modifier = Modifier
+                             .fillMaxWidth(0.5F)
+                             .height(80.dp),
+                         verticalArrangement = Arrangement.SpaceEvenly
+                     ) {
+                         Text("Sunrise", style = MaterialTheme.typography.body2.copy(color = Color.LightGray))
+                         Text(
+                             DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.ofInstant(Instant.ofEpochMilli(
+                                 (1000*locationData.daily.data[0].sunriseTime!!).toLong()
+                             ), ZoneId.systemDefault())), style = MaterialTheme.typography.body1)
+                     }
+                     Column(
+                         modifier = Modifier
+                             .fillMaxWidth(0.5F)
+                             .height(80.dp),
+                         verticalArrangement = Arrangement.SpaceEvenly
+                     ) {
+                         Text("Sunset", style = MaterialTheme.typography.body2.copy(color = Color.LightGray))
+                         Text(DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.ofInstant(Instant.ofEpochMilli(
+                             (1000*locationData.daily.data[0].sunsetTime!!).toLong()
+                         ), ZoneId.systemDefault())), style = MaterialTheme.typography.body1)
+                     }
                  }
-                 Row(
-                     modifier = Modifier
-                         .padding(horizontal = 16.dp, vertical = 10.dp)
-                         .fillMaxWidth(),
-                     horizontalArrangement = Arrangement.SpaceBetween
-                 ) {
-                     Text("Humidity", style = MaterialTheme.typography.body2)
-                     Text("${(100*locationData.currently.humidity!!).roundToInt()}%", style = MaterialTheme.typography.body2)
-                 }
-                 Row(
-                     modifier = Modifier
-                         .padding(horizontal = 16.dp, vertical = 10.dp)
-                         .fillMaxWidth(),
-                     horizontalArrangement = Arrangement.SpaceBetween
-                 ) {
-                     Text("UV Index", style = MaterialTheme.typography.body2)
-                     Text("${locationData.currently.uvIndex}", style = MaterialTheme.typography.body2)
-                 }
-                 Row(
-                     modifier = Modifier
-                         .padding(horizontal = 16.dp, vertical = 10.dp)
-                         .fillMaxWidth(),
-                     horizontalArrangement = Arrangement.SpaceBetween
-                 ) {
-                     Text("Feels like", style = MaterialTheme.typography.body2)
-                     Text("${locationData.currently.apparentTemperature!!.roundToInt()}°", style = MaterialTheme.typography.body2)
-                 }
-                 Row(
-                     modifier = Modifier
-                         .padding(horizontal = 16.dp, vertical = 10.dp)
-                         .fillMaxWidth(),
-                     horizontalArrangement = Arrangement.SpaceBetween
-                 ) {
-                     Text("Sunrise", style = MaterialTheme.typography.body2)
-                     Text(
-                         DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.ofInstant(Instant.ofEpochMilli(
-                             (1000*locationData.daily.data[0].sunriseTime!!).toLong()
-                         ), ZoneId.systemDefault())), style = MaterialTheme.typography.body2)
-                 }
-                 Row(
-                     modifier = Modifier
-                         .padding(horizontal = 16.dp, vertical = 10.dp)
-                         .fillMaxWidth(),
-                     horizontalArrangement = Arrangement.SpaceBetween
-                 ) {
-                     Text("Sunset", style = MaterialTheme.typography.body2)
-                     Text(DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.ofInstant(Instant.ofEpochMilli(
-                         (1000*locationData.daily.data[0].sunsetTime!!).toLong()
-                     ), ZoneId.systemDefault())), style = MaterialTheme.typography.body2)
-                 }
-             }
+               }
 
 
-         }
+           }
+       }
+   }
      }
      item {
          Spacer(modifier = Modifier.height(50.dp))
@@ -251,9 +282,7 @@ fun MainWeatherCard(locationData:WeatherResponse,locationName:String,isCurrent:B
          WeeklyTimes(data = locationData.daily.data)
      }
      
-    item {
-        Spacer(modifier = Modifier.height(50.dp))
-    }
+
  }
    }
 
@@ -270,20 +299,21 @@ fun WeeklyTimes(data:List<Data>) {
 
     Surface(
         contentColor = Color.White, modifier = Modifier
-         
 
-            .fillMaxWidth().padding(top=20.dp),
-        color = Color.Transparent
+
+            .fillMaxWidth()
+            .padding(vertical = 20.dp),
+        color = Color.White.copy(alpha = 0.1F)
     ) {
         Column(
             modifier = Modifier
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = 16.dp, vertical = 10.dp)
                 .fillMaxWidth(),
-            horizontalAlignment = Alignment.Start,
+            horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
 
-            Text("Weekly forecast", style = MaterialTheme.typography.h3)
+            Text("Weekly forecast", style = MaterialTheme.typography.body2.copy(color = Color.White))
             
             Column(modifier = Modifier.padding(top = 20.dp)) {
              data.forEach { 
@@ -316,9 +346,10 @@ fun WeeklyTile(data:Data){
              )
              Icon(Icons.Filled.ArrowUpward,contentDescription = "",tint = Color.Red,modifier = Modifier.scale(0.7f))
              Text(data.temperatureHigh!!.roundToInt().toString(), style = MaterialTheme.typography.caption.copy(color = Color.Red))
-             Icon(Icons.Filled.ArrowDownward,contentDescription = "",tint = blue_grey_500,modifier = Modifier.scale(0.7f))
-             Text(data.temperatureLow!!.roundToInt().toString(), style = MaterialTheme.typography.caption.copy(color = blue_grey_500))
+             Icon(Icons.Filled.ArrowDownward,contentDescription = "",tint = blue_grey_200,modifier = Modifier.scale(0.7f))
 
+             Text(data.temperatureLow!!.roundToInt().toString(), style = MaterialTheme.typography.caption.copy(color = blue_grey_500))
+             Spacer(modifier = Modifier.width(5.dp))
              Image(
                  painter = painterResource(id = R.drawable.raining), contentDescription = "",
                  colorFilter = ColorFilter.tint(color = Color.White)
@@ -341,30 +372,32 @@ fun RainTimes(rainProbability:List<DataX>,rainProbabilityDaily:List<Data>){
 
         Surface(
             contentColor = Color.White, modifier = Modifier
-                .height(300.dp)
+                .height(340.dp)
 
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .padding(vertical = 10.dp),
             color = Color.Transparent
         ) {
             Column(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
                     .fillMaxWidth(),
-                horizontalAlignment = Alignment.Start,
+                horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceEvenly
             ) {
 
-                   Text("Rain probability", style = MaterialTheme.typography.h3)
+                   Text("Rain probability", style = MaterialTheme.typography.body2.copy(color = Color.White),modifier = Modifier
+                       .padding(bottom = 20.dp))
                 Row(modifier = Modifier
                     .padding(vertical = 10.dp)
-                    .fillMaxWidth(0.5F),
+                    .fillMaxWidth(0.8F),
                 horizontalArrangement = Arrangement.SpaceBetween) {
                     Button(onClick = {
                         category = RainTimeCategory.HOURLY
                     },
                         modifier = Modifier
-                            .width(90.dp)
-                            .height(34.dp),shape = RoundedCornerShape(12),
+                            .width(140.dp)
+                            .height(34.dp),shape = RoundedCornerShape(30),
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = if(category == RainTimeCategory.HOURLY) Color.DarkGray else Color.LightGray
                         )
@@ -379,9 +412,9 @@ fun RainTimes(rainProbability:List<DataX>,rainProbabilityDaily:List<Data>){
                         category = RainTimeCategory.DAILY
                     },
                         modifier = Modifier
-                            .width(90.dp)
+                            .width(140.dp)
                             .height(34.dp),
-                        shape = RoundedCornerShape(12),
+                        shape = RoundedCornerShape(30),
                         colors = ButtonDefaults.buttonColors(
                             backgroundColor = if(category == RainTimeCategory.DAILY) Color.DarkGray else Color.LightGray
                         )
@@ -442,19 +475,19 @@ fun RainMeter(index:Int,value:Double,time:Long,weekly:Boolean){
 
 Column(modifier = Modifier
     .height(220.dp)
-    .padding(end = 5.dp),verticalArrangement = Arrangement.SpaceEvenly) {
+    .padding(end = 10.dp),verticalArrangement = Arrangement.SpaceEvenly) {
     Box(contentAlignment = Alignment.Center,modifier = Modifier
         .height(140.dp)
-        .width(30.dp)
-        .background(color = Color.LightGray, shape = RoundedCornerShape(50))
-        .clip(shape = RoundedCornerShape(50))) {
+        .width(28.dp)
+        .background(color = Color.LightGray, shape = RoundedCornerShape(30))
+        .clip(shape = RoundedCornerShape(30))) {
         Column(modifier = Modifier.fillMaxHeight(),verticalArrangement = Arrangement.Bottom) {
             Box(modifier = Modifier
                 .height(height)
-                .width(30.dp)
+                .width(28.dp)
                 .background(
                     color = barColor.value,
-                    shape = RoundedCornerShape(bottomEndPercent = 50, bottomStartPercent = 50)
+                    shape = RoundedCornerShape(bottomEndPercent = 30, bottomStartPercent = 30)
 
                 ))
         }

@@ -40,32 +40,32 @@ val Typography = Typography(
     body1 = TextStyle(
         fontFamily = appFont,
         fontWeight = FontWeight.Bold,
-        fontSize = 20.sp,
-        letterSpacing = 1.sp
+        fontSize = 16.sp,
+        letterSpacing = 0.7.sp
     ),
     body2 = TextStyle(
         fontFamily = appFont,
         fontWeight = FontWeight.Bold,
-        fontSize = 16.sp,
-        letterSpacing = 1.sp
+        fontSize = 14.sp,
+        letterSpacing = 0.7.sp
     ),
     h1 = TextStyle(
         fontFamily = appFont,
         fontWeight = FontWeight.Black,
-        fontSize = 34.sp,
-        letterSpacing = 1.05.sp
+        fontSize = 60.sp,
+        letterSpacing = 0.sp
     ),
     h2 = TextStyle(
         fontFamily = appFont,
         fontWeight = FontWeight.Black,
-        fontSize = 28.sp,
-        letterSpacing = 1.05.sp
+        fontSize = 26.sp,
+        letterSpacing = 0.7.sp
     ),
     h3 = TextStyle(
         fontFamily = appFont,
         fontWeight = FontWeight.Black,
         fontSize = 24.sp,
-        letterSpacing = 1.sp
+        letterSpacing = 0.7.sp
     ),
 
     button = TextStyle(
@@ -76,7 +76,8 @@ val Typography = Typography(
     caption = TextStyle(
         fontFamily = appFont,
         fontWeight = FontWeight.Normal,
-        fontSize = 12.sp
+        fontSize = 12.sp,
+        letterSpacing = 0.sp
     )
 
 )
