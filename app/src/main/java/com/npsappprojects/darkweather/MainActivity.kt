@@ -1,6 +1,7 @@
 package com.npsappprojects.darkweather
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -14,11 +15,13 @@ import com.npsappprojects.darkweather.ui.theme.DarkWeatherTheme
  @SuppressLint("StaticFieldLeak")
  object MyApp {
    lateinit var context: Context
-
+     lateinit var activity: Activity
    fun setAppContext(con:Context){
        context = con
    }
-
+     fun setAppActivity(act: Activity){
+         activity = act
+     }
 }
 
 class MainActivity : ComponentActivity() {
@@ -31,8 +34,8 @@ class MainActivity : ComponentActivity() {
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
         MyApp.setAppContext(this)
-
-        model.getCurrentLocation()
+        MyApp.setAppActivity(act = this)
+        model.getCurrentLocationWeather()
         
         setContent {
 

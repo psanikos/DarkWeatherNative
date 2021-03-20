@@ -77,33 +77,7 @@ class LocationHelper {
             }
 
         } else {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                if (mLocationManager.isLocationEnabled) {
-                    mLocationManager.requestLocationUpdates(
-                        LocationManager.GPS_PROVIDER,
-                        LOCATION_REFRESH_TIME.toLong(),
-                        LOCATION_REFRESH_DISTANCE.toFloat(),
-                        mLocationListener
-                    )
-
-                } else {
-                    mLocationManager.requestLocationUpdates(
-                        LocationManager.NETWORK_PROVIDER,
-                        LOCATION_REFRESH_TIME.toLong(),
-                        LOCATION_REFRESH_DISTANCE.toFloat(),
-                        mLocationListener
-                    )
-
-                }
-            } else {
-                mLocationManager.requestLocationUpdates(
-                    LocationManager.GPS_PROVIDER,
-                    LOCATION_REFRESH_TIME.toLong(),
-                    LOCATION_REFRESH_DISTANCE.toFloat(),
-                    mLocationListener
-                )
-
-            }
+         return
         }
     }
 }

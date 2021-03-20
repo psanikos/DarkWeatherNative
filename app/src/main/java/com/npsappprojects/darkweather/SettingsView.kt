@@ -43,13 +43,13 @@ fun SettingsView(model:WeatherViewModel){
         modifier = Modifier
 
             .fillMaxWidth()
-            .height(220.dp)
+            .height(250.dp)
         ,
         verticalArrangement = Arrangement.SpaceBetween
 
     ) {
-        Surface(color = Color.White,modifier = Modifier.fillMaxWidth() .height(150.dp)) {
-            Text("Settings", style = MaterialTheme.typography.h1.copy(color = Color.Black),modifier = Modifier.padding(horizontal = 16.dp,vertical = 40.dp))
+        Surface(color = Color.White,modifier = Modifier.fillMaxWidth() .height(180.dp)) {
+            Text("Settings", style = MaterialTheme.typography.h1.copy(color = Color.Black),modifier = Modifier.padding(horizontal = 16.dp,vertical = 50.dp))
         }
         Row(modifier = itemsModifier,horizontalArrangement = Arrangement.SpaceBetween,verticalAlignment = Alignment.CenterVertically){
             Text("Units",style = MaterialTheme.typography.body1)

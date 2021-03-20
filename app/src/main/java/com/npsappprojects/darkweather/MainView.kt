@@ -1,6 +1,7 @@
 package com.npsappprojects.darkweather
 
 import androidx.compose.animation.Crossfade
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,6 +20,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.GridCells
+import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -57,6 +60,7 @@ import com.npsappprojects.darkweather.ui.theme.green_400
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalFoundationApi::class)
 @ExperimentalMaterialApi
 @Composable
 fun MainPageView(model: WeatherViewModel){
@@ -64,6 +68,7 @@ fun MainPageView(model: WeatherViewModel){
     var offset:Float by remember { mutableStateOf(0f) }
     val state = rememberScaffoldState()
     var currentPage by remember { mutableStateOf("Main") }
+
     val swipableModifier = Modifier.draggable(
         orientation = Orientation.Horizontal,
         state = rememberDraggableState { delta ->
@@ -92,10 +97,10 @@ fun MainPageView(model: WeatherViewModel){
         topBar = {
             TopAppBar(
 
-                backgroundColor = if(currentPage == "AddNew") Color(0xFF9AABBC) else if (model.locations.count() > 0) getWeatherColor(input = model.locations[index].data.currently.icon!!) else getWeatherColor(input = ""),
+                backgroundColor = if(currentPage == "AddNew") Color(0xFF9AABBC) else if (!model.isLoading && model.locations.isNotEmpty()) getWeatherColor(input = model.locations[index].data.currently.icon!!) else getWeatherColor(input = ""),
                 elevation = 0.dp,
 
-                modifier = Modifier.height(80.dp),contentPadding = PaddingValues(top = 30.dp,start = 8.dp,end = 8.dp)
+                modifier = Modifier.height(90.dp),contentPadding = PaddingValues(top = 30.dp,start = 8.dp,end = 8.dp)
             ){
                 Row(modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween,verticalAlignment = Alignment.CenterVertically){
                     IconButton(onClick = {
@@ -114,33 +119,44 @@ fun MainPageView(model: WeatherViewModel){
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center
                     ) {
-                        if (model.locations.count() > 0) {
-                            if (model.locations[index].isCurrent) {
-                                Icon(
-                                    Icons.Filled.LocationOn,
-                                    contentDescription = "",
-                                    modifier = Modifier.size(18.dp),
-                                    tint = Color.White
-                                )
-                                Spacer(modifier = Modifier.width(4.dp))
-                            }
+                        if(currentPage == "AddNew") {
                             Text(
-                                text = model.locations[index].name,
+                                text = "Add new location",
                                 style = MaterialTheme.typography.body2.copy(color = Color.White)
                             )
                         }
                         else {
-                            Text(
-                                text = "No location",
-                                style = MaterialTheme.typography.body2.copy(color = Color.White)
-                            )
+                            if (!model.isLoading && model.locations.isNotEmpty()) {
+
+                                if (model.locations[index].isCurrent) {
+                                    Icon(
+                                        Icons.Filled.LocationOn,
+                                        contentDescription = "",
+                                        modifier = Modifier.size(18.dp),
+                                        tint = Color.White
+                                    )
+                                    Spacer(modifier = Modifier.width(4.dp))
+                                }
+                                Text(
+                                    text = model.locations[index].name,
+                                    style = MaterialTheme.typography.body2.copy(color = Color.White)
+                                )
+                            } else {
+                                Text(
+                                    text = "No location",
+                                    style = MaterialTheme.typography.body2.copy(color = Color.White)
+                                )
+                            }
+                            IconButton(onClick = {
+                                model.getCurrentLocationWeather()
+                            }) {
+                                Icon(Icons.Filled.Refresh,tint = Color.White,contentDescription = "")
+                            }
                         }
-                        IconButton(onClick = {
-                            model.getCurrentLocation()
-                        }) {
-                            Icon(Icons.Filled.Refresh,tint = Color.White,contentDescription = "")
                         }
-                    }
+
+
+
                     IconButton(onClick = {
                         currentPage = if(currentPage == "Main"){
                             "AddNew"
@@ -160,7 +176,8 @@ fun MainPageView(model: WeatherViewModel){
         },
         drawerBackgroundColor = Color(0xFFD7E0EB),
         drawerElevation = 0.dp,
-        drawerShape = RoundedCornerShape(0)
+        drawerShape = RoundedCornerShape(0),
+        drawerGesturesEnabled = false
 
 
     ) {
@@ -192,6 +209,7 @@ fun MainPageView(model: WeatherViewModel){
 }
 
 
+@ExperimentalFoundationApi
 @Composable
 fun AddPlaceView(model: WeatherViewModel){
   var searchTerm:String by remember { mutableStateOf("")}
@@ -212,7 +230,7 @@ Box(modifier = Modifier
     .padding(horizontal = 16.dp)
     .fillMaxWidth()
 
-    .height(35.dp)
+    .height(40.dp)
     .background(color = Color.White, shape = RoundedCornerShape(12)),contentAlignment = Alignment.CenterStart){
     BasicTextField(value = searchTerm,onValueChange = {
         searchTerm = it
@@ -238,16 +256,49 @@ Box(modifier = Modifier
 }
      Spacer(modifier = Modifier.height(30.dp))
      model.searchedAdresses.forEach {
-Row(modifier = Modifier.padding(horizontal = 20.dp,vertical = 5.dp).fillMaxWidth().height(40.dp)
-    .background(color = Color.White.copy(alpha = 0.5f),shape = RoundedCornerShape(12))
-    .clickable {
-      model.saveLocation(address = it)
-    },
-horizontalArrangement = Arrangement.SpaceBetween,verticalAlignment = Alignment.CenterVertically) {
+    Row(modifier = Modifier
+        .padding(horizontal = 20.dp, vertical = 5.dp)
+        .fillMaxWidth()
+        .height(50.dp)
+        .background(color = Color.White.copy(alpha = 0.5f), shape = RoundedCornerShape(12))
+        .clickable {
+            model.saveLocation(address = it)
+            searchTerm = ""
+            model.searchedAdresses.clear()
+        },
+    horizontalArrangement = Arrangement.SpaceBetween,verticalAlignment = Alignment.CenterVertically) {
     Text(it.locality,style = MaterialTheme.typography.body2,modifier = Modifier.padding(horizontal = 16.dp,vertical = 8.dp))
-Icon(Icons.TwoTone.CheckBox,contentDescription = "",tint = green_400,modifier = Modifier.size(25.dp).padding(end = 10.dp))
+    Icon(Icons.TwoTone.CheckBox,contentDescription = "",tint = green_400,modifier = Modifier
+        .size(25.dp)
+        .padding(end = 10.dp))
 }
     }
+     LazyVerticalGrid(cells = GridCells.Fixed(count = 2),modifier = Modifier.padding(horizontal = 8.dp).fillMaxWidth()) {
+
+             model.myLocations.forEach {
+                 item {
+                     Box(
+                         modifier = Modifier
+                             .height(100.dp)
+                             .width(100.dp)
+                             .padding(10.dp)
+                             .background(
+                                 brush = Brush.verticalGradient(
+                                     colors = listOf(
+                                         Color.White.copy(
+                                             alpha = 0.3f
+                                         ), Color.White.copy(alpha = 0.1f)
+                                     )
+                                 ), shape = RoundedCornerShape(20)
+                             ),
+                         contentAlignment = Alignment.Center){
+                         Text(it.name, style = MaterialTheme.typography.body2)
+                     }
+                 }
+
+         }
+
+     }
  }
 }
 }

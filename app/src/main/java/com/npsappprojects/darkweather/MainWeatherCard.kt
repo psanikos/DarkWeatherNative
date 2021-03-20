@@ -64,7 +64,7 @@ import kotlin.math.roundToLong
 
 @Composable
 fun MainWeatherCard(locationData:WeatherResponse,locationName:String,isCurrent:Boolean){
-   Surface(modifier = Modifier.fillMaxSize(),color = getWeatherColor("clear-night"),
+   Surface(modifier = Modifier.fillMaxSize(),color = getWeatherColor(locationData.currently.icon!!),
        contentColor = Color.White) {
 
  LazyColumn(modifier = Modifier.fillMaxSize(),horizontalAlignment = Alignment.CenterHorizontally
@@ -82,9 +82,10 @@ fun MainWeatherCard(locationData:WeatherResponse,locationName:String,isCurrent:B
              )
          }
      }
+
      item {
          Text(
-             text = "${locationData.currently.summary!!}",
+             text = locationData.currently.summary!!,
              style = MaterialTheme.typography.body1,
              modifier = Modifier
                  .padding(horizontal = 20.dp, vertical = 10.dp),
