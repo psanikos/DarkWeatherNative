@@ -26,13 +26,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Scaffold
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -41,6 +42,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.twotone.CheckBox
+import androidx.compose.material.icons.twotone.Warning
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -56,7 +58,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.npsappprojects.darkweather.ui.theme.blue_200
+import com.npsappprojects.darkweather.ui.theme.blue_600
+import com.npsappprojects.darkweather.ui.theme.green_200
 import com.npsappprojects.darkweather.ui.theme.green_400
+import com.npsappprojects.darkweather.ui.theme.green_600
+import com.npsappprojects.darkweather.ui.theme.orange_500
+import com.npsappprojects.darkweather.ui.theme.red_500
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -182,20 +190,27 @@ fun MainPageView(model: WeatherViewModel){
 
     ) {
         when(model.isLoading) {
-            true -> Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
-            }
+            true ->  LoadingView(model = model)
+
             false -> Crossfade(targetState = currentPage) { screen ->
                 when (screen) {
 
-                    "Main" -> if (model.locations.count() > 0) {
-                        MainWeatherCard(
+                    "Main" -> if (model.locations.count() > 0) {MainWeatherCard(
                             locationData = model.locations[index].data,
                             locationName = model.locations[index].name,
                             isCurrent = model.locations[index].isCurrent
                         )
                     } else {
-                        LoadingView()
+                        Box(modifier = Modifier.background(color = getWeatherColor("")).fillMaxSize(),contentAlignment = Alignment.Center) {
+                            Text(
+                                "No places added yet.",
+                                style = MaterialTheme.typography.body2.copy(
+                                    color = Color.White,
+
+                                    ),
+                                modifier = Modifier.padding(vertical=10.dp,horizontal = 16.dp)
+                            )
+                        }
                     }
                     "AddNew" -> AddPlaceView(model = model)
 
@@ -273,7 +288,9 @@ Box(modifier = Modifier
         .padding(end = 10.dp))
 }
     }
-     LazyVerticalGrid(cells = GridCells.Fixed(count = 2),modifier = Modifier.padding(horizontal = 8.dp).fillMaxWidth()) {
+     LazyVerticalGrid(cells = GridCells.Fixed(count = 2),modifier = Modifier
+         .padding(horizontal = 8.dp)
+         .fillMaxWidth()) {
 
              model.myLocations.forEach {
                  item {
@@ -303,12 +320,111 @@ Box(modifier = Modifier
 }
 }
 
+enum class WeatherError{
+    NONETWORK,NOGPS,NOPERMISSION,NONE
+}
+
+
 @Composable
-fun LoadingView(){
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = Color.DarkGray
-    ) {
+fun LoadingView(model: WeatherViewModel){
+
+
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = getWeatherColor("")),
+
+            ) {
+
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart) {
+            when (model.error) {
+                WeatherError.NONE ->
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+
+
+                    ) {
+                        Spacer(modifier = Modifier.height(250.dp))
+
+                        CircularProgressIndicator(
+                            color = Color.White, modifier = Modifier
+                                .size(30.dp)
+                                .padding(vertical = 20.dp)
+                        )
+
+                    }
+
+                WeatherError.NOPERMISSION -> Column(
+                    Modifier
+                        .padding(horizontal = 16.dp)
+                        .fillMaxSize()) {
+                    Spacer(modifier = Modifier.height(200.dp))
+                    Icon(Icons.TwoTone.Warning,modifier = Modifier.size(50.dp)
+                        ,contentDescription = "",tint = orange_500)
+                    Text(
+                        "No location access is provided, if you want to see your current location please allow or continue to your saved places.",
+                        style = MaterialTheme.typography.body2.copy(
+                            color = Color.White,
+
+                        ),
+                        modifier = Modifier.padding(vertical=10.dp)
+                    )
+                    Spacer(modifier=Modifier.height(14.dp))
+                    Button(onClick = {
+                                     model.askPermission()
+                    },colors = ButtonDefaults.buttonColors(
+                        contentColor = green_200,backgroundColor = green_600
+                    )) {
+                        Text("Allow access",style = MaterialTheme.typography.button)
+                    }
+                    Spacer(modifier=Modifier.height(14.dp))
+                    Button(onClick = {
+                        model.askContinueWithout()
+                    },colors = ButtonDefaults.buttonColors(
+                        contentColor = blue_200,backgroundColor = blue_600
+                    )) {
+                        Text("Continue without",style = MaterialTheme.typography.button)
+                    }
+
+                }
+                WeatherError.NONETWORK -> Column(
+                    Modifier
+                        .padding(horizontal = 16.dp)
+                        .fillMaxSize()) {
+    Spacer(modifier = Modifier.height(200.dp))
+    Icon(Icons.TwoTone.Warning,modifier = Modifier.size(50.dp)
+        ,contentDescription = "",tint = red_500)
+    Text(
+        "Error while getting your data, please check your internet connection.",
+        style = MaterialTheme.typography.body2.copy(
+            color = Color.White,
+
+            ),
+        modifier = Modifier.padding(vertical=10.dp)
+    )
+
+}
+                WeatherError.NOGPS  -> Column(
+                    Modifier
+                        .padding(horizontal = 16.dp)
+                        .fillMaxSize()) {
+                    Spacer(modifier = Modifier.height(200.dp))
+                Icon(Icons.TwoTone.Warning,modifier = Modifier.size(50.dp)
+                    ,contentDescription = "",tint = red_500)
+                Text(
+                    "There was an error getting your location, please try again.",
+                    style = MaterialTheme.typography.body2.copy(
+                        color = Color.White,
+
+                        ),
+                    modifier = Modifier.padding(vertical=10.dp)
+                )
+
+            }
+            }
+        }
 
     }
 }

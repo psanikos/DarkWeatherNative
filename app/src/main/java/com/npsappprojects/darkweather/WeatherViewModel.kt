@@ -64,6 +64,38 @@ class WeatherViewModel: ViewModel() {
     var units:WeatherUnits by  mutableStateOf(WeatherUnits.AUTO)
     var searchedAdresses:MutableList<Address> by mutableStateOf(mutableListOf())
     var myLocations:List<SavedLocation> by mutableStateOf(listOf())
+    var error:WeatherError by mutableStateOf(WeatherError.NONE)
+
+
+    fun askPermission() {
+        val permissionFineLocation = android.Manifest.permission.ACCESS_FINE_LOCATION
+        val permissionCoarseLocation = android.Manifest.permission.ACCESS_COARSE_LOCATION
+        val context = MyApp.context
+        val REQUEST_CODE_LOCATION = 100
+
+        requestPermissions(
+            MyApp.activity,
+            arrayOf(permissionFineLocation, permissionCoarseLocation),
+            REQUEST_CODE_LOCATION
+        )
+        if (ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            getCurrentLocationWeather()
+        }
+
+        }
+
+
+    fun askContinueWithout(){
+        error = WeatherError.NONE
+        isLoading = false
+    }
 
     fun getCoordinatesFromLocation(input:String){
         if (input != "") {
@@ -122,6 +154,7 @@ class WeatherViewModel: ViewModel() {
                                 GlobalScope.launch {
                                     delay(2000)
                                     println("loading complete")
+
                                     isLoading = false
                                 }
                             }
@@ -132,14 +165,24 @@ class WeatherViewModel: ViewModel() {
             }
             else {
                 GlobalScope.launch {
+                    getSavedLocations(){
+                        getSavedLocationData(){
+                            GlobalScope.launch {
+                                delay(2000)
+                                println("loading complete")
+                              //  error = WeatherError.NOGPS
 
-                    isLoading = false
+                            }
+                        }
+                    }
+
+
                 }
             }
         }
     }
 
- private fun getCurrentLocation(completion: (Location?) -> Unit){
+    private fun getCurrentLocation(completion: (Location?) -> Unit){
      val context = MyApp.context
       val permissionFineLocation=android.Manifest.permission.ACCESS_FINE_LOCATION
      val permissionCoarseLocation=android.Manifest.permission.ACCESS_COARSE_LOCATION
@@ -157,8 +200,9 @@ class WeatherViewModel: ViewModel() {
              Manifest.permission.ACCESS_FINE_LOCATION
          ) != PackageManager.PERMISSION_GRANTED
      ) {
-
-         requestPermissions(MyApp.activity, arrayOf(permissionFineLocation, permissionCoarseLocation), REQUEST_CODE_LOCATION)
+        error = WeatherError.NOPERMISSION
+         //requestPermissions(MyApp.activity, arrayOf(permissionFineLocation, permissionCoarseLocation), REQUEST_CODE_LOCATION)
+        completion(null)
          return
      }
      fusedLocationClient.lastLocation
@@ -179,6 +223,7 @@ class WeatherViewModel: ViewModel() {
          }
 
          .addOnFailureListener {
+             error = WeatherError.NOGPS
              println("NO LOCATION GOT")
          completion(null)
          }
@@ -281,6 +326,10 @@ getSavedLocations(){}
                     completion()
                  }
             }
+                else {
+                    error = WeatherError.NONETWORK
+                 completion()
+                }
             }
         } else {
            completion()
@@ -335,11 +384,7 @@ getSavedLocations(){}
         completion()
     }
 
-    init {
-        GlobalScope.launch {
 
-        }
-    }
 
 }
 

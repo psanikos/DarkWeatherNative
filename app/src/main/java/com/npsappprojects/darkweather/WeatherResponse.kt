@@ -245,7 +245,7 @@ fun getWeatherColor(input: String): Color {
         "hail" -> Color(0xFFc5e1e8)
         "thunderstorm" -> Color(0xFF130c36)
         "tornado" -> Color(0xFF1e1640)
-        else -> Color(0xFF18a9c9)
+        else -> Color(0xFF2F4276)
     }
 }
 
