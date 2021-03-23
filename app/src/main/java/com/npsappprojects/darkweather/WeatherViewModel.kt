@@ -12,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.beust.klaxon.Klaxon
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -29,6 +30,11 @@ import okio.IOException
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.math.round
+
+
+
+
+
 
 class WeatherModel constructor(
     val name:String,
@@ -65,32 +71,72 @@ class WeatherViewModel: ViewModel() {
     var searchedAdresses:MutableList<Address> by mutableStateOf(mutableListOf())
     var myLocations:List<SavedLocation> by mutableStateOf(listOf())
     var error:WeatherError by mutableStateOf(WeatherError.NONE)
+    var hasInit:Boolean by mutableStateOf(false)
+    private val _permissionGranted = MutableLiveData(false)
+    val permissionGranted = _permissionGranted
+
+    fun onPermissionGranted() = _permissionGranted.postValue(true)
 
 
-    fun askPermission() {
+
+
+    init {
+        isInit()
+    }
+
+    fun hasRun(){
+        val context = MyApp.context
+
+        val pref: SharedPreferences = context
+            .getSharedPreferences("MyPref", 0)
+        with (pref.edit()) {
+            putBoolean("init",true)
+            apply()
+        }
+        hasInit = true
+    }
+    fun isInit(){
+        val context = MyApp.context
+
+        val pref: SharedPreferences = context
+            .getSharedPreferences("MyPref", 0)
+
+        val initStatus =  pref.getBoolean("init", false)
+        hasInit = initStatus
+    }
+
+   fun askPermission() {
         val permissionFineLocation = android.Manifest.permission.ACCESS_FINE_LOCATION
         val permissionCoarseLocation = android.Manifest.permission.ACCESS_COARSE_LOCATION
         val context = MyApp.context
         val REQUEST_CODE_LOCATION = 100
 
-        requestPermissions(
-            MyApp.activity,
-            arrayOf(permissionFineLocation, permissionCoarseLocation),
-            REQUEST_CODE_LOCATION
-        )
-        if (ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            getCurrentLocationWeather()
-        }
+       when {
+           ContextCompat.checkSelfPermission(
+               context,
+               Manifest.permission.ACCESS_COARSE_LOCATION
+           ) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
+               context,
+               Manifest.permission.ACCESS_FINE_LOCATION
+           ) == PackageManager.PERMISSION_GRANTED -> {
+               GlobalScope.launch {
+                   hasRun()
+               }
+               getCurrentLocationWeather()
+
+
+       }
+           else -> {
+               requestPermissions(
+                   MyApp.activity,
+                   arrayOf(permissionFineLocation, permissionCoarseLocation),
+                   REQUEST_CODE_LOCATION
+               )
+           }
+       }
+
 
         }
-
 
     fun askContinueWithout(){
         error = WeatherError.NONE
@@ -133,6 +179,48 @@ class WeatherViewModel: ViewModel() {
           }
     }
 
+    fun remove(item:SavedLocation){
+        isLoading = true
+        //----List of locations----
+      var items = locations.toMutableList()
+      var places =   myLocations.toMutableList()
+        places.removeIf { it.name == item.name }
+        myLocations = places.toList()
+      items.removeIf { it.name == item.name }
+        locations = items.toList()
+      //---------------------------
+
+        val context = MyApp.context
+        val pref: SharedPreferences = context
+            .getSharedPreferences("MyPref", 0) // 0 - for private mode
+        val savedLocations = pref.getString("locations", null)
+        println("SAVED $savedLocations ")
+        val itemsSaved =
+            savedLocations?.trimStart()?.trimEnd()?.split(",")?.map {
+                it
+            }?.toMutableList()
+                ?: mutableListOf<String>()
+
+        var savedItems = if(itemsSaved.size > 0) itemsSaved.map { saved ->
+            saved.replace("[", "").replace("]", "")
+            val list = saved.split("|")
+            SavedLocation(
+                name = list[0].replace("[", "").replace("]", "").replace("|", ""),
+                latitude = list[1].replace("[", "").replace("]", "").replace("]", "").replace("|", "").toDouble(),
+                longitude = list[2].replace("[", "").replace("]", "").replace("]", "").replace("|", "").toDouble()
+            )
+        }.toMutableList() else mutableListOf<SavedLocation>()
+
+      savedItems.removeIf { it.name == item.name }
+
+        with (pref.edit()) {
+            putString("locations", savedItems.toString())
+            apply()
+        }
+
+        getSavedLocations(){}
+        isLoading = false
+    }
 
     fun getCurrentLocationWeather(){
         val context = MyApp.context
@@ -154,7 +242,7 @@ class WeatherViewModel: ViewModel() {
                                 GlobalScope.launch {
                                     delay(2000)
                                     println("loading complete")
-
+                                    error = WeatherError.NONE
                                     isLoading = false
                                 }
                             }
@@ -171,7 +259,7 @@ class WeatherViewModel: ViewModel() {
                                 delay(2000)
                                 println("loading complete")
                               //  error = WeatherError.NOGPS
-
+                                isLoading = false
                             }
                         }
                     }
@@ -257,20 +345,19 @@ class WeatherViewModel: ViewModel() {
 
     }
 
-    // {name,lat,lon}-{name,lat,lon}
-
     fun saveLocation(address:Address){
         val context = MyApp.context
         val pref: SharedPreferences = context
             .getSharedPreferences("MyPref", 0) // 0 - for private mode
         val savedLocations =  pref.getString("locations", null)
         println("SAVED $savedLocations ")
-        val items = savedLocations?.trimStart()?.trimEnd()?.split(",")?.map {
-            it
-        }?.toMutableList()
-            ?: mutableListOf<String>()
+        val items = if (savedLocations != null && savedLocations != "[]")
+            savedLocations.trimStart().trimEnd().split(",").map {
+                it
+            }.toMutableList()
+        else mutableListOf<String>()
 
-        val itemToAdd = SavedLocation(name = address.locality,latitude = address.latitude,longitude = address.longitude).toString()
+        val itemToAdd = SavedLocation(name = if(address.subLocality != null) address.subLocality else address.locality ,latitude = address.latitude,longitude = address.longitude).toString()
        if (!items.contains(itemToAdd)){
            items.add(itemToAdd )
        }
@@ -280,8 +367,12 @@ class WeatherViewModel: ViewModel() {
             apply()
         }
 
-getSavedLocations(){}
+getSavedLocations(){
+  //  getCurrentLocationWeather()
+}
     }
+
+
 
     private fun getSavedLocations(completion:()->Unit) {
         val context = MyApp.context
@@ -289,12 +380,12 @@ getSavedLocations(){}
             .getSharedPreferences("MyPref", 0) // 0 - for private mode
         val savedLocations = pref.getString("locations", null)
         println("SAVED $savedLocations ")
-        val items =
-            savedLocations?.trimStart()?.trimEnd()?.split(",")?.map {
+        val items = if (savedLocations != null && savedLocations != "[]")
+            savedLocations.trimStart().trimEnd().split(",").map {
                 it
-            }?.toMutableList()
-                ?: mutableListOf<String>()
-        val savedItems = items.map { saved ->
+            }.toMutableList()
+                else mutableListOf<String>()
+        val savedItems = if (items.size > 0) items.map { saved ->
             saved.replace("[", "").replace("]", "")
             val list = saved.split("|")
             SavedLocation(
@@ -302,7 +393,7 @@ getSavedLocations(){}
                 latitude = list[1].replace("[", "").replace("]", "").replace("]", "").replace("|", "").toDouble(),
                 longitude = list[2].replace("[", "").replace("]", "").replace("]", "").replace("|", "").toDouble()
             )
-        }.toList()
+        }.toList() else listOf<SavedLocation>()
         myLocations = savedItems
         completion()
     }
