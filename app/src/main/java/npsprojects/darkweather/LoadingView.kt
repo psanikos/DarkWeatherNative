@@ -1,4 +1,4 @@
-package com.npsappprojects.darkweather
+package npsprojects.darkweather
 
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.LinearEasing
@@ -33,7 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.npsappprojects.darkweather.ui.theme.red_500
+import npsprojects.darkweather.ui.theme.red_500
 
 
 
@@ -84,6 +84,19 @@ fun LoadingView(model: WeatherViewModel){
 
                         }
                     }
+                WeatherError.NOGPS ->
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+
+
+                        ) {
+                        Box(modifier = Modifier.padding(bottom = 100.dp).fillMaxSize(),contentAlignment = Alignment.Center) {
+
+                            LoadingAnimation()
+
+                        }
+                    }
 
                 WeatherError.NONETWORK -> Column(
                     Modifier
@@ -104,25 +117,7 @@ fun LoadingView(model: WeatherViewModel){
                     )
 
                 }
-                WeatherError.NOGPS  -> Column(
-                    Modifier
-                        .padding(horizontal = 16.dp)
-                        .fillMaxSize()) {
-                    Spacer(modifier = Modifier.height(200.dp))
-                    Icon(
-                        Icons.TwoTone.Warning,modifier = Modifier.size(50.dp)
-                        ,contentDescription = "",tint = red_500
-                    )
-                    Text(
-                        "There was an error getting your location, please try again.",
-                        style = MaterialTheme.typography.body2.copy(
-                            color = Color.White,
 
-                            ),
-                        modifier = Modifier.padding(vertical=10.dp)
-                    )
-
-                }
             }
         }
 

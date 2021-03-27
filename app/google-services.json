@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "968361122740",
+    "firebase_url": "https://darkweatherandroid.firebaseio.com",
+    "project_id": "darkweatherandroid",
+    "storage_bucket": "darkweatherandroid.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:968361122740:android:52ddcc8f3b70b1a20eb0e1",
+        "android_client_info": {
+          "package_name": "npsprojects.darkweather"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "968361122740-4qnsdjagqq3e7vh275s5fpqe2722mnk4.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDw7mchJrMqLAuWZ7jFqY-tNeF4YWeH1es"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "968361122740-4qnsdjagqq3e7vh275s5fpqe2722mnk4.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "968361122740-3u3mu1a8d9te6ifp4k7b7d2eoh2hodsc.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "npsprojects.darkweather"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

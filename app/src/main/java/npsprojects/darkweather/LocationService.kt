@@ -1,4 +1,4 @@
-package com.npsappprojects.darkweather
+package npsprojects.darkweather
 
 import android.Manifest
 import android.content.Context

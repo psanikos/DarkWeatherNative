@@ -1,4 +1,4 @@
-package com.npsappprojects.darkweather
+package npsprojects.darkweather
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.Image
@@ -27,9 +27,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.npsappprojects.darkweather.ui.theme.blue_600
-import com.npsappprojects.darkweather.ui.theme.green_400
-import com.npsappprojects.darkweather.ui.theme.green_800
+import npsprojects.darkweather.ui.theme.blue_600
+import npsprojects.darkweather.ui.theme.green_400
+import npsprojects.darkweather.ui.theme.green_800
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -57,6 +57,7 @@ fun FirstScreen(model: WeatherViewModel) {
 
                 Text("DarkWeather", style = MaterialTheme.typography.h2.copy(color= Color.White,fontSize = 50.sp))
                 Box(modifier = Modifier
+                    .padding(horizontal = 16.dp)
                     .clip(RoundedCornerShape(12))
                     .fillMaxWidth()
                     .background(
@@ -67,7 +68,7 @@ fun FirstScreen(model: WeatherViewModel) {
                             )
                         )
                     )){
-                    Text("Welcome to DarkWeather!\nYou can use the app with or without access to your location. To see your current location please allow access or add places from the add page. To see your saved places swipe left or right on the main screen.",
+                    Text("Welcome to DarkWeather!\nYou can use the app with or without access to your location.\nTo see your current location please allow access or add places from the add page.\nTo see your saved places swipe left or right on the main screen.",
                         style = MaterialTheme.typography.body2.copy(color= Color.White),modifier = Modifier.padding(16.dp),lineHeight = 24.sp,textAlign = TextAlign.Center,color = Color.White)
                 }
                 if (permissionGranted.value!!) {

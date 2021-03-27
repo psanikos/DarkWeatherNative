@@ -1,4 +1,4 @@
-package com.npsappprojects.darkweather
+package npsprojects.darkweather
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -13,7 +13,11 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
-import com.npsappprojects.darkweather.ui.theme.DarkWeatherTheme
+import com.google.android.gms.ads.MobileAds
+import npsprojects.darkweather.ui.theme.DarkWeatherTheme
+
+
+
 
 
  @SuppressLint("StaticFieldLeak")
@@ -44,7 +48,11 @@ class MainActivity : ComponentActivity() {
 
         
         setContent {
+            MobileAds.initialize(
+                this
+            ) {
 
+            }
             DarkWeatherTheme {
            if(model.hasInit){
                MainPageView(model = model)

@@ -1,4 +1,4 @@
-package com.npsappprojects.darkweather
+package npsprojects.darkweather
 
 import android.annotation.SuppressLint
 import android.os.Parcelable
@@ -252,7 +252,7 @@ fun getWeatherColor(input: String): Color {
 fun getWeatherIcon(input: String): Int {
 
     return when (input) {
-        "clear-day" ->  R.drawable.sun
+        "clear-day" -> R.drawable.sun
         "clear-night" -> R.drawable.clearnight
         "rain" -> R.drawable.rain
         "snow" -> R.drawable.snow
@@ -260,7 +260,7 @@ fun getWeatherIcon(input: String): Int {
         "wind" -> R.drawable.air
         "fog" -> R.drawable.clouds
         "cloudy" -> R.drawable.clouds
-        "partly-cloudy-day" ->  R.drawable.partlycloudyday
+        "partly-cloudy-day" -> R.drawable.partlycloudyday
         "partly-cloudy-night" -> R.drawable.partlycloudynight
         "hail" -> R.drawable.snow
         "thunderstorm" -> R.drawable.heavyrain

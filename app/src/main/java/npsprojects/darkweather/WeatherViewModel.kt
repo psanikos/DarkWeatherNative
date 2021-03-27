@@ -1,4 +1,4 @@
-package com.npsappprojects.darkweather
+package npsprojects.darkweather
 
 import android.Manifest
 import android.content.Context
@@ -7,6 +7,9 @@ import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
 import android.location.Location
+import android.os.Build
+import android.provider.Settings
+import android.text.TextUtils
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -27,18 +30,14 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
 import okio.IOException
-import java.util.*
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 import kotlin.math.round
 
 
-
-
-
-
 class WeatherModel constructor(
     val name:String,
-    val data:WeatherResponse,
+    val data: WeatherResponse,
     val isCurrent:Boolean
 )
 
@@ -62,15 +61,15 @@ fun Double.round(decimals: Int): Double {
 class WeatherViewModel: ViewModel() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private val locator = LocationHelper()
-    var isLoading by mutableStateOf(false)
+    var isLoading by mutableStateOf(true)
     var currentLocation: Location? by  mutableStateOf(null)
     var currentLocationData: WeatherResponse? by  mutableStateOf(null)
     var currentLocationName:String by mutableStateOf("My Location")
     var locations:List<WeatherModel> by mutableStateOf(listOf())
-    var units:WeatherUnits by  mutableStateOf(WeatherUnits.AUTO)
+    var units: WeatherUnits by  mutableStateOf(WeatherUnits.AUTO)
     var searchedAdresses:MutableList<Address> by mutableStateOf(mutableListOf())
     var myLocations:List<SavedLocation> by mutableStateOf(listOf())
-    var error:WeatherError by mutableStateOf(WeatherError.NONE)
+    var error: WeatherError by mutableStateOf(WeatherError.NONE)
     var hasInit:Boolean by mutableStateOf(false)
     private val _permissionGranted = MutableLiveData(false)
     val permissionGranted = _permissionGranted
@@ -179,7 +178,7 @@ class WeatherViewModel: ViewModel() {
           }
     }
 
-    fun remove(item:SavedLocation){
+    fun remove(item: SavedLocation){
         isLoading = true
         //----List of locations----
       var items = locations.toMutableList()
@@ -252,21 +251,38 @@ class WeatherViewModel: ViewModel() {
                 }
             }
             else {
-                GlobalScope.launch {
-                    getSavedLocations(){
-                        getSavedLocationData(){
-                            GlobalScope.launch {
-                                delay(2000)
-                                println("loading complete")
-                              //  error = WeatherError.NOGPS
-                                isLoading = false
-                            }
+                getSavedLocations(){
+                    getSavedLocationData(){
+                        GlobalScope.launch {
+                            delay(2000)
+                            println("loading complete")
+                            error = WeatherError.NOGPS
+                            isLoading = false
                         }
                     }
-
-
                 }
             }
+        }
+    }
+    fun canGetLocation(): Boolean {
+        return isLocationEnabled(MyApp.context) // application context
+    }
+
+    fun isLocationEnabled(context: Context): Boolean {
+        var locationMode = 0
+        val locationProviders: String
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            try {
+                locationMode =
+                    Settings.Secure.getInt(context.contentResolver, Settings.Secure.LOCATION_MODE)
+            } catch (e: Settings.SettingNotFoundException) {
+                e.printStackTrace()
+            }
+            locationMode != Settings.Secure.LOCATION_MODE_OFF
+        } else {
+            locationProviders =
+                Settings.Secure.getString(context.contentResolver, Settings.Secure.LOCATION_MODE)
+            !TextUtils.isEmpty(locationProviders)
         }
     }
 
@@ -276,47 +292,54 @@ class WeatherViewModel: ViewModel() {
      val permissionCoarseLocation=android.Manifest.permission.ACCESS_COARSE_LOCATION
 
     val REQUEST_CODE_LOCATION=100
+    if (canGetLocation()) {
 
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+        //       fusedLocationClient.
+        // checking location permission
+        if (ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            error = WeatherError.NOPERMISSION
+            //requestPermissions(MyApp.activity, arrayOf(permissionFineLocation, permissionCoarseLocation), REQUEST_CODE_LOCATION)
+            completion(null)
+            return
+        }
+        fusedLocationClient.lastLocation
+            .addOnSuccessListener { location: Location? ->
+                if (location != null) {
+                    completion(location)
+                } else {
+                    println("GOT NULL LOCATION ")
+                    locator.startListeningUserLocation(
+                        context,
+                        object : LocationHelper.MyLocationListener {
+                            override fun onLocationChanged(location: Location) {
+                                completion(location)
+                            }
+                        })
 
-     fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
-     // checking location permission
-     if (ContextCompat.checkSelfPermission(
-             context,
-             Manifest.permission.ACCESS_COARSE_LOCATION
-         ) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
-             context,
-             Manifest.permission.ACCESS_FINE_LOCATION
-         ) != PackageManager.PERMISSION_GRANTED
-     ) {
-        error = WeatherError.NOPERMISSION
-         //requestPermissions(MyApp.activity, arrayOf(permissionFineLocation, permissionCoarseLocation), REQUEST_CODE_LOCATION)
+                }
+
+            }
+
+            .addOnFailureListener {
+                error = WeatherError.NOGPS
+                println("NO LOCATION GOT")
+                completion(null)
+            }
+
+    }
+        else {
+        error = WeatherError.NOGPS
+        println("NO LOCATION GOT")
         completion(null)
-         return
-     }
-     fusedLocationClient.lastLocation
-         .addOnSuccessListener { location : Location? ->
-         if(location != null) {
-             completion(location)
-         }
-             else {
-             println("GOT NULL LOCATION ")
-             locator.startListeningUserLocation(context, object : LocationHelper.MyLocationListener {
-                 override fun onLocationChanged(location: Location) {
-                     completion(location)
-                 }
-             })
-
-             }
-
-         }
-
-         .addOnFailureListener {
-             error = WeatherError.NOGPS
-             println("NO LOCATION GOT")
-         completion(null)
-         }
-
-
+        }
 }
 
     private fun getDataFromUserDefaults(){
@@ -331,7 +354,7 @@ class WeatherViewModel: ViewModel() {
         }
     }
 
-    fun saveUnit(inputUnit:WeatherUnits){
+    fun saveUnit(inputUnit: WeatherUnits){
         val context = MyApp.context
         val unit = if (inputUnit == WeatherUnits.AUTO) "auto" else if (inputUnit == WeatherUnits.SI) "si" else "us"
         val pref: SharedPreferences = context
@@ -400,26 +423,25 @@ getSavedLocations(){
     private fun getCurrentLocationData(completion:()->Unit) {
         val unit = if (units == WeatherUnits.AUTO) "auto" else if (units == WeatherUnits.SI) "si" else "us"
         if (currentLocation != null) {
-            DataFetcher.getFromUrl(url = "https://api.darksky.net/forecast/0b2f0e7f415678b66d4918b96d6672fa/${currentLocation!!.latitude},${currentLocation!!.longitude}?lang=en&units=$unit"){
-             if(it != null){
-                 println("DATAAA $it")
-                 val klaxon = Klaxon()
+            DataFetcher.getFromUrl(url = "https://api.darksky.net/forecast/0b2f0e7f415678b66d4918b96d6672fa/${currentLocation!!.latitude},${currentLocation!!.longitude}?lang=en&units=$unit") {
+                if (it != null) {
+                    println("DATAAA $it")
+                    val klaxon = Klaxon()
 
-                 val out = klaxon.parse<WeatherResponse>(it.toString())
-                 currentLocationData = out
-                 if (currentLocationData != null) {
-                     val current = WeatherModel(
-                         name = currentLocationName,
-                         data = currentLocationData!!,
-                         isCurrent = true
-                     )
-                     locations = listOf(current)
-                    completion()
-                 }
-            }
-                else {
+                    val out = klaxon.parse<WeatherResponse>(it.toString())
+                    currentLocationData = out
+                    if (currentLocationData != null) {
+                        val current = WeatherModel(
+                            name = currentLocationName,
+                            data = currentLocationData!!,
+                            isCurrent = true
+                        )
+                        locations = listOf(current)
+                        completion()
+                    }
+                } else {
                     error = WeatherError.NONETWORK
-                 completion()
+                    completion()
                 }
             }
         } else {
@@ -447,8 +469,7 @@ getSavedLocations(){
 
                     completion(current)
                 }
-            }
-            else {
+            } else {
                 completion(null)
             }
         }

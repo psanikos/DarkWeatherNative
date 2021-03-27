@@ -1,4 +1,4 @@
-package com.npsappprojects.darkweather
+package npsprojects.darkweather
 
 import androidx.compose.animation.Animatable
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -47,9 +47,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.npsappprojects.darkweather.ui.theme.blue_500
-import com.npsappprojects.darkweather.ui.theme.blue_grey_500
-import com.npsappprojects.darkweather.ui.theme.red_800
+import npsprojects.darkweather.ui.theme.blue_500
+import npsprojects.darkweather.ui.theme.blue_grey_500
+import npsprojects.darkweather.ui.theme.red_800
 import kotlinx.coroutines.delay
 import java.time.Instant
 import java.time.LocalDateTime
@@ -96,7 +96,7 @@ fun WeeklyTimes(data:List<Data>) {
 }
 
 @Composable
-fun WeeklyTile(data:Data){
+fun WeeklyTile(data: Data){
     Box(){
         Row(modifier = Modifier
             .fillMaxWidth()
@@ -141,7 +141,7 @@ fun WeeklyTile(data:Data){
 }
 
 @Composable
-fun RainTimes(rainProbability:List<DataX>,rainProbabilityDaily:List<Data>){
+fun RainTimes(rainProbability:List<DataX>, rainProbabilityDaily:List<Data>){
 
     var category: RainTimeCategory by remember { mutableStateOf(RainTimeCategory.HOURLY) }
 

@@ -1,5 +1,6 @@
-package com.npsappprojects.darkweather
+package npsprojects.darkweather
 
+import android.widget.LinearLayout
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -36,7 +37,11 @@ import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.npsappprojects.darkweather.ui.theme.grey_600
+import androidx.compose.ui.viewinterop.AndroidView
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.AdSize
+import com.google.android.gms.ads.AdView
+import npsprojects.darkweather.ui.theme.grey_600
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -45,8 +50,34 @@ import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 
 
+
+
+
+
+
+
 @Composable
-fun MainWeatherCard(locationData:WeatherResponse){
+fun BannerAdView() {
+val bannerId = "ca-app-pub-9340838273925003/1697078171"
+    val testId = "ca-app-pub-3940256099942544/6300978111"
+    AndroidView(factory = { ctx ->
+
+        LinearLayout(ctx).apply {
+            val adView = AdView(ctx)
+            adView.adSize = AdSize.BANNER
+            adView.adUnitId = bannerId
+            this.orientation = LinearLayout.VERTICAL
+            this.addView(adView)
+            val adRequest = AdRequest.Builder().build()
+            adView.loadAd(adRequest)
+
+        }
+    }, modifier = Modifier.fillMaxWidth().height(50.dp))
+}
+
+@Composable
+fun MainWeatherCard(locationData: WeatherResponse){
+
    Box(modifier = Modifier
        .background(
            brush = Brush.verticalGradient(
@@ -124,6 +155,9 @@ fun MainWeatherCard(locationData:WeatherResponse){
                  Text(text = "${locationData.currently.windSpeed!!.roundToInt()} km/h", style = MaterialTheme.typography.body1.copy(shadow = Shadow(color = Color.Black,offset = Offset(0.5f,0.5f))))
              }
          }
+     }
+     item {
+         BannerAdView()
      }
      item {
          LazyRow(modifier = Modifier

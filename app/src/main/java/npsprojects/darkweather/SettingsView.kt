@@ -1,4 +1,4 @@
-package com.npsappprojects.darkweather
+package npsprojects.darkweather
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -32,9 +32,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.npsappprojects.darkweather.ui.theme.green_200
-import com.npsappprojects.darkweather.ui.theme.green_600
-import com.npsappprojects.darkweather.ui.theme.orange_500
+import npsprojects.darkweather.ui.theme.green_200
+import npsprojects.darkweather.ui.theme.green_600
+import npsprojects.darkweather.ui.theme.orange_500
 
 enum class WeatherUnits{
     SI,US,AUTO
@@ -42,12 +42,12 @@ enum class WeatherUnits{
 
 
 @Composable
-fun SettingsView(model:WeatherViewModel){
+fun SettingsView(model: WeatherViewModel){
 
     val itemsModifier = Modifier
         .padding(vertical = 5.dp, horizontal = 16.dp)
         .fillMaxWidth()
-    var units:WeatherUnits by remember { mutableStateOf(model.units) }
+    var units: WeatherUnits by remember { mutableStateOf(model.units) }
 
 
     Column(

@@ -1,6 +1,8 @@
-package com.npsappprojects.darkweather
+package npsprojects.darkweather
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -20,6 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.DrawerValue
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -32,12 +35,15 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.twotone.Warning
+import androidx.compose.material.rememberDrawerState
 import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -46,9 +52,10 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import npsprojects.darkweather.ui.theme.red_500
 
+@ExperimentalAnimationApi
 @OptIn(ExperimentalFoundationApi::class)
 @ExperimentalMaterialApi
 @Composable
@@ -56,10 +63,12 @@ fun MainPageView(model: WeatherViewModel){
     LaunchedEffect(key1 = "GetData" ){
         model.getCurrentLocationWeather()
     }
-
+    val scope = rememberCoroutineScope()
     var index:Int by remember { mutableStateOf(0) }
     var offset:Float by remember { mutableStateOf(0f) }
-    val state = rememberScaffoldState()
+    val state  = rememberScaffoldState(
+        rememberDrawerState(DrawerValue.Closed)
+    )
     var currentPage by remember { mutableStateOf("Main") }
 
     val swipableModifier = Modifier.draggable(
@@ -95,77 +104,91 @@ fun MainPageView(model: WeatherViewModel){
 
                 modifier = Modifier.height(90.dp),contentPadding = PaddingValues(top = 30.dp,start = 8.dp,end = 8.dp)
             ){
-                Row(modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween,verticalAlignment = Alignment.CenterVertically){
-                    IconButton(onClick = {
-                        GlobalScope.launch {
-                            state.drawerState.open()
-                        }
-                    }) {
-                        Image(
-                            painter = painterResource(id = R.drawable.menu), contentDescription = "",
-                            colorFilter = ColorFilter.tint(color = Color.White),
-                            modifier = Modifier.size(20.dp)
+
+AnimatedVisibility(visible = !model.isLoading) {
+    Row(modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween,verticalAlignment = Alignment.CenterVertically){
+        IconButton(onClick = {
+
+            scope.launch {
+                state.drawerState.open()
+            }
+
+        }) {
+            Image(
+                painter = painterResource(id = R.drawable.menu), contentDescription = "",
+                colorFilter = ColorFilter.tint(color = Color.White),
+                modifier = Modifier.size(20.dp)
+            )
+        }
+        Row(
+
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            if(currentPage == "AddNew") {
+                Text(
+                    text = "Add new location",
+                    style = MaterialTheme.typography.body2.copy(color = Color.White)
+                )
+            }
+            else {
+                if (!model.isLoading && model.locations.isNotEmpty()) {
+
+                    if (model.locations[index].isCurrent) {
+                        Icon(
+                            Icons.Filled.LocationOn,
+                            contentDescription = "",
+                            modifier = Modifier.size(18.dp),
+                            tint = Color.White
                         )
+
+                        Spacer(modifier = Modifier.width(4.dp))
+
+
                     }
-                    Row(
-
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        if(currentPage == "AddNew") {
-                            Text(
-                                text = "Add new location",
-                                style = MaterialTheme.typography.body2.copy(color = Color.White)
-                            )
-                        }
-                        else {
-                            if (!model.isLoading && model.locations.isNotEmpty()) {
-
-                                if (model.locations[index].isCurrent) {
-                                    Icon(
-                                        Icons.Filled.LocationOn,
-                                        contentDescription = "",
-                                        modifier = Modifier.size(18.dp),
-                                        tint = Color.White
-                                    )
-
-                                    Spacer(modifier = Modifier.width(4.dp))
-
-
-                                }
-                                Text(
-                                    text = model.locations[index].name,
-                                    style = MaterialTheme.typography.body2.copy(color = Color.White)
-                                )
-                            } else {
-                                Text(
-                                    text = "No location",
-                                    style = MaterialTheme.typography.body2.copy(color = Color.White)
-                                )
-                            }
-                            IconButton(onClick = {
-                                model.getCurrentLocationWeather()
-                            }) {
-                                Icon(Icons.Filled.Refresh,tint = Color.White,contentDescription = "")
-                            }
-                        }
-                        }
-
-
-
-                    IconButton(onClick = {
-                        currentPage = if(currentPage == "Main"){
-                            "AddNew"
-                        } else {
-                            "Main"
-                        }
-                    }) {
-                        Icon(if(currentPage == "AddNew") Icons.Filled.ArrowBack else Icons.Filled.Add,tint = Color.White, modifier = Modifier.size(18.dp),contentDescription = "")
+                    Text(
+                        text = model.locations[index].name,
+                        style = MaterialTheme.typography.body2.copy(color = Color.White)
+                    )
+                } else {
+                    if (model.error == WeatherError.NOGPS) {
+                        Icon(
+                            Icons.TwoTone.Warning,
+                            modifier = Modifier.size(20.dp),
+                            contentDescription = "",
+                            tint = red_500
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
                     }
-
-
+                    Text(
+                        text = if (model.error == WeatherError.NOGPS) "No location access" else "No location",
+                        style = MaterialTheme.typography.body2.copy(color = Color.White)
+                    )
+                }
+                IconButton(onClick = {
+                    model.getCurrentLocationWeather()
+                }) {
+                    Icon(Icons.Filled.Refresh,tint = Color.White,contentDescription = "")
                 }
             }
+        }
+
+
+
+        IconButton(onClick = {
+            currentPage = if(currentPage == "Main"){
+                "AddNew"
+            } else {
+                "Main"
+            }
+        }) {
+            Icon(if(currentPage == "AddNew") Icons.Filled.ArrowBack else Icons.Filled.Add,tint = Color.White, modifier = Modifier.size(18.dp),contentDescription = "")
+        }
+
+
+    }
+
+}            }
         },
         drawerContent = {
             SettingsView(model = model)
@@ -173,7 +196,7 @@ fun MainPageView(model: WeatherViewModel){
         drawerBackgroundColor = Color(0xFFD7E0EB),
         drawerElevation = 0.dp,
         drawerShape = RoundedCornerShape(0),
-        drawerGesturesEnabled = false
+        drawerGesturesEnabled = true
 
 
     ) {
@@ -193,6 +216,7 @@ fun MainPageView(model: WeatherViewModel){
                             .background(color = getWeatherColor(""))
                             .fillMaxSize(),contentAlignment = Alignment.Center) {
                       Column() {
+
                           Text(
                               "No places added yet and there is no access to your location.",
                               style = MaterialTheme.typography.body1.copy(
@@ -217,6 +241,6 @@ fun MainPageView(model: WeatherViewModel){
 
     }
 
-}
+    }
 
 

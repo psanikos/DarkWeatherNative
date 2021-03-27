@@ -1,4 +1,4 @@
-package com.npsappprojects.darkweather
+package npsprojects.darkweather
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -14,8 +14,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.GridCells
-import androidx.compose.foundation.lazy.LazyVerticalGrid
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -39,13 +39,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import com.npsappprojects.darkweather.ui.theme.green_400
-import com.npsappprojects.darkweather.ui.theme.red_400
-import com.npsappprojects.darkweather.ui.theme.red_800
+import npsprojects.darkweather.ui.theme.green_400
+import npsprojects.darkweather.ui.theme.red_400
+import npsprojects.darkweather.ui.theme.red_800
 
 @ExperimentalFoundationApi
 @Composable
-fun AddPlaceView(model: WeatherViewModel,resetIndex:()->Unit){
+fun AddPlaceView(model: WeatherViewModel, resetIndex:()->Unit){
     var searchTerm:String by remember { mutableStateOf("") }
 
     Box(modifier = Modifier
@@ -111,42 +111,46 @@ fun AddPlaceView(model: WeatherViewModel,resetIndex:()->Unit){
                             .padding(end = 10.dp))
                 }
             }
-            LazyVerticalGrid(cells = GridCells.Fixed(count = 2),modifier = Modifier
-                .padding(horizontal = 6.dp)
+            LazyColumn(modifier = Modifier
+                .padding(vertical = 6.dp,horizontal = 20.dp)
                 .fillMaxWidth()) {
+                items(model.myLocations){
 
-                model.myLocations.forEach {
-                    item {
+
+
+
                         Box(
                             modifier = Modifier
-                                .height(160.dp)
-                                .width(120.dp)
-                                .padding(10.dp)
+                                .padding(vertical = 5.dp)
+                                .height(50.dp)
+
+                                .fillMaxWidth()
                                 .background(
-                                    brush = Brush.verticalGradient(
+                                    brush = Brush.horizontalGradient(
                                         colors = listOf(
                                             Color.White.copy(
                                                 alpha = 0.4f
                                             ), Color.White.copy(alpha = 0.2f)
                                         )
-                                    ), shape = RoundedCornerShape(6)
+                                    ), shape = RoundedCornerShape(12)
                                 ),
                             contentAlignment = Alignment.Center){
-                          Column(modifier = Modifier.fillMaxSize(),verticalArrangement = Arrangement.SpaceBetween,horizontalAlignment = Alignment.CenterHorizontally) {
-                             Spacer(modifier = Modifier.height(2.dp))
-                              Text(it.name, style = MaterialTheme.typography.body2)
+                          Row(modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween,
+                              verticalAlignment = Alignment.CenterVertically) {
+
+                              Text(it.name, style = MaterialTheme.typography.body2,modifier = Modifier.padding(horizontal = 10.dp))
                               Button(onClick = {
                                   resetIndex()
                                   model.remove(it)
                               },modifier = Modifier
-                                  .fillMaxWidth()
-                                  .height(40.dp),colors = ButtonDefaults.buttonColors(
-                                  contentColor = red_800,backgroundColor = red_400.copy(alpha = 0.85f)),shape = RoundedCornerShape(topStartPercent = 0,topEndPercent = 0,bottomStartPercent = 6,bottomEndPercent = 6)) {
+                                  .width(100.dp)
+                                  .height(50.dp),colors = ButtonDefaults.buttonColors(
+                                  contentColor = red_800,backgroundColor = red_400.copy(alpha = 0.85f)),shape = RoundedCornerShape( bottomEndPercent = 12,topEndPercent = 12)) {
                                   Text("Remove",style = MaterialTheme.typography.body2 )
                               }
                           }
                         }
-                    }
+
 
                 }
 
