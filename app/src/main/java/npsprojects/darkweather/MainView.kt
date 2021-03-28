@@ -196,7 +196,7 @@ AnimatedVisibility(visible = !model.isLoading) {
         drawerBackgroundColor = Color(0xFFD7E0EB),
         drawerElevation = 0.dp,
         drawerShape = RoundedCornerShape(0),
-        drawerGesturesEnabled = true
+        drawerGesturesEnabled = state.drawerState.isOpen
 
 
     ) {
