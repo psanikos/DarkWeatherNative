@@ -47,10 +47,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.delay
 import npsprojects.darkweather.ui.theme.blue_500
 import npsprojects.darkweather.ui.theme.blue_grey_500
 import npsprojects.darkweather.ui.theme.red_800
-import kotlinx.coroutines.delay
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -63,7 +63,7 @@ enum class RainTimeCategory{
 }
 
 @Composable
-fun WeeklyTimes(data:List<Data>) {
+fun WeeklyTimes(data:List<Data>,units: WeatherUnits) {
 
 
 
@@ -88,7 +88,7 @@ fun WeeklyTimes(data:List<Data>) {
 
             Column(modifier = Modifier.padding(top = 20.dp)) {
                 data.forEach {
-                    WeeklyTile(data = it)
+                    WeeklyTile(data = it,units = units)
                 }
             }
         }
@@ -96,7 +96,7 @@ fun WeeklyTimes(data:List<Data>) {
 }
 
 @Composable
-fun WeeklyTile(data: Data){
+fun WeeklyTile(data: Data,units: WeatherUnits){
     Box(){
         Row(modifier = Modifier
             .fillMaxWidth()
@@ -133,7 +133,7 @@ fun WeeklyTile(data: Data){
                 Text("${(100*data.precipProbability!!).roundToInt()}%", style = MaterialTheme.typography.caption)
 
                 Icon(Icons.Filled.Air,contentDescription = "",tint = MaterialTheme.colors.primary, modifier = Modifier.size(16.dp))
-                Text("${data.windSpeed!!.roundToLong()} km/h", style = MaterialTheme.typography.caption)
+                Text("${data.windSpeed!!.roundToLong()} " + if(units == WeatherUnits.US) "mph" else "km/h", style = MaterialTheme.typography.caption)
 
             }
         }

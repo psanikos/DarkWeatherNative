@@ -209,7 +209,7 @@ AnimatedVisibility(visible = !model.isLoading) {
                     "Main" -> if (model.locations.count() > 0) {
                         MainWeatherCard(
                             locationData = model.locations[index].data,
-
+                                units = model.units
                         )
                     } else {
                         Box(modifier = Modifier

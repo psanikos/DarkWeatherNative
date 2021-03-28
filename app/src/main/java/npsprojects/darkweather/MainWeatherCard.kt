@@ -76,7 +76,7 @@ val bannerId = "ca-app-pub-9340838273925003/1697078171"
 }
 
 @Composable
-fun MainWeatherCard(locationData: WeatherResponse){
+fun MainWeatherCard(locationData: WeatherResponse,units: WeatherUnits){
 
    Box(modifier = Modifier
        .background(
@@ -152,7 +152,7 @@ fun MainWeatherCard(locationData: WeatherResponse){
              Row() {
                  Icon(Icons.Filled.Air, contentDescription = "")
                  Spacer(modifier = Modifier.width(5.dp))
-                 Text(text = "${locationData.currently.windSpeed!!.roundToInt()} km/h", style = MaterialTheme.typography.body1.copy(shadow = Shadow(color = Color.Black,offset = Offset(0.5f,0.5f))))
+                 Text(text = "${locationData.currently.windSpeed!!.roundToInt()} " + if(units == WeatherUnits.US) "mph" else "km/h", style = MaterialTheme.typography.body1.copy(shadow = Shadow(color = Color.Black,offset = Offset(0.5f,0.5f))))
              }
          }
      }
@@ -250,7 +250,7 @@ fun MainWeatherCard(locationData: WeatherResponse){
                     verticalArrangement = Arrangement.SpaceEvenly
                 ) {
                     Text("Wind", style = MaterialTheme.typography.body2.copy(color = grey_600))
-                    Text("${locationData.currently.windSpeed!!.roundToLong()}km/h", style = MaterialTheme.typography.body1)
+                    Text("${locationData.currently.windSpeed!!.roundToLong()} " + if(units == WeatherUnits.US) "mph" else "km/h" , style = MaterialTheme.typography.body1)
                 }
                 Column(
                     modifier = Modifier
@@ -323,7 +323,7 @@ fun MainWeatherCard(locationData: WeatherResponse){
 
      }
      item {
-         WeeklyTimes(data = locationData.daily.data)
+         WeeklyTimes(data = locationData.daily.data,units = units)
      }
      item {
          Spacer(modifier = Modifier.height(50.dp))
