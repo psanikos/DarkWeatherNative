@@ -1,8 +1,11 @@
 package npsprojects.darkweather
 
 import android.widget.LinearLayout
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,6 +30,8 @@ import androidx.compose.material.icons.filled.Air
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -48,12 +53,13 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
-
-
-
-
-
-
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.unit.sp
+import npsprojects.darkweather.ui.theme.pink_400
 
 
 @Composable
@@ -72,11 +78,15 @@ val bannerId = "ca-app-pub-9340838273925003/1697078171"
             adView.loadAd(adRequest)
 
         }
-    }, modifier = Modifier.fillMaxWidth().height(50.dp))
+    }, modifier = Modifier
+        .fillMaxWidth()
+        .height(50.dp))
 }
 
 @Composable
 fun MainWeatherCard(locationData: WeatherResponse,units: WeatherUnits){
+    var isExpanded:Boolean by remember { mutableStateOf(false)}
+
 
    Box(modifier = Modifier
        .background(
@@ -122,7 +132,35 @@ fun MainWeatherCard(locationData: WeatherResponse,units: WeatherUnits){
                  .padding(horizontal = 20.dp, vertical = 10.dp)
          )
      }
+     if(locationData.alerts.size>0) {
+         item {
+Box(modifier = Modifier
 
+    .fillMaxWidth()
+    .background(pink_400).animateContentSize().clickable {
+     isExpanded = !isExpanded
+    },
+contentAlignment = Alignment.Center){
+    Column(horizontalAlignment = Alignment.CenterHorizontally,verticalArrangement = Arrangement.SpaceEvenly,modifier = Modifier.padding(6.dp)) {
+      Text(locationData.alerts[0].title,style = MaterialTheme.typography.body1.copy(color = Color.White))
+      if(isExpanded) {
+          Text(
+              locationData.alerts[0].description,
+              style = MaterialTheme.typography.caption.copy(color = Color.White),
+              modifier = Modifier.padding(vertical = 5.dp)
+          )
+      }
+        Text("Until: " +   DateTimeFormatter.ofPattern("EEEE dd  HH:mm").format(
+            LocalDateTime.ofInstant(
+                Instant.ofEpochMilli(1000 * locationData.alerts[0].expires.toLong()),
+                ZoneId.systemDefault()
+            )
+        ) ,style = MaterialTheme.typography.body2.copy(color = Color.White),lineHeight = 14.sp)
+
+    }
+}
+         }
+     }
      item {
          Row(
              modifier = Modifier

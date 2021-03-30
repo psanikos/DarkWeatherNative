@@ -5,9 +5,27 @@ import android.os.Parcelable
 import androidx.compose.ui.graphics.Color
 import com.google.gson.annotations.SerializedName
 import kotlinx.android.parcel.Parcelize
+import java.util.*
 
+@SuppressLint("ParcelCreator")
+@Parcelize
+data class WeatherAlert(
 
-
+    @SerializedName("title")
+    val title:String = "",
+    @SerializedName("regions")
+    val regions:List<String> = listOf(),
+    @SerializedName("severity")
+    val severity:String = "",
+    @SerializedName("time")
+    val time:Int = Calendar.MILLISECOND,
+    @SerializedName("expires")
+    val expires:Int = Calendar.MILLISECOND,
+    @SerializedName("description")
+    val description:String = "",
+    @SerializedName("uri")
+    val uri:String = ""
+) : Parcelable
 
 
 @SuppressLint("ParcelCreator")
@@ -28,7 +46,9 @@ data class WeatherResponse(
     @SerializedName("offset")
     val offset: Int = 0,
     @SerializedName("timezone")
-    val timezone: String = ""
+    val timezone: String = "",
+    @SerializedName("alerts")
+    val alerts:List<WeatherAlert> = listOf()
 ) : Parcelable
 
 @SuppressLint("ParcelCreator")

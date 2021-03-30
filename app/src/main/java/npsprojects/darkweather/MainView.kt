@@ -9,6 +9,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -31,10 +32,8 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.Circle
 import androidx.compose.material.icons.twotone.Warning
 import androidx.compose.material.rememberDrawerState
 import androidx.compose.material.rememberScaffoldState
@@ -166,6 +165,7 @@ AnimatedVisibility(visible = !model.isLoading) {
                     )
                 }
                 IconButton(onClick = {
+                    index = 0
                     model.getCurrentLocationWeather()
                 }) {
                     Icon(Icons.Filled.Refresh,tint = Color.White,contentDescription = "")
@@ -207,11 +207,60 @@ AnimatedVisibility(visible = !model.isLoading) {
                 when (screen) {
 
                     "Main" -> if (model.locations.count() > 0) {
-                        MainWeatherCard(
-                            locationData = model.locations[index].data,
+                        Box(contentAlignment = Alignment.BottomCenter) {
+                            MainWeatherCard(
+                                locationData = model.locations[index].data,
                                 units = model.units
-                        )
-                    } else {
+                            )
+                            Box(
+                                modifier = Modifier
+                                    .padding(50.dp)
+
+                                    .background(
+                                        if (isSystemInDarkTheme())
+                                         Color.White.copy(alpha = 0.2f) else Color.Black.copy(alpha = 0.2f),
+                                        shape = RoundedCornerShape(50)
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Row(modifier = Modifier.padding(5.dp)) {
+                                    model.locations.forEachIndexed { i, item ->
+
+                                        if (i > 5) {
+                                            Icon(
+                                                Icons.Filled.CropSquare,
+                                                contentDescription = "",
+                                                tint = Color.White,
+                                                modifier = Modifier.padding(end = 4.dp).size(14.dp)
+                                            )
+
+                                        } else {
+                                            if (i == index) {
+                                                Icon(
+                                                    Icons.Filled.Circle,
+                                                    contentDescription = "",
+                                                    tint = Color.White,
+                                                    modifier = Modifier.padding(end = 4.dp).size(14.dp)
+                                                )
+
+                                            } else {
+                                                Icon(
+                                                    Icons.Outlined.Circle,
+                                                    contentDescription = "",
+                                                    tint = Color.White,
+                                                    modifier = Modifier.padding(end = 4.dp).size(14.dp)
+                                                )
+
+                                            }
+
+
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                 else {
                         Box(modifier = Modifier
                             .background(color = getWeatherColor(""))
                             .fillMaxSize(),contentAlignment = Alignment.Center) {
@@ -241,6 +290,7 @@ AnimatedVisibility(visible = !model.isLoading) {
 
     }
 
-    }
+
+}
 
 
