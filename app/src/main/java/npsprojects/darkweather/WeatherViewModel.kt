@@ -43,8 +43,8 @@ class WeatherModel constructor(
 
 class SavedLocation constructor(
     val name:String,
-val latitude: Double,
-val longitude: Double
+    val latitude: Double,
+    val longitude: Double
 ) {
     override fun toString(): String {
         return "[$name|${latitude.round(5)}|${longitude.round(5)}]"
@@ -380,7 +380,7 @@ class WeatherViewModel: ViewModel() {
             }.toMutableList()
         else mutableListOf<String>()
 
-        val itemToAdd = SavedLocation(name = if(address.subLocality != null) address.subLocality else address.locality ,latitude = address.latitude,longitude = address.longitude).toString()
+        val itemToAdd = SavedLocation(name = if (address.featureName != null) address.featureName else if (address.subLocality != null) address.subLocality else address.locality ,latitude = address.latitude,longitude = address.longitude).toString()
        if (!items.contains(itemToAdd)){
            items.add(itemToAdd )
        }

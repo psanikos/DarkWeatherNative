@@ -90,25 +90,38 @@ fun AddPlaceView(model: WeatherViewModel, resetIndex:()->Unit){
             }
             Spacer(modifier = Modifier.height(30.dp))
             model.searchedAdresses.forEach {
-                Row(modifier = Modifier
-                    .padding(horizontal = 20.dp, vertical = 5.dp)
-                    .fillMaxWidth()
-                    .height(50.dp)
-                    .background(
-                        color = Color.White.copy(alpha = 0.5f),
-                        shape = RoundedCornerShape(12)
-                    )
-                    .clickable {
-                        model.saveLocation(address = it)
-                        searchTerm = ""
-                        model.searchedAdresses.clear()
-                    },
-                    horizontalArrangement = Arrangement.SpaceBetween,verticalAlignment = Alignment.CenterVertically) {
-                    Text(if(it.subLocality != null) it.subLocality else it.locality,style = MaterialTheme.typography.body2,modifier = Modifier.padding(horizontal = 16.dp,vertical = 8.dp))
-                    Icon(
-                        Icons.TwoTone.CheckBox,contentDescription = "",tint = green_400,modifier = Modifier
-                            .size(25.dp)
-                            .padding(end = 10.dp))
+                if (it.subLocality != null || it.locality != null || it.featureName != null) {
+                    Row(
+                        modifier = Modifier
+                            .padding(horizontal = 20.dp, vertical = 5.dp)
+                            .fillMaxWidth()
+                            .height(50.dp)
+                            .background(
+                                color = Color.White.copy(alpha = 0.5f),
+                                shape = RoundedCornerShape(12)
+                            )
+                            .clickable {
+                                model.saveLocation(address = it)
+                                searchTerm = ""
+                                model.searchedAdresses.clear()
+                            },
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            if (it.featureName != null) it.featureName else if (it.subLocality != null) it.subLocality else it.locality,
+                            style = MaterialTheme.typography.body2,
+                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                        )
+                        Icon(
+                            Icons.TwoTone.CheckBox,
+                            contentDescription = "",
+                            tint = green_400,
+                            modifier = Modifier
+                                .size(25.dp)
+                                .padding(end = 10.dp)
+                        )
+                    }
                 }
             }
             LazyColumn(modifier = Modifier
