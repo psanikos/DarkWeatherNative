@@ -67,6 +67,12 @@ val Typography = Typography(
         fontSize = 24.sp,
         letterSpacing = 0.7.sp
     ),
+    h4 = TextStyle(
+        fontFamily = appFont,
+        fontWeight = FontWeight.Black,
+        fontSize = 18.sp,
+        letterSpacing = 0.7.sp
+    ),
 
     button = TextStyle(
         fontFamily = appFont,

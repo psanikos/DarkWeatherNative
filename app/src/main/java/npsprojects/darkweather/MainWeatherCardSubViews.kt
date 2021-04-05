@@ -69,24 +69,20 @@ fun WeeklyTimes(data:List<Data>,units: WeatherUnits) {
 
     Surface(
         contentColor = MaterialTheme.colors.primary, modifier = Modifier
-
-
             .fillMaxWidth()
-            .padding(vertical = 20.dp),
+         ,
         color = if (isSystemInDarkTheme()) Color(0xFF202020).copy(alpha = 0.5F) else Color.White.copy(alpha = 0.5F)
 
     ) {
         Column(
             modifier = Modifier
-                .padding(horizontal = 16.dp, vertical = 10.dp)
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
 
-            Text("Weekly forecast", style = MaterialTheme.typography.body2)
 
-            Column(modifier = Modifier.padding(top = 20.dp)) {
+            Column() {
                 data.forEach {
                     WeeklyTile(data = it,units = units)
                 }
@@ -146,27 +142,24 @@ fun RainTimes(rainProbability:List<DataX>, rainProbabilityDaily:List<Data>){
     var category: RainTimeCategory by remember { mutableStateOf(RainTimeCategory.HOURLY) }
 
     Surface(
-        contentColor = Color.White, modifier = Modifier
-            .height(340.dp)
+         modifier = Modifier
 
             .fillMaxWidth()
-            .padding(vertical = 10.dp),
+           ,
         color = Color.Transparent
     ) {
         Column(
             modifier = Modifier
-                .padding(horizontal = 16.dp)
+                .padding(vertical = 10.dp)
                 .fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
 
-            Text("Rain probability", style = MaterialTheme.typography.body2.copy(color = Color.White),modifier = Modifier
-                .padding(bottom = 20.dp))
             Row(modifier = Modifier
-                .padding(vertical = 10.dp)
-                .fillMaxWidth(0.8F),
-                horizontalArrangement = Arrangement.SpaceBetween) {
+                .padding(vertical = 5.dp)
+                .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Start) {
                 Button(onClick = {
                     category = RainTimeCategory.HOURLY
                 },
@@ -183,6 +176,7 @@ fun RainTimes(rainProbability:List<DataX>, rainProbabilityDaily:List<Data>){
 
 
                 }
+                Spacer(modifier = Modifier.width(10.dp))
                 Button( onClick = {
                     category = RainTimeCategory.DAILY
                 },
@@ -274,7 +268,7 @@ fun RainMeter(index:Int,value:Double,time:Long,weekly:Boolean){
 
         }
         Text(if (weekly) DateTimeFormatter.ofPattern("EEE").format(LocalDateTime.ofInstant(Instant.ofEpochMilli(1000*time), ZoneId.systemDefault())) else DateTimeFormatter.ofPattern("HH:mm").format(
-            LocalDateTime.ofInstant(Instant.ofEpochMilli(1000*time), ZoneId.systemDefault())), style = MaterialTheme.typography.caption.copy(color = Color.White))
+            LocalDateTime.ofInstant(Instant.ofEpochMilli(1000*time), ZoneId.systemDefault())), style = MaterialTheme.typography.caption)
 
     }
 }
