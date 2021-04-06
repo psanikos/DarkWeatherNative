@@ -52,6 +52,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import npsprojects.darkweather.ui.theme.red_500
 
@@ -59,18 +60,20 @@ import npsprojects.darkweather.ui.theme.red_500
 @OptIn(ExperimentalFoundationApi::class)
 @ExperimentalMaterialApi
 @Composable
-fun MainPageView(model: WeatherViewModel){
-    LaunchedEffect(key1 = "GetData" ){
-        model.getCurrentLocationWeather()
+fun MainPageView(model: WeatherViewModel,controller:NavController) {
+    if ((model.myLocations.size + 1 > model.locations.size) || model.locations.isEmpty()) {
+        LaunchedEffect(key1 = "GetData") {
+            model.getCurrentLocationWeather()
+        }
     }
     val scope = rememberCoroutineScope()
-    var index:Int by remember { mutableStateOf(0) }
-    var offset:Float by remember { mutableStateOf(0f) }
-    val state  = rememberScaffoldState(
+    var index: Int by remember { mutableStateOf(0) }
+
+    val state = rememberScaffoldState(
         rememberDrawerState(DrawerValue.Closed)
     )
     var currentPage by remember { mutableStateOf("Main") }
-
+    var offset: Float by remember { mutableStateOf(0f) }
     val swipableModifier = Modifier.draggable(
         orientation = Orientation.Horizontal,
         state = rememberDraggableState { delta ->
@@ -78,13 +81,12 @@ fun MainPageView(model: WeatherViewModel){
 
         },
         onDragStopped = {
-            if (offset > 0){
-                if (index > 0){
-                    index --
+            if (offset > 0) {
+                if (index > 0) {
+                    index--
                 }
                 offset = 0f
-            }
-            else if (offset < 0){
+            } else if (offset < 0) {
                 if (index < model.locations.count() - 1) {
                     index++
                 }
@@ -94,162 +96,56 @@ fun MainPageView(model: WeatherViewModel){
 
     )
 
-    Scaffold(modifier = swipableModifier.fillMaxSize(),
-        scaffoldState = state,
-//        topBar = {
-//            TopAppBar(
-//
-//                backgroundColor = if(currentPage == "AddNew") Color(0xFF9AABBC) else if (!model.isLoading && model.locations.isNotEmpty()) getWeatherColor(input = model.locations[index].data.currently.icon!!) else getWeatherColor(input = ""),
-//                elevation = 0.dp,
-//
-//                modifier = Modifier.height(90.dp),contentPadding = PaddingValues(top = 30.dp,start = 8.dp,end = 8.dp)
-//            ){
-//
-//AnimatedVisibility(visible = !model.isLoading) {
-//    Row(modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween,verticalAlignment = Alignment.CenterVertically){
-//        IconButton(onClick = {
-//
-//            scope.launch {
-//                state.drawerState.open()
-//            }
-//
-//        }) {
-//           Icon(Icons.Rounded.Sort,contentDescription = "",
-//               modifier = Modifier.size(18.dp),
-//               tint = Color.White)
-//        }
-//        Row(
-//
-//            verticalAlignment = Alignment.CenterVertically,
-//            horizontalArrangement = Arrangement.Center
-//        ) {
-//            if(currentPage == "AddNew") {
-//                Text(
-//                    text = "Add new location",
-//                    style = MaterialTheme.typography.body2.copy(color = Color.White)
-//                )
-//            }
-//            else {
-//                if (!model.isLoading && model.locations.isNotEmpty()) {
-//
-//                    if (model.locations[index].isCurrent) {
-//                        Icon(
-//                            Icons.Filled.LocationOn,
-//                            contentDescription = "",
-//                            modifier = Modifier.size(18.dp),
-//                            tint = Color.White
-//                        )
-//
-//                        Spacer(modifier = Modifier.width(4.dp))
-//
-//
-//                    }
-//                    Text(
-//                        text = model.locations[index].name,
-//                        style = MaterialTheme.typography.body2.copy(color = Color.White)
-//                    )
-//                } else {
-//                    if (model.error == WeatherError.NOGPS) {
-//                        Icon(
-//                            Icons.TwoTone.Warning,
-//                            modifier = Modifier.size(20.dp),
-//                            contentDescription = "",
-//                            tint = red_500
-//                        )
-//                        Spacer(modifier = Modifier.width(4.dp))
-//                    }
-//                    Text(
-//                        text = if (model.error == WeatherError.NOGPS) "No location access" else "No location",
-//                        style = MaterialTheme.typography.body2.copy(color = Color.White)
-//                    )
-//                }
-//                IconButton(onClick = {
-//                    index = 0
-//                    model.getCurrentLocationWeather()
-//                }) {
-//                    Icon(Icons.Filled.Refresh,tint = Color.White,contentDescription = "")
-//                }
-//            }
-//        }
-//
-//
-//
-//        IconButton(onClick = {
-//            currentPage = if(currentPage == "Main"){
-//                "AddNew"
-//            } else {
-//                "Main"
-//            }
-//        }) {
-//            Icon(if(currentPage == "AddNew") Icons.Filled.ArrowBack else Icons.Filled.Add,tint = Color.White, modifier = Modifier.size(18.dp),contentDescription = "")
-//        }
-//
-//
-//    }
-//
-//}            }
-//        },
-        drawerContent = {
-            SettingsView(model = model)
-        },
-        drawerBackgroundColor = Color(0xFFD7E0EB),
-        drawerElevation = 0.dp,
-        drawerShape = RoundedCornerShape(0),
-        drawerGesturesEnabled = true
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
 
 
-    ) {
-        when(model.isLoading) {
-            true ->  LoadingView(model = model)
+        ) {
+        when (model.isLoading) {
+            true -> LoadingView(model = model)
 
-            false -> Crossfade(targetState = currentPage) { screen ->
-                when (screen) {
+            false -> if (model.locations.count() > 0) {
+                Box(contentAlignment = Alignment.BottomCenter) {
+                    MainWeatherCard(
+                        data = model,
+                        index = index,
 
-                    "Main" -> if (model.locations.count() > 0) {
-                        Box(contentAlignment = Alignment.BottomCenter) {
-                            MainWeatherCard(
-                                data = model,
-                                index = index,
-
-                                units = model.units,
-                                updateIndex = {
-                                    index = it
-                                }
-                            )
-
-                        }
-                    }
-                 else {
-                        Box(modifier = Modifier
-                            .background(color = getWeatherColor(""))
-                            .fillMaxSize(),contentAlignment = Alignment.Center) {
-                      Column() {
-
-                          Text(
-                              "No places added yet and there is no access to your location.",
-                              style = MaterialTheme.typography.body1.copy(
-                                  color = Color.White,
-
-                                  ),
-                              modifier = Modifier.padding(20.dp),
-                              textAlign = TextAlign.Center
-                          )
-                          Spacer(modifier = Modifier.height(80.dp))
-                      }
-                        }
-                    }
-                    "AddNew" -> AddPlaceView(model = model,resetIndex = {
-                        index = 0
-                    })
+                        units = model.units,
+                        updateIndex = {
+                            index = it
+                        }, controller = controller
+                    )
 
                 }
+            } else {
+                Box(
+                    modifier = Modifier
+                        .background(color = getWeatherColor(""))
+                        .fillMaxSize(), contentAlignment = Alignment.Center
+                ) {
+                    Column() {
+
+                        Text(
+                            "No places added yet and there is no access to your location.",
+                            style = MaterialTheme.typography.body1.copy(
+                                color = Color.White,
+
+                                ),
+                            modifier = Modifier.padding(20.dp),
+                            textAlign = TextAlign.Center
+                        )
+                        Spacer(modifier = Modifier.height(80.dp))
+                    }
+                }
+
             }
 
         }
 
     }
-
-
 }
+
+
+
 
 

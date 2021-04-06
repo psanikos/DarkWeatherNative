@@ -10,13 +10,20 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.runtime.Composable
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.google.android.gms.ads.MobileAds
 import npsprojects.darkweather.ui.theme.DarkWeatherTheme
 
-
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 
 
 
@@ -36,6 +43,7 @@ class MainActivity : ComponentActivity() {
 
     private val model by viewModels<WeatherViewModel>()
 
+    @ExperimentalFoundationApi
     @ExperimentalAnimationApi
     @ExperimentalMaterialApi
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -55,7 +63,7 @@ class MainActivity : ComponentActivity() {
             }
             DarkWeatherTheme {
            if(model.hasInit){
-               MainPageView(model = model)
+             MyApp(model = model)
            }
                 else {
                FirstScreen(model = model)
@@ -63,6 +71,9 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
+
+
     @SuppressLint("MissingSuperCall")
     override fun onRequestPermissionsResult(requestCode: Int,
                                             permissions: Array<String>, grantResults: IntArray) {
@@ -84,7 +95,26 @@ if(ContextCompat.checkSelfPermission(
 }
 
 
+@ExperimentalFoundationApi
+@ExperimentalMaterialApi
+@ExperimentalAnimationApi
+@Composable
+fun MyApp(model: WeatherViewModel){
+    val controller = rememberNavController()
+    NavHost(navController = controller, startDestination = "Main") {
+      composable("Main"){
+          MainPageView(model = model,controller = controller)
+      }
+        composable("Add"){
+            AddPlaceView(model = model,controller = controller)
+        }
+        composable("Settings"){
+            SettingsView(model = model,controller = controller)
+        }
 
+    }
+
+}
 
 
 

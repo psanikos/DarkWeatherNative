@@ -3,29 +3,16 @@ package npsprojects.darkweather
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowBackIosNew
 import androidx.compose.material.icons.twotone.CheckBox
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -39,13 +26,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import npsprojects.darkweather.ui.theme.green_400
-import npsprojects.darkweather.ui.theme.red_400
-import npsprojects.darkweather.ui.theme.red_800
+import androidx.navigation.NavController
+import npsprojects.darkweather.ui.theme.*
 
 @ExperimentalFoundationApi
 @Composable
-fun AddPlaceView(model: WeatherViewModel, resetIndex:()->Unit){
+fun AddPlaceView(model: WeatherViewModel,controller: NavController){
     var searchTerm:String by remember { mutableStateOf("") }
 
     Box(modifier = Modifier
@@ -53,15 +39,25 @@ fun AddPlaceView(model: WeatherViewModel, resetIndex:()->Unit){
         .background(
             brush = Brush.verticalGradient(
                 colors = listOf(
-                    Color(0xFF9AABBC),
+                    blue_grey_800,
                     Color(0xFF4A526D)
                 )
             )
         )) {
-        Column(modifier = Modifier.fillMaxSize(),verticalArrangement = Arrangement.Top,horizontalAlignment = Alignment.CenterHorizontally) {
+        Column(modifier = Modifier
+            .padding(top = 50.dp, start = 16.dp, end = 16.dp)
+            .fillMaxSize(),verticalArrangement = Arrangement.Top,horizontalAlignment = Alignment.CenterHorizontally) {
+         Row(modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.Start) {
+             IconButton(onClick = {
+                 controller.popBackStack()
+             }) {
+                 Icon(Icons.Rounded.ArrowBackIosNew,contentDescription = "",tint = Color.White)
+             }
+         }
+
             Spacer(modifier = Modifier.height(30.dp))
             Box(modifier = Modifier
-                .padding(horizontal = 16.dp)
+
                 .fillMaxWidth()
 
                 .height(40.dp)
@@ -93,7 +89,7 @@ fun AddPlaceView(model: WeatherViewModel, resetIndex:()->Unit){
                 if (it.subLocality != null || it.locality != null || it.featureName != null) {
                     Row(
                         modifier = Modifier
-                            .padding(horizontal = 20.dp, vertical = 5.dp)
+                            .padding(vertical = 5.dp)
                             .fillMaxWidth()
                             .height(50.dp)
                             .background(
@@ -125,7 +121,7 @@ fun AddPlaceView(model: WeatherViewModel, resetIndex:()->Unit){
                 }
             }
             LazyColumn(modifier = Modifier
-                .padding(vertical = 6.dp,horizontal = 20.dp)
+                .padding(vertical = 6.dp)
                 .fillMaxWidth()) {
                 items(model.myLocations){
 
@@ -153,7 +149,7 @@ fun AddPlaceView(model: WeatherViewModel, resetIndex:()->Unit){
 
                               Text(it.name, style = MaterialTheme.typography.body2,modifier = Modifier.padding(horizontal = 10.dp))
                               Button(onClick = {
-                                  resetIndex()
+
                                   model.remove(it)
                               },modifier = Modifier
                                   .width(100.dp)

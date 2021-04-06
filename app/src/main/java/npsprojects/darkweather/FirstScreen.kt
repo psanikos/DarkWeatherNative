@@ -70,8 +70,8 @@ fun FirstScreen(model: WeatherViewModel) {
                             )
                         )
                     )){
-                    Text("Welcome to DarkWeather!\nYou can use the app with or without access to your location.\nTo see your current location please allow access or add places from the add page.\nTo see your saved places swipe left or right on the main screen.",
-                        style = MaterialTheme.typography.body2.copy(color= Color.White),modifier = Modifier.padding(16.dp),lineHeight = 24.sp,textAlign = TextAlign.Center,color = Color.White)
+                    Text("Welcome to DarkWeather!\nYou can use the app with or without access to your location.\nTo see your current location please allow access or add places from the add page.",
+                        style = MaterialTheme.typography.body2.copy(color= Color.White),modifier = Modifier.padding(20.dp),lineHeight = 26.sp,textAlign = TextAlign.Center,color = Color.White)
                 }
                 if (permissionGranted.value!!) {
                     Button(onClick = {

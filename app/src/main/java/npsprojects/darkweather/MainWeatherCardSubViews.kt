@@ -67,13 +67,7 @@ fun WeeklyTimes(data:List<Data>,units: WeatherUnits) {
 
 
 
-    Surface(
-        contentColor = MaterialTheme.colors.primary, modifier = Modifier
-            .fillMaxWidth()
-         ,
-        color = if (isSystemInDarkTheme()) Color(0xFF202020).copy(alpha = 0.5F) else Color.White.copy(alpha = 0.5F)
 
-    ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth(),
@@ -87,7 +81,7 @@ fun WeeklyTimes(data:List<Data>,units: WeatherUnits) {
                     WeeklyTile(data = it,units = units)
                 }
             }
-        }
+
     }
 }
 
@@ -96,7 +90,7 @@ fun WeeklyTile(data: Data,units: WeatherUnits){
     Box(){
         Row(modifier = Modifier
             .fillMaxWidth()
-            .height(45.dp),horizontalArrangement = Arrangement.SpaceBetween,
+            .height(50.dp),horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically) {
             Text(
                 DateTimeFormatter.ofPattern("EEEE").format(
