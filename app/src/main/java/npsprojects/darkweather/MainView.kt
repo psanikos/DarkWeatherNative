@@ -3,13 +3,10 @@ package npsprojects.darkweather
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalAnimationApi
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
+import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.gestures.rememberDraggableState
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,6 +19,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.DrawerValue
 import androidx.compose.material.ExperimentalMaterialApi
@@ -34,6 +33,8 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.Circle
+import androidx.compose.material.icons.rounded.LocationCity
+import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.material.icons.rounded.Sort
 import androidx.compose.material.icons.twotone.Warning
 import androidx.compose.material.rememberDrawerState
@@ -53,6 +54,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.compose.navigate
 import kotlinx.coroutines.launch
 import npsprojects.darkweather.ui.theme.red_500
 
@@ -123,8 +125,36 @@ fun MainPageView(model: WeatherViewModel,controller:NavController) {
                         .background(color = getWeatherColor(""))
                         .fillMaxSize(), contentAlignment = Alignment.Center
                 ) {
-                    Column() {
+                    Column(modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.SpaceBetween) {
+                        Row(
+                            modifier = Modifier
+                                .padding(top = 50.dp, start = 16.dp, end = 16.dp)
+                                .fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            IconButton(onClick = {
+                                controller.navigate("Settings")
+                            }) {
+                                Icon(
+                                    Icons.Rounded.Sort,
+                                    tint = Color.White,
+                                    modifier = Modifier.size(18.dp),
+                                    contentDescription = ""
+                                )
+                            }
 
+                            IconButton(onClick = {
+                                controller.navigate("Add")
+                            }) {
+                                Icon(
+                                    Icons.Rounded.LocationCity,
+                                    tint = Color.White,
+                                    modifier = Modifier.size(18.dp),
+                                    contentDescription = ""
+                                )
+                            }
+                        }
                         Text(
                             "No places added yet and there is no access to your location.",
                             style = MaterialTheme.typography.body1.copy(

@@ -462,7 +462,8 @@ val locationData = data.locations[index].data
                      }
                      LazyRow(
                          contentPadding = PaddingValues(start = 10.dp, end = 10.dp),
-                         verticalAlignment = Alignment.CenterVertically
+                         verticalAlignment = Alignment.CenterVertically,
+                         modifier = Modifier.fillMaxWidth(0.8f)
                      ) {
                          itemsIndexed(data.locations) { i, item ->
                              Box(

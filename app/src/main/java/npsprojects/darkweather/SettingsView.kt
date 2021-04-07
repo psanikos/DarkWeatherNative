@@ -67,7 +67,7 @@ Scaffold() {
            IconButton(onClick = {
                controller.popBackStack()
            }) {
-               Icon(Icons.Rounded.ArrowBackIosNew,contentDescription = "",tint = if(isSystemInDarkTheme()) Color.Black else Color.White)
+               Icon(Icons.Rounded.ArrowBackIosNew,contentDescription = "",tint =  Color.Black )
            }
        }
        Text("Settings", style = MaterialTheme.typography.h1.copy(color = Color.Black),modifier = Modifier.padding(horizontal = 16.dp,vertical = 20.dp))
