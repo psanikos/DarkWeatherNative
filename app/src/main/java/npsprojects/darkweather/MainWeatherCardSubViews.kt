@@ -60,8 +60,9 @@ enum class RainTimeCategory{
 @Composable
 fun WeeklyTimes(data:List<Data>,units: WeatherUnits) {
 
+var weekData = data.toMutableList()
 
-
+weekData.removeFirst()
 
         Column(
             modifier = Modifier
@@ -72,7 +73,7 @@ fun WeeklyTimes(data:List<Data>,units: WeatherUnits) {
 
 
             Column() {
-                data.forEach {
+                weekData.forEach {
                     WeeklyTile(data = it,units = units)
                 }
             }
@@ -131,7 +132,9 @@ fun RainTimes(rainProbability:List<DataX>, rainProbabilityDaily:List<Data>){
     var category: RainTimeCategory by remember { mutableStateOf(RainTimeCategory.HOURLY) }
 
 
-        MyChartView(rainProbability = rainProbability,rainProbabilityDaily = rainProbabilityDaily)
+    var rainDailyData = rainProbabilityDaily.toMutableList()
+    rainDailyData.removeFirst()
+        MyChartView(rainProbability = rainProbability,rainProbabilityDaily = rainDailyData)
 
 
 //    Surface(

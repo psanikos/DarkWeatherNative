@@ -280,7 +280,7 @@ fun getWeatherIcon(input: String): Int {
         "wind" -> R.drawable.air
         "fog" -> R.drawable.clouds
         "cloudy" -> R.drawable.clouds
-        "partly-cloudy-day" -> R.drawable.partlycloudyday
+        "partly-cloudy-day" -> R.drawable.partlycloudy
         "partly-cloudy-night" -> R.drawable.partlycloudynight
         "hail" -> R.drawable.snow
         "thunderstorm" -> R.drawable.heavyrain

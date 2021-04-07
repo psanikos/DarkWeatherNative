@@ -152,20 +152,20 @@ val locationData = data.locations[index].data
                                  ) {
                                      Text(
                                          locationData.alerts[0].title,
-                                         style = MaterialTheme.typography.body1
+                                         style = MaterialTheme.typography.h4.copy(fontSize = 14.sp)
                                      )
 
                                      if (isExpanded) {
                                          Text(
-                                             locationData.alerts[0].description,
-                                             style = MaterialTheme.typography.caption,
+                                             locationData.alerts[0].description.toLowerCase(),
+                                             style = MaterialTheme.typography.button.copy(fontSize = 11.sp),
                                              modifier = Modifier.padding(vertical = 5.dp),
 
                                              )
                                      } else {
                                          Text(
-                                             locationData.alerts[0].description,
-                                             style = MaterialTheme.typography.caption,
+                                             locationData.alerts[0].description.toLowerCase(),
+                                             style = MaterialTheme.typography.button.copy(fontSize = 11.sp),
                                              modifier = Modifier.padding(vertical = 5.dp),
                                              maxLines = 3
                                          )
@@ -179,7 +179,7 @@ val locationData = data.locations[index].data
                                                      ZoneId.systemDefault()
                                                  )
                                              ),
-                                         style = MaterialTheme.typography.caption,
+                                         style = MaterialTheme.typography.h4.copy(fontSize = 12.sp),
                                          lineHeight = 10.sp
                                      )
 

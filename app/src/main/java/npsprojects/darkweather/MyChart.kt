@@ -26,6 +26,7 @@ import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 
 class ChartData constructor(
@@ -48,16 +49,17 @@ fun MyChartView(rainProbability:List<DataX>,rainProbabilityDaily:List<Data>) {
                 .height(40.dp), horizontalArrangement = Arrangement.Start,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Button(
+
+            OutlinedButton(
                 onClick = {
                     category = RainTimeCategory.HOURLY
                 },
                 modifier = Modifier
-                    .width(140.dp)
-                    .height(34.dp), shape = RoundedCornerShape(30),
-                colors = ButtonDefaults.buttonColors(
-                    backgroundColor = if (category == RainTimeCategory.HOURLY) if (isSystemInDarkTheme()) Color.Black else Color.DarkGray else Color.LightGray,
-                    contentColor = if (category == RainTimeCategory.HOURLY) Color.White else Color.DarkGray
+                    .width(100.dp)
+                    .height(32.dp), shape = RoundedCornerShape(20),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    backgroundColor = if (category == RainTimeCategory.HOURLY) if(isSystemInDarkTheme()) Color.DarkGray else Color.White else Color.Transparent,
+                    contentColor = if(isSystemInDarkTheme()) Color.White else Color.DarkGray
                 )
 
             ) {
@@ -67,19 +69,18 @@ fun MyChartView(rainProbability:List<DataX>,rainProbabilityDaily:List<Data>) {
 
             }
             Spacer(modifier = Modifier.width(10.dp))
-            Button(
+            OutlinedButton(
                 onClick = {
                     category = RainTimeCategory.DAILY
                 },
                 modifier = Modifier
-                    .width(140.dp)
-                    .height(34.dp),
-                shape = RoundedCornerShape(30),
-                colors = ButtonDefaults.buttonColors(
-                    backgroundColor = if (category == RainTimeCategory.DAILY) if (isSystemInDarkTheme()) Color.Black else Color.DarkGray else Color.LightGray,
-                    contentColor = if (category == RainTimeCategory.DAILY) Color.White else Color.DarkGray,
-
-                    )
+                    .width(100.dp)
+                    .height(32.dp),
+                shape = RoundedCornerShape(20),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    backgroundColor = if (category == RainTimeCategory.DAILY) if(isSystemInDarkTheme()) Color.DarkGray else Color.White else Color.Transparent,
+                    contentColor = if(isSystemInDarkTheme()) Color.White else Color.DarkGray
+                )
 
             ) {
 
@@ -88,9 +89,9 @@ fun MyChartView(rainProbability:List<DataX>,rainProbabilityDaily:List<Data>) {
             }
         }
         Surface(
-            color = blue_grey_100.copy(alpha = 0.25f), modifier = Modifier
+            color = blue_grey_100.copy(alpha = 0.2f), modifier = Modifier
                 .height(240.dp)
-                .fillMaxWidth(),shape = RoundedCornerShape(6)
+                .fillMaxWidth(),shape = RoundedCornerShape(4)
         ) {
 
             Box(modifier = Modifier.padding(16.dp)) {
@@ -107,7 +108,7 @@ fun MyChartView(rainProbability:List<DataX>,rainProbabilityDaily:List<Data>) {
 @Composable
 fun MyChart(rainProbability:List<DataX>) {
     val freeSpace = 40f
-    val dataSpace = 100f
+    val dataSpace = 140f
     var dataPoints = mutableListOf<ChartData>()
     var dataOffsets = mutableListOf<Offset>()
     val state = rememberScrollState()
@@ -177,11 +178,21 @@ fun MyChart(rainProbability:List<DataX>) {
                                             }
                                             dataPoints.size - 1 -> {
                                                 val preValue = dataPoints[i - 1].offsets
-
-                                                relativeLineTo(
-                                                    dx = dataSpace,
-                                                    dy = value.offsets.y - preValue.y
+                                                relativeCubicTo(
+                                                    dx1 = dataSpace/4,
+                                                    dy1 =  (value.offsets.y - preValue.y)/4,
+                                                    dy2 =  3*(value.offsets.y - preValue.y)/4,
+                                                    dx2 = 3*dataSpace/4,
+                                                    dx3 = dataSpace,
+                                                    dy3 = value.offsets.y - preValue.y
                                                 )
+//                                                relativeQuadraticBezierTo(
+//                                                    dx1 = dataSpace/2,dy1 = (value.offsets.y - preValue.y)/2,dx2 =  dataSpace,dy2 = value.offsets.y - preValue.y
+//                                                )
+//                                                relativeLineTo(
+//                                                    dx = dataSpace,
+//                                                    dy = value.offsets.y - preValue.y
+//                                                )
                                                 relativeLineTo(
                                                     dx = 0f,
                                                     dy = canvasHeight - (value.offsets.y)
@@ -190,10 +201,21 @@ fun MyChart(rainProbability:List<DataX>) {
                                             }
                                             else -> {
                                                 val preValue = dataPoints[i - 1].offsets
-                                                relativeLineTo(
-                                                    dx = dataSpace,
-                                                    dy = value.offsets.y - preValue.y
+                                                relativeCubicTo(
+                                                    dx1 = dataSpace/4,
+                                                    dy1 =  (value.offsets.y - preValue.y)/4,
+                                                    dy2 =  3*(value.offsets.y - preValue.y)/4,
+                                                    dx2 = 3*dataSpace/4,
+                                                    dx3 = dataSpace,
+                                                    dy3 = value.offsets.y - preValue.y
                                                 )
+//                                                relativeQuadraticBezierTo(
+//                                                    dx1 = dataSpace/2,dy1 = (value.offsets.y - preValue.y)/2,dx2 =  dataSpace,dy2 = value.offsets.y - preValue.y
+//                                                )
+//                                                relativeLineTo(
+//                                                    dx = dataSpace,
+//                                                    dy = value.offsets.y - preValue.y
+//                                                )
                                             }
                                         }
 
@@ -218,7 +240,7 @@ fun MyChart(rainProbability:List<DataX>) {
                                 .height(20.dp)
                                 .padding(start = 12.dp)
                                 .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy((dataSpace / 2 - 44).dp),
+                            horizontalArrangement = Arrangement.spacedBy((dataSpace / 2 - 49).dp),
                             verticalAlignment = Alignment.Bottom
                         ) {
                             rainProbability.forEach {
@@ -285,7 +307,7 @@ fun MyChart(rainProbability:List<DataX>) {
 @Composable
 fun MyChartDaily(rainProbability:List<Data>) {
     val freeSpace = 40f
-    val dataSpace = 100f
+    val dataSpace = 140f
     var dataPoints = mutableListOf<ChartData>()
     var dataOffsets = mutableListOf<Offset>()
     val state = rememberScrollState()
@@ -345,11 +367,21 @@ val lineColor = if(isSystemInDarkTheme()) red_700 else blue_700
                                             }
                                             dataPoints.size - 1 -> {
                                                 val preValue = dataPoints[i - 1].offsets
-
-                                                relativeLineTo(
-                                                    dx = dataSpace,
-                                                    dy = value.offsets.y - preValue.y
+                                                relativeCubicTo(
+                                                    dx1 = dataSpace/4,
+                                                    dy1 =  (value.offsets.y - preValue.y)/4,
+                                                    dy2 =  3*(value.offsets.y - preValue.y)/4,
+                                                    dx2 = 3*dataSpace/4,
+                                                    dx3 = dataSpace,
+                                                    dy3 = value.offsets.y - preValue.y
                                                 )
+//                                                relativeQuadraticBezierTo(
+//                                                    dx1 = dataSpace/2,dy1 = (value.offsets.y - preValue.y)/2,dx2 =  dataSpace,dy2 = value.offsets.y - preValue.y
+//                                                )
+//                                                relativeLineTo(
+//                                                    dx = dataSpace,
+//                                                    dy = value.offsets.y - preValue.y
+//                                                )
                                                 relativeLineTo(
                                                     dx = 0f,
                                                     dy = canvasHeight - (value.offsets.y)
@@ -358,10 +390,25 @@ val lineColor = if(isSystemInDarkTheme()) red_700 else blue_700
                                             }
                                             else -> {
                                                 val preValue = dataPoints[i - 1].offsets
-                                                relativeLineTo(
-                                                    dx = dataSpace,
-                                                    dy = value.offsets.y - preValue.y
+
+                                                relativeCubicTo(
+                                                    dx1 = dataSpace/4,
+                                                    dy1 =  (value.offsets.y - preValue.y)/4,
+                                                    dy2 =  3*(value.offsets.y - preValue.y)/4,
+                                                    dx2 = 3*dataSpace/4,
+                                                    dx3 = dataSpace,
+                                                    dy3 = value.offsets.y - preValue.y
                                                 )
+//                                                        relativeQuadraticBezierTo(
+//                                                            dx1 = dataSpace/2,dy1 = (value.offsets.y - preValue.y)/2,dx2 =  dataSpace,dy2 = value.offsets.y - preValue.y
+//                                                        )
+
+//                                                    relativeLineTo(
+//                                                        dx = dataSpace,
+//                                                        dy = value.offsets.y - preValue.y
+//                                                    )
+
+
                                             }
                                         }
 
@@ -371,9 +418,10 @@ val lineColor = if(isSystemInDarkTheme()) red_700 else blue_700
 
                                 }, brush = Brush.verticalGradient(
                                     colors = listOf(
-                                        lineColor, lineColor.copy(alpha = 0.5f),
-                                        lineColor.copy(alpha = 0.3f), lineColor.copy(alpha = 0.1f)
-                                    )
+                                        lineColor, lineColor.copy(alpha = 0.6f),
+                                        lineColor.copy(alpha = 0.4f), lineColor.copy(alpha = 0.2f)
+                                    ),
+
                                 )
                             )
 
@@ -386,7 +434,7 @@ val lineColor = if(isSystemInDarkTheme()) red_700 else blue_700
                                 .height(20.dp)
                                 .padding(start = 12.dp)
                                 .fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy((dataSpace / 2 - 44).dp),
+                            horizontalArrangement = Arrangement.spacedBy((dataSpace / 2 - 50).dp),
                             verticalAlignment = Alignment.Bottom
                         ) {
                             rainProbability.forEach {
@@ -409,7 +457,7 @@ val lineColor = if(isSystemInDarkTheme()) red_700 else blue_700
                     }
                 }
                 item {
-                    Spacer(modifier = Modifier.width(50.dp))
+                    Spacer(modifier = Modifier.width(20.dp))
                 }
             }
 
