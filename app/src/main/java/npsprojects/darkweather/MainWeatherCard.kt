@@ -18,10 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.icons.rounded.LocationCity
-import androidx.compose.material.icons.rounded.LocationOn
-import androidx.compose.material.icons.rounded.MyLocation
-import androidx.compose.material.icons.rounded.Sort
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,6 +52,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.navigate
 import npsprojects.darkweather.ui.theme.*
+import java.text.SimpleDateFormat
 
 
 @Composable
@@ -172,13 +170,10 @@ val locationData = data.locations[index].data
                                      }
 
                                      Text(
-                                         "Until: " + DateTimeFormatter.ofPattern("EEEE dd  HH:mm")
-                                             .format(
-                                                 LocalDateTime.ofInstant(
-                                                     Instant.ofEpochMilli(1000 * locationData.alerts[0].expires.toLong()),
-                                                     ZoneId.systemDefault()
-                                                 )
-                                             ),
+                                         "Until: " +
+                                                 SimpleDateFormat("EEEE dd  HH:mm").format(1000 * locationData.alerts[0].expires.toLong())
+
+                                           ,
                                          style = MaterialTheme.typography.h4.copy(fontSize = 12.sp),
                                          lineHeight = 10.sp
                                      )
@@ -271,138 +266,200 @@ val locationData = data.locations[index].data
                      Text("Currently", style = MaterialTheme.typography.h4)
                  }
                  item {
-                     Column(
-                         modifier = Modifier
-                             .fillMaxWidth()
-                     ) {
 
                          Box(modifier = Modifier.fillMaxWidth()) {
-                             Column(modifier = Modifier.fillMaxWidth()) {
-                                 Row(
-                                     modifier = Modifier.fillMaxWidth(),
-                                     horizontalArrangement = Arrangement.SpaceBetween
-                                 ) {
-                                     Box(
-                                         modifier = Modifier
-                                             .height(100.dp)
-                                             .width(80.dp)
-                                             .background(
-                                                 color = blue_700.copy(alpha = 0.15f),
-                                                 shape = RoundedCornerShape(12.dp)
-                                             )
-                                     ) {
-                                         Column(
-                                             modifier = Modifier
-                                                 .padding(4.dp)
-                                                 .height(100.dp)
-                                                 .width(80.dp),
-                                             verticalArrangement = Arrangement.SpaceEvenly
-                                             ,
-                                             horizontalAlignment = Alignment.CenterHorizontally
-                                         ) {
-                                             Text(
-                                                 "Wind",
-                                                 style = MaterialTheme.typography.button.copy(color = blue_700)
-                                             )
-                                             Text(
-                                                 "${locationData.currently.windSpeed!!.roundToLong()} " + if (units == WeatherUnits.US) "mph" else "km/h",
-                                                 style = MaterialTheme.typography.h4
-                                             )
-                                         }
-                                     }
-                                     Box(
-                                         modifier = Modifier
-                                             .height(100.dp)
-                                             .width(80.dp)
-                                             .background(
-                                                 color = blue_700.copy(alpha = 0.15f),
-                                                 shape = RoundedCornerShape(12.dp)
-                                             )
-                                     ) {
-                                         Column(
-                                             modifier = Modifier
-                                                 .padding(4.dp)
-                                                 .height(100.dp)
-                                                 .width(80.dp),
-                                             verticalArrangement = Arrangement.SpaceEvenly
-                                             ,
-                                             horizontalAlignment = Alignment.CenterHorizontally
-                                         ) {
-                                             Text(
-                                                 "Humidity",
-                                                 style = MaterialTheme.typography.button.copy(color = blue_700)
-                                             )
-                                             Text(
-                                                 "${(100 * locationData.currently.humidity!!).roundToInt()}%",
-                                                 style = MaterialTheme.typography.h4
-                                             )
-                                         }
-                                     }
-                                     Box(
-                                         modifier = Modifier
-                                             .height(100.dp)
-                                             .width(80.dp)
-                                             .background(
-                                                 color = blue_700.copy(alpha = 0.15f),
-                                                 shape = RoundedCornerShape(12.dp)
-                                             )
-                                     ) {
-                                         Column(
-                                             modifier = Modifier
-                                                 .padding(4.dp)
-                                                 .height(100.dp)
-                                                 .width(80.dp),
-                                             verticalArrangement = Arrangement.SpaceEvenly
-                                             ,
-                                             horizontalAlignment = Alignment.CenterHorizontally
-                                         ) {
-                                             Text(
-                                                 "UV Index",
-                                                 style = MaterialTheme.typography.button.copy(color = blue_700)
-                                             )
-                                             Text(
-                                                 "${locationData.currently.uvIndex}",
-                                                 style = MaterialTheme.typography.h4
-                                             )
-                                         }
-                                     }
 
-                                     Box(
-                                         modifier = Modifier
-                                             .height(100.dp)
-                                             .width(80.dp)
-                                             .background(
-                                                 color = blue_700.copy(alpha = 0.15f),
-                                                 shape = RoundedCornerShape(12.dp)
-                                             )
-                                     ) {
-                                         Column(
+                                 LazyRow(
+                                     modifier = Modifier.fillMaxWidth(),
+                                     horizontalArrangement = Arrangement.spacedBy(10.dp),
+                                     verticalAlignment = Alignment.CenterVertically
+                                 ) {
+//                                   item{
+//                                       Box(
+//                                           modifier = Modifier
+//                                               .height(100.dp)
+//                                               .width(80.dp)
+//                                               .background(
+//                                                   color = blue_700.copy(alpha = 0.15f),
+//                                                   shape = RoundedCornerShape(12.dp)
+//                                               )
+//                                       ) {
+//                                           Column(
+//                                               modifier = Modifier
+//                                                   .padding(4.dp)
+//                                                   .height(100.dp)
+//                                                   .width(80.dp),
+//                                               verticalArrangement = Arrangement.SpaceEvenly
+//                                               ,
+//                                               horizontalAlignment = Alignment.CenterHorizontally
+//                                           ) {
+//                                               Text(
+//                                                   "Wind",
+//                                                   style = MaterialTheme.typography.button.copy(color = blue_700)
+//                                               )
+//                                               Text(
+//                                                   "${locationData.currently.windSpeed!!.roundToLong()} " + if (units == WeatherUnits.US) "mph" else "km/h",
+//                                                   style = MaterialTheme.typography.h4
+//                                               )
+//                                           }
+//                                       }
+//                                   }
+                          item{
+                              Box(
+                                  modifier = Modifier
+                                      .height(100.dp)
+                                      .width(80.dp)
+                                      .background(
+                                          color = blue_700.copy(alpha = 0.15f),
+                                          shape = RoundedCornerShape(12.dp)
+                                      )
+                              ) {
+                                  Column(
+                                      modifier = Modifier
+                                          .padding(4.dp)
+                                          .height(100.dp)
+                                          .width(80.dp),
+                                      verticalArrangement = Arrangement.SpaceEvenly
+                                      ,
+                                      horizontalAlignment = Alignment.CenterHorizontally
+                                  ) {
+                                      Image(painter = painterResource(id = R.drawable.humidity),contentDescription = "",
+                                      modifier = Modifier.size(25.dp))
+                                      Text(
+                                          "${(100 * locationData.currently.humidity!!).roundToInt()}%",
+                                          style = MaterialTheme.typography.h4
+                                      )
+                                  }
+                              }
+                          }
+                           item{
+                               Box(
+                                   modifier = Modifier
+                                       .height(100.dp)
+                                       .width(80.dp)
+                                       .background(
+                                           color = when (locationData.currently.uvIndex) {
+                                               0, 1, 2 -> Color.Green.copy(alpha = 0.3f)
+                                               3, 4, 5 -> Color.Yellow.copy(alpha = 0.3f)
+                                               6, 7 -> orange_500.copy(alpha = 0.3f)
+                                               else -> Color.Red.copy(alpha = 0.3f)
+                                           },
+                                           shape = RoundedCornerShape(12.dp)
+                                       )
+                               ) {
+                                   Column(
+                                       modifier = Modifier
+                                           .padding(4.dp)
+                                           .height(100.dp)
+                                           .width(80.dp),
+                                       verticalArrangement = Arrangement.SpaceEvenly
+                                       ,
+                                       horizontalAlignment = Alignment.CenterHorizontally
+                                   ) {
+                                       Image(painter = painterResource(id = R.drawable.uv),contentDescription = "",
+                                           modifier = Modifier.size(25.dp))
+                                       Text(
+                                           "${locationData.currently.uvIndex}",
+                                           style = MaterialTheme.typography.h4
+                                       )
+                                   }
+                               }
+
+                           }
+                            item{
+                                Box(
+                                    modifier = Modifier
+                                        .height(100.dp)
+                                        .width(80.dp)
+                                        .background(
+                                            color = blue_700.copy(alpha = 0.15f),
+                                            shape = RoundedCornerShape(12.dp)
+                                        )
+                                ) {
+                                    Column(
+                                        modifier = Modifier
+                                            .padding(4.dp)
+                                            .height(100.dp)
+                                            .width(80.dp),
+                                        verticalArrangement = Arrangement.SpaceEvenly
+                                        ,
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        Image(painter = painterResource(id = R.drawable.hot),contentDescription = "",
+                                            modifier = Modifier.size(25.dp))
+                                        Text(
+                                            "${locationData.currently.apparentTemperature!!.roundToInt()}°",
+                                            style = MaterialTheme.typography.h4
+                                        )
+                                    }
+                                }
+                            }
+                                     item{
+                                         Box(
                                              modifier = Modifier
-                                                 .padding(4.dp)
                                                  .height(100.dp)
-                                                 .width(80.dp),
-                                             verticalArrangement = Arrangement.SpaceEvenly
-                                             ,
-                                             horizontalAlignment = Alignment.CenterHorizontally
+                                                 .width(80.dp)
+                                                 .background(
+                                                     color = blue_700.copy(alpha = 0.15f),
+                                                     shape = RoundedCornerShape(12.dp)
+                                                 )
                                          ) {
-                                             Text(
-                                                 "Feels like",
-                                                 style = MaterialTheme.typography.button.copy(color = blue_700)
-                                             )
-                                             Text(
-                                                 "${locationData.currently.apparentTemperature!!.roundToInt()}°",
-                                                 style = MaterialTheme.typography.h4
-                                             )
+                                             Column(
+                                                 modifier = Modifier
+                                                     .padding(4.dp)
+                                                     .height(100.dp)
+                                                     .width(80.dp),
+                                                 verticalArrangement = Arrangement.SpaceEvenly
+                                                 ,
+                                                 horizontalAlignment = Alignment.CenterHorizontally
+                                             ) {
+                                                 Image(painter = painterResource(id = R.drawable.sunrise),contentDescription = "",
+                                                     modifier = Modifier.size(25.dp))
+                                                 Text(
+
+                                                     SimpleDateFormat("HH:mm").format(1000*locationData.daily.data[0].sunriseTime!!.toLong())
+                                                  ,
+                                                     style = MaterialTheme.typography.h4
+                                                 )
+                                             }
+                                         }
+                                     }
+                                     item{
+                                         Box(
+                                             modifier = Modifier
+                                                 .height(100.dp)
+                                                 .width(80.dp)
+                                                 .background(
+                                                     color = blue_700.copy(alpha = 0.15f),
+                                                     shape = RoundedCornerShape(12.dp)
+                                                 )
+                                         ) {
+                                             Column(
+                                                 modifier = Modifier
+                                                     .padding(4.dp)
+                                                     .height(100.dp)
+                                                     .width(80.dp),
+                                                 verticalArrangement = Arrangement.SpaceEvenly
+                                                 ,
+                                                 horizontalAlignment = Alignment.CenterHorizontally
+                                             ) {
+                                                 Image(painter = painterResource(id = R.drawable.sunset),contentDescription = "",
+                                                     modifier = Modifier.size(25.dp))
+                                                 Text(
+                                                     SimpleDateFormat("HH:mm").format(1000*locationData.daily.data[0].sunsetTime!!.toLong()),
+                                                     style = MaterialTheme.typography.h4
+                                                 )
+                                             }
                                          }
                                      }
                                  }
 
-                             }
+
 
                          }
 
 
-                     }
+
 
                  }
 
@@ -517,7 +574,16 @@ val locationData = data.locations[index].data
 
                      ) {
 
-
+                                if(index == 0){
+                                    IconButton(onClick = {
+                                        data.getCurrentLocationWeather()
+                                    }) {
+                                       Icon(Icons.Rounded.Repeat,
+                                           tint = Color.White,
+                                           modifier = Modifier.size(25.dp),
+                                           contentDescription = "")
+                                    }
+                                }
                      Row(verticalAlignment = Alignment.CenterVertically) {
                          Image(
                              painter = painterResource(id = getWeatherIcon(locationData.currently.icon)),

@@ -502,7 +502,6 @@ getSavedLocations(){
 
 
 
-const val RANDOMURL = "https://api.spoonacular.com/recipes/random?number=8&apiKey=2c920a6d86764c1d86ad2605bb2b97d2"
 
 //'https://api.darksky.net/forecast/0b2f0e7f415678b66d4918b96d6672fa/${position
 //        .latitude},${position.longitude}?lang=$language&units=$units'

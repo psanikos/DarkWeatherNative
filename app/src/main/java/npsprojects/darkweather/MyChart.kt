@@ -18,14 +18,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.PointMode
 import androidx.compose.ui.graphics.drawscope.DrawStyle
+import androidx.compose.ui.layout.VerticalAlignmentLine
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import npsprojects.darkweather.ui.theme.*
+import java.lang.reflect.Array.get
+import java.text.SimpleDateFormat
+import java.time.Duration
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.*
+import java.util.concurrent.TimeUnit
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 
@@ -40,8 +46,28 @@ class ChartData constructor(
 @Composable
 fun MyChartView(rainProbability:List<DataX>,rainProbabilityDaily:List<Data>) {
     var category: RainTimeCategory by remember { mutableStateOf(RainTimeCategory.HOURLY) }
+    var timeUntilRain:Long? = null
+    var timeUntilEnd:Long? = null
+    var firstRainTimeIndex:Int? = rainProbability.indexOfFirst { it.precipProbability!! >= 0.5 }
+
+    if (firstRainTimeIndex != null && firstRainTimeIndex >= 0 ) {
+        timeUntilRain =
+            (1000 * rainProbability[firstRainTimeIndex].time!!.toLong() - Calendar.getInstance().timeInMillis)
+    }
+    if (firstRainTimeIndex != null && firstRainTimeIndex >= 0 ) {
+        rainProbability.forEachIndexed { index, item ->
+            if (index > firstRainTimeIndex) {
+                if (timeUntilEnd == null) {
+                    if (item.precipProbability!! <= 0.4) {
+                        timeUntilEnd = 1000*item.time!!.toLong() - Calendar.getInstance().timeInMillis
+                    }
+                }
+            }
+        }
+    }
+
     Column(modifier = Modifier
-        .height(300.dp)
+        .height(410.dp)
         .fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
         Row(
             modifier = Modifier
@@ -58,7 +84,7 @@ fun MyChartView(rainProbability:List<DataX>,rainProbabilityDaily:List<Data>) {
                     .width(100.dp)
                     .height(32.dp), shape = RoundedCornerShape(20),
                 colors = ButtonDefaults.outlinedButtonColors(
-                    backgroundColor = if (category == RainTimeCategory.HOURLY) if(isSystemInDarkTheme()) Color.DarkGray else Color.White else Color.Transparent,
+                    backgroundColor = if (category == RainTimeCategory.HOURLY) if(isSystemInDarkTheme()) Color.DarkGray else Color.LightGray else Color.Transparent,
                     contentColor = if(isSystemInDarkTheme()) Color.White else Color.DarkGray
                 )
 
@@ -78,7 +104,7 @@ fun MyChartView(rainProbability:List<DataX>,rainProbabilityDaily:List<Data>) {
                     .height(32.dp),
                 shape = RoundedCornerShape(20),
                 colors = ButtonDefaults.outlinedButtonColors(
-                    backgroundColor = if (category == RainTimeCategory.DAILY) if(isSystemInDarkTheme()) Color.DarkGray else Color.White else Color.Transparent,
+                    backgroundColor = if (category == RainTimeCategory.DAILY) if(isSystemInDarkTheme()) Color.DarkGray else Color.LightGray else Color.Transparent,
                     contentColor = if(isSystemInDarkTheme()) Color.White else Color.DarkGray
                 )
 
@@ -88,10 +114,56 @@ fun MyChartView(rainProbability:List<DataX>,rainProbabilityDaily:List<Data>) {
 
             }
         }
+        if(timeUntilRain != null) {
+
+            Box(
+                modifier = Modifier.fillMaxWidth().height(50.dp).background( shape = RoundedCornerShape(12),
+                color = blue_700.copy(alpha = 0.15f)),contentAlignment = Alignment.CenterStart
+            ) {
+
+                if (timeUntilRain > 0) {
+            Text(
+                "Rain starts in " +
+                        String.format(
+                            "%d hours , %d min",
+                            TimeUnit.MILLISECONDS.toHours(timeUntilRain),
+                            TimeUnit.MILLISECONDS.toMinutes(timeUntilRain) -
+                                    TimeUnit.HOURS.toMinutes(
+                                        TimeUnit.MILLISECONDS.toHours(
+                                            timeUntilRain
+                                        )
+                                    )
+                        ), style = MaterialTheme.typography.body2,modifier = Modifier.padding(start = 10.dp)
+            )
+        }
+                else {
+                    if (timeUntilEnd != null){
+                    Text(
+                        "Rain ends in " +
+                                String.format(
+                                    "%d hours , %d min",
+                                    TimeUnit.MILLISECONDS.toHours(timeUntilEnd!!),
+                                    TimeUnit.MILLISECONDS.toMinutes(timeUntilEnd!!) -
+                                            TimeUnit.HOURS.toMinutes(
+                                                TimeUnit.MILLISECONDS.toHours(
+                                                    timeUntilEnd!!
+                                                )
+                                            )
+                                ), style = MaterialTheme.typography.body2,modifier = Modifier.padding(start = 10.dp)
+                    )
+                }
+                    else {
+                        Text(
+                            "The Rain will continue ", style = MaterialTheme.typography.body2,modifier = Modifier.padding(start = 10.dp)  )
+                    }
+            }
+            }
+
+        }
         Surface(
-            color = blue_grey_100.copy(alpha = 0.2f), modifier = Modifier
-                .height(240.dp)
-                .fillMaxWidth(),shape = RoundedCornerShape(4)
+            color = Color.White.copy(alpha = 0.25f), modifier = Modifier
+                .height(310.dp)
+                .fillMaxWidth(),shape = RoundedCornerShape(3)
         ) {
 
             Box(modifier = Modifier.padding(16.dp)) {
@@ -249,9 +321,8 @@ fun MyChart(rainProbability:List<DataX>) {
                                     contentAlignment = Alignment.CenterStart
                                 ) {
                                     Text(
-                                        DateTimeFormatter.ofPattern("HH").format(
-                                            LocalDateTime.ofInstant(
-                                                Instant.ofEpochMilli((1000*it.time!!).toLong()), ZoneId.systemDefault())),
+                                        SimpleDateFormat("HH").format(1000*it.time!!.toLong())
+                                        ,
                                         style = MaterialTheme.typography.caption.copy(fontSize = 9.sp)
                                     )
                                 }
@@ -298,7 +369,7 @@ fun MyChart(rainProbability:List<DataX>) {
        ) {
        (0 until 110 step 10).reversed().forEach {
            Text("$it",style = MaterialTheme.typography.caption.copy(fontSize = 7.sp),
-           modifier = Modifier.padding(bottom = (heightOfBox/12).dp))
+           modifier = Modifier.padding(bottom = (heightOfBox/11.5).dp))
        }
    }
 
@@ -443,9 +514,8 @@ val lineColor = if(isSystemInDarkTheme()) red_700 else blue_700
                                     contentAlignment = Alignment.CenterStart
                                 ) {
                                     Text(
-                                        DateTimeFormatter.ofPattern("EEE").format(
-                                            LocalDateTime.ofInstant(
-                                                Instant.ofEpochMilli((1000*it.time!!).toLong()), ZoneId.systemDefault())),
+                                        SimpleDateFormat("EEE").format(1000*it.time!!.toLong())
+                                        ,
                                         style = MaterialTheme.typography.caption.copy(fontSize = 9.sp)
                                     )
                                 }
@@ -492,7 +562,7 @@ val lineColor = if(isSystemInDarkTheme()) red_700 else blue_700
       ) {
             (0 until 110 step 10).reversed().forEach {
                 Text("$it",style = MaterialTheme.typography.caption.copy(fontSize = 7.sp),
-                    modifier = Modifier.padding(bottom = (heightOfBox/12).dp))
+                    modifier = Modifier.padding(bottom = (heightOfBox/11.5).dp))
             }
         }
 

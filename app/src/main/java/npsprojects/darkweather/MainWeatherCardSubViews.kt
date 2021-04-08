@@ -46,6 +46,7 @@ import kotlinx.coroutines.delay
 import npsprojects.darkweather.ui.theme.blue_500
 import npsprojects.darkweather.ui.theme.blue_grey_500
 import npsprojects.darkweather.ui.theme.red_800
+import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -60,9 +61,7 @@ enum class RainTimeCategory{
 @Composable
 fun WeeklyTimes(data:List<Data>,units: WeatherUnits) {
 
-var weekData = data.toMutableList()
 
-weekData.removeFirst()
 
         Column(
             modifier = Modifier
@@ -73,7 +72,7 @@ weekData.removeFirst()
 
 
             Column() {
-                weekData.forEach {
+                data.forEach {
                     WeeklyTile(data = it,units = units)
                 }
             }
@@ -89,11 +88,8 @@ fun WeeklyTile(data: Data,units: WeatherUnits){
             .height(50.dp),horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically) {
             Text(
-                DateTimeFormatter.ofPattern("EEEE").format(
-                    LocalDateTime.ofInstant(
-                        Instant.ofEpochMilli(
-                (1000*data.sunsetTime!!).toLong()
-            ), ZoneId.systemDefault())), style = MaterialTheme.typography.body2,modifier = Modifier.fillMaxWidth(0.25F))
+                SimpleDateFormat("EEEE").format(1000*data.time!!.toLong())
+                , style = MaterialTheme.typography.body2,modifier = Modifier.fillMaxWidth(0.25F))
             Row(modifier = Modifier
                 .fillMaxWidth(0.85F)
                 .height(40.dp),horizontalArrangement = Arrangement.SpaceBetween,
