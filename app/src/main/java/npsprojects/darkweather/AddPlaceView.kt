@@ -27,6 +27,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.google.android.gms.common.util.CollectionUtils.listOf
 import npsprojects.darkweather.ui.theme.*
 
 @ExperimentalFoundationApi
@@ -87,6 +88,7 @@ fun AddPlaceView(model: WeatherViewModel,controller: NavController){
             Spacer(modifier = Modifier.height(30.dp))
             model.searchedAdresses.forEach {
                 if (it.subLocality != null || it.locality != null || it.featureName != null) {
+
                     Row(
                         modifier = Modifier
                             .padding(vertical = 5.dp)

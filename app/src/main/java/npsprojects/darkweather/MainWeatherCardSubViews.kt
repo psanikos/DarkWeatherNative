@@ -26,12 +26,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Air
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,8 +46,7 @@ import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import kotlin.math.roundToInt
-import kotlin.math.roundToLong
+
 
 enum class RainTimeCategory{
     HOURLY,DAILY
@@ -101,10 +95,10 @@ fun WeeklyTile(data: Data,units: WeatherUnits){
                         .width(25.dp)
                 )
                 Icon(Icons.Filled.ArrowUpward,contentDescription = "",tint = Color.Red,modifier = Modifier.scale(0.7f))
-                Text(data.temperatureHigh!!.roundToInt().toString(), style = MaterialTheme.typography.caption.copy(color = Color.Red))
+                Text(data.temperatureHigh!!.toInt().toString(), style = MaterialTheme.typography.caption.copy(color = Color.Red))
                 Icon(Icons.Filled.ArrowDownward,contentDescription = "",tint = blue_grey_500,modifier = Modifier.scale(0.7f))
 
-                Text(data.temperatureLow!!.roundToInt().toString(), style = MaterialTheme.typography.caption.copy(color = blue_grey_500))
+                Text(data.temperatureLow!!.toInt().toString(), style = MaterialTheme.typography.caption.copy(color = blue_grey_500))
                 Spacer(modifier = Modifier.width(5.dp))
                 Image(
                     painter = painterResource(id = R.drawable.raining), contentDescription = "",
@@ -112,10 +106,10 @@ fun WeeklyTile(data: Data,units: WeatherUnits){
                     modifier = Modifier.size(16.dp)
                 )
 
-                Text("${(100*data.precipProbability!!).roundToInt()}%", style = MaterialTheme.typography.caption)
+                Text("${(100*data.precipProbability!!).toInt()}%", style = MaterialTheme.typography.caption)
 
                 Icon(Icons.Filled.Air,contentDescription = "",tint = MaterialTheme.colors.primary, modifier = Modifier.size(16.dp))
-                Text("${data.windSpeed!!.roundToLong()} " + if(units == WeatherUnits.US) "mph" else "km/h", style = MaterialTheme.typography.caption)
+                Text("${data.windSpeed!!.round(1)} " + if(units == WeatherUnits.US) "mph" else "km/h", style = MaterialTheme.typography.caption)
 
             }
         }
@@ -129,7 +123,7 @@ fun RainTimes(rainProbability:List<DataX>, rainProbabilityDaily:List<Data>){
 
 
     var rainDailyData = rainProbabilityDaily.toMutableList()
-    rainDailyData.removeFirst()
+    rainDailyData.removeAt(0)
         MyChartView(rainProbability = rainProbability,rainProbabilityDaily = rainDailyData)
 
 
@@ -219,7 +213,7 @@ fun RainTimes(rainProbability:List<DataX>, rainProbabilityDaily:List<Data>){
 @Composable
 fun RainMeter(index:Int,value:Double,time:Long,weekly:Boolean){
 
-    val target = (value*140).roundToInt()
+    val target = (value*140).toInt()
 
     var isLoaded by remember { mutableStateOf(false) }
     val height: Dp by animateDpAsState(targetValue = if (isLoaded) target.dp else 0.dp,
@@ -256,7 +250,7 @@ fun RainMeter(index:Int,value:Double,time:Long,weekly:Boolean){
                     ))
             }
 
-            Text("${(100*value).roundToInt()}%",style = MaterialTheme.typography.caption.copy(Color.DarkGray,fontSize = 11.sp))
+            Text("${(100*value).toInt()}%",style = MaterialTheme.typography.caption.copy(Color.DarkGray,fontSize = 11.sp))
 
         }
         Text(if (weekly) DateTimeFormatter.ofPattern("EEE").format(LocalDateTime.ofInstant(Instant.ofEpochMilli(1000*time), ZoneId.systemDefault())) else DateTimeFormatter.ofPattern("HH:mm").format(

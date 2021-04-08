@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
@@ -117,15 +118,20 @@ fun MyChartView(rainProbability:List<DataX>,rainProbabilityDaily:List<Data>) {
         if(timeUntilRain != null) {
 
             Box(
-                modifier = Modifier.fillMaxWidth().height(50.dp).background( shape = RoundedCornerShape(12),
-                color = blue_700.copy(alpha = 0.15f)),contentAlignment = Alignment.CenterStart
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(60.dp)
+                    .background(
+                        shape = RoundedCornerShape(12),
+                        color = blue_700.copy(alpha = 0.15f)
+                    ),contentAlignment = Alignment.CenterStart
             ) {
 
                 if (timeUntilRain > 0) {
             Text(
                 "Rain starts in " +
                         String.format(
-                            "%d hours , %d min",
+                            "%d hours and %d min",
                             TimeUnit.MILLISECONDS.toHours(timeUntilRain),
                             TimeUnit.MILLISECONDS.toMinutes(timeUntilRain) -
                                     TimeUnit.HOURS.toMinutes(
@@ -141,7 +147,7 @@ fun MyChartView(rainProbability:List<DataX>,rainProbabilityDaily:List<Data>) {
                     Text(
                         "Rain ends in " +
                                 String.format(
-                                    "%d hours , %d min",
+                                    "%d hours and %d min",
                                     TimeUnit.MILLISECONDS.toHours(timeUntilEnd!!),
                                     TimeUnit.MILLISECONDS.toMinutes(timeUntilEnd!!) -
                                             TimeUnit.HOURS.toMinutes(
@@ -206,16 +212,6 @@ fun MyChart(rainProbability:List<DataX>) {
                         Canvas(modifier = Modifier.fillMaxSize()) {
                             val canvasWidth = size.width
                             val canvasHeight = size.height - freeSpace
-//    var hourlyRainTimes = mutableListOf<Long>()
-//    var hourlyPercent = mutableListOf<Double>()
-//    LaunchedEffect(key1 = "data"){
-//        rainProbability.forEach {
-//            hourlyRainTimes.add(it.time!!.toLong())
-//            hourlyPercent.add(it.precipProbability!!)
-//            println("Count ${hourlyPercent.size}")
-//        }
-//    }
-
 
                                     rainProbability.forEachIndexed { index, item ->
                                         val offset = Offset(
@@ -250,17 +246,17 @@ fun MyChart(rainProbability:List<DataX>) {
                                             }
                                             dataPoints.size - 1 -> {
                                                 val preValue = dataPoints[i - 1].offsets
-                                                relativeCubicTo(
-                                                    dx1 = dataSpace/4,
-                                                    dy1 =  (value.offsets.y - preValue.y)/4,
-                                                    dy2 =  3*(value.offsets.y - preValue.y)/4,
-                                                    dx2 = 3*dataSpace/4,
-                                                    dx3 = dataSpace,
-                                                    dy3 = value.offsets.y - preValue.y
-                                                )
-//                                                relativeQuadraticBezierTo(
-//                                                    dx1 = dataSpace/2,dy1 = (value.offsets.y - preValue.y)/2,dx2 =  dataSpace,dy2 = value.offsets.y - preValue.y
+//                                                relativeCubicTo(
+//                                                    dx1 = dataSpace/4,
+//                                                    dy1 =  (value.offsets.y - preValue.y)/4,
+//                                                    dy2 =  3*(value.offsets.y - preValue.y)/4,
+//                                                    dx2 = 3*dataSpace/4,
+//                                                    dx3 = dataSpace,
+//                                                    dy3 = value.offsets.y - preValue.y
 //                                                )
+                                                relativeQuadraticBezierTo(
+                                                    dx1 = dataSpace/2,dy1 = (value.offsets.y - preValue.y)/2,dx2 =  dataSpace,dy2 = value.offsets.y - preValue.y
+                                                )
 //                                                relativeLineTo(
 //                                                    dx = dataSpace,
 //                                                    dy = value.offsets.y - preValue.y
@@ -273,23 +269,44 @@ fun MyChart(rainProbability:List<DataX>) {
                                             }
                                             else -> {
                                                 val preValue = dataPoints[i - 1].offsets
-                                                relativeCubicTo(
-                                                    dx1 = dataSpace/4,
-                                                    dy1 =  (value.offsets.y - preValue.y)/4,
-                                                    dy2 =  3*(value.offsets.y - preValue.y)/4,
-                                                    dx2 = 3*dataSpace/4,
-                                                    dx3 = dataSpace,
-                                                    dy3 = value.offsets.y - preValue.y
-                                                )
-//                                                relativeQuadraticBezierTo(
-//                                                    dx1 = dataSpace/2,dy1 = (value.offsets.y - preValue.y)/2,dx2 =  dataSpace,dy2 = value.offsets.y - preValue.y
+//                                                val curveRadius = 20
+//
+//                                                val x1 = 0f
+//                                                val x2 = dataSpace
+//                                                val y1 = 0f
+//                                                val y2 = value.offsets.y - preValue.y
+//                                                val midX: Float = x1 + (x2 - x1) / 2
+//                                                val midY: Float = y1 + (y2 - y1) / 2
+//                                                val xDiff: Float = midX - x1
+//                                                val yDiff: Float = midY - y1
+//                                                val angle = Math.atan2(
+//                                                    yDiff.toDouble(),
+//                                                    xDiff.toDouble()
+//                                                ) * (180 / Math.PI) - 90
+//                                                val angleRadians = Math.toRadians(angle)
+//                                                val multiplier = if(value.offsets.y - preValue.y > 0 ) -1 else 1
+//                                                val pointX =
+//                                                    (midX + curveRadius * Math.cos(angleRadians)).toFloat()
+//                                                val pointY =
+//                                                    (midY + curveRadius * Math.sin(angleRadians)).toFloat()
+//                                                relativeCubicTo(x1,y1,pointX, pointY, x2, y2)
+//                                                relativeCubicTo(
+//                                                    dx1 = dataSpace/4,
+//                                                    dy1 =  (value.offsets.y - preValue.y)/4,
+//                                                    dy2 =  3*(value.offsets.y - preValue.y)/4,
+//                                                    dx2 = 3*dataSpace/4,
+//                                                    dx3 = dataSpace,
+//                                                    dy3 = value.offsets.y - preValue.y
 //                                                )
+                                                relativeQuadraticBezierTo(
+                                                    dx1 = dataSpace/2,dy1 = (value.offsets.y - preValue.y)/2,dx2 =  dataSpace,dy2 = value.offsets.y - preValue.y
+                                                )
 //                                                relativeLineTo(
 //                                                    dx = dataSpace,
 //                                                    dy = value.offsets.y - preValue.y
 //                                                )
-                                            }
-                                        }
+                                         }
+                                       }
 
 
                                     }
@@ -348,17 +365,17 @@ fun MyChart(rainProbability:List<DataX>) {
                     color = Color.Gray,
                     start = Offset(x = freeSpace, y = canvasHeight),
                     end = Offset(x = canvasWidth, y = canvasHeight),
-                    strokeWidth = 4f
+                    strokeWidth = 5f
                 )
                 //------------------------
 
                 //Vertical-------------
-                drawLine(
-                    color = Color.Gray,
-                    start = Offset(x = freeSpace, y = canvasHeight),
-                    end = Offset(x = freeSpace, y = 0f),
-                    strokeWidth = 4f
-                )
+//                drawLine(
+//                    color = Color.Gray,
+//                    start = Offset(x = freeSpace, y = canvasHeight),
+//                    end = Offset(x = freeSpace, y = 0f),
+//                    strokeWidth = 5f
+//                )
                 //---------------
                 //****************
             }
@@ -438,17 +455,17 @@ val lineColor = if(isSystemInDarkTheme()) red_700 else blue_700
                                             }
                                             dataPoints.size - 1 -> {
                                                 val preValue = dataPoints[i - 1].offsets
-                                                relativeCubicTo(
-                                                    dx1 = dataSpace/4,
-                                                    dy1 =  (value.offsets.y - preValue.y)/4,
-                                                    dy2 =  3*(value.offsets.y - preValue.y)/4,
-                                                    dx2 = 3*dataSpace/4,
-                                                    dx3 = dataSpace,
-                                                    dy3 = value.offsets.y - preValue.y
-                                                )
-//                                                relativeQuadraticBezierTo(
-//                                                    dx1 = dataSpace/2,dy1 = (value.offsets.y - preValue.y)/2,dx2 =  dataSpace,dy2 = value.offsets.y - preValue.y
+//                                                relativeCubicTo(
+//                                                    dx1 = dataSpace/4,
+//                                                    dy1 =  (value.offsets.y - preValue.y)/4,
+//                                                    dy2 =  3*(value.offsets.y - preValue.y)/4,
+//                                                    dx2 = 3*dataSpace/4,
+//                                                    dx3 = dataSpace,
+//                                                    dy3 = value.offsets.y - preValue.y
 //                                                )
+                                                relativeQuadraticBezierTo(
+                                                    dx1 = dataSpace/2,dy1 = (value.offsets.y - preValue.y)/2,dx2 =  dataSpace,dy2 = value.offsets.y - preValue.y
+                                                )
 //                                                relativeLineTo(
 //                                                    dx = dataSpace,
 //                                                    dy = value.offsets.y - preValue.y
@@ -462,24 +479,42 @@ val lineColor = if(isSystemInDarkTheme()) red_700 else blue_700
                                             else -> {
                                                 val preValue = dataPoints[i - 1].offsets
 
-                                                relativeCubicTo(
-                                                    dx1 = dataSpace/4,
-                                                    dy1 =  (value.offsets.y - preValue.y)/4,
-                                                    dy2 =  3*(value.offsets.y - preValue.y)/4,
-                                                    dx2 = 3*dataSpace/4,
-                                                    dx3 = dataSpace,
-                                                    dy3 = value.offsets.y - preValue.y
-                                                )
-//                                                        relativeQuadraticBezierTo(
-//                                                            dx1 = dataSpace/2,dy1 = (value.offsets.y - preValue.y)/2,dx2 =  dataSpace,dy2 = value.offsets.y - preValue.y
-//                                                        )
+//                                                relativeCubicTo(
+//                                                    dx1 = dataSpace/4,
+//                                                    dy1 =  (value.offsets.y - preValue.y)/4,
+//                                                    dy2 =  3*(value.offsets.y - preValue.y)/4,
+//                                                    dx2 = 3*dataSpace/4,
+//                                                    dx3 = dataSpace,
+//                                                    dy3 = value.offsets.y - preValue.y
+//                                                )
+                                                        relativeQuadraticBezierTo(
+                                                            dx1 = dataSpace/2,dy1 = (value.offsets.y - preValue.y)/2,dx2 =  dataSpace,dy2 = value.offsets.y - preValue.y
+                                                        )
 
 //                                                    relativeLineTo(
 //                                                        dx = dataSpace,
 //                                                        dy = value.offsets.y - preValue.y
 //                                                    )
-
-
+//                                                val curveRadius = 20
+//                                                val x1 = 0f
+//                                                    val x2 = dataSpace
+//                                                        val y1 = 0f
+//                                                            val y2 = value.offsets.y - preValue.y
+//                                                val midX: Float = x1 + (x2 - x1) / 2
+//                                                val midY: Float = y1 + (y2 - y1) / 2
+//                                                val xDiff: Float = midX - x1
+//                                                val yDiff: Float = midY - y1
+//                                                val angle = Math.atan2(
+//                                                    yDiff.toDouble(),
+//                                                    xDiff.toDouble()
+//                                                ) * (180 / Math.PI) - 90
+//                                                val angleRadians = Math.toRadians(angle)
+//                                                val multiplier = if(value.offsets.y - preValue.y > 0 ) -1 else 1
+//                                                val pointX =
+//                                                    (midX + curveRadius * Math.cos(angleRadians)).toFloat()
+//                                                val pointY =
+//                                                    (midY + curveRadius * Math.sin(angleRadians)).toFloat()
+//                                                relativeCubicTo(x1,y1,pointX, pointY, x2, y2)
                                             }
                                         }
 
@@ -546,12 +581,12 @@ val lineColor = if(isSystemInDarkTheme()) red_700 else blue_700
                 //------------------------
 
                 //Vertical-------------
-                drawLine(
-                    color = Color.Gray,
-                    start = Offset(x = freeSpace, y = canvasHeight),
-                    end = Offset(x = freeSpace, y = 0f),
-                    strokeWidth = 4f
-                )
+//                drawLine(
+//                    color = Color.Gray,
+//                    start = Offset(x = freeSpace, y = canvasHeight),
+//                    end = Offset(x = freeSpace, y = 0f),
+//                    strokeWidth = 4f
+//                )
                 //---------------
                 //****************
             }

@@ -17,9 +17,11 @@ import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.beust.klaxon.Klaxon
+import com.google.android.gms.common.util.CollectionUtils.listOf
+
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.google.gson.Gson
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -224,8 +226,10 @@ class WeatherViewModel: ViewModel() {
     fun getCurrentLocationWeather(){
         val context = MyApp.context
         isLoading = true
+
         getDataFromUserDefaults()
         println("LOADING DATA ")
+
         getCurrentLocation {
             if(it != null) {
                 currentLocation = it
@@ -380,7 +384,7 @@ class WeatherViewModel: ViewModel() {
             }.toMutableList()
         else mutableListOf<String>()
 
-        val itemToAdd = SavedLocation(name = if (address.featureName != null) address.featureName else if (address.subLocality != null) address.subLocality else address.locality ,latitude = address.latitude,longitude = address.longitude).toString()
+        val itemToAdd = SavedLocation(name = if (address.featureName != null) address.featureName else if (address.subLocality != null) address.subLocality else address.locality ,latitude = address.latitude.round(3),longitude = address.longitude.round(3)).toString()
        if (!items.contains(itemToAdd)){
            items.add(itemToAdd )
        }
@@ -399,6 +403,7 @@ getSavedLocations(){
 
     private fun getSavedLocations(completion:()->Unit) {
         val context = MyApp.context
+
         val pref: SharedPreferences = context
             .getSharedPreferences("MyPref", 0) // 0 - for private mode
         val savedLocations = pref.getString("locations", null)
@@ -408,16 +413,24 @@ getSavedLocations(){
                 it
             }.toMutableList()
                 else mutableListOf<String>()
-        val savedItems = if (items.size > 0) items.map { saved ->
-            saved.replace("[", "").replace("]", "")
-            val list = saved.split("|")
-            SavedLocation(
-                name = list[0].replace("[", "").replace("]", "").replace("|", ""),
-                latitude = list[1].replace("[", "").replace("]", "").replace("]", "").replace("|", "").toDouble(),
-                longitude = list[2].replace("[", "").replace("]", "").replace("]", "").replace("|", "").toDouble()
-            )
-        }.toList() else listOf<SavedLocation>()
-        myLocations = savedItems
+        val savedItems = mutableListOf<SavedLocation>()
+            if (items.size > 0) {
+                items.forEach { saved ->
+                    saved.replace("[", "").replace("]", "")
+                    val list = saved.split("|")
+                   val output = SavedLocation(
+                        name = list[0].replace("[", "").replace("]", "").replace("|", ""),
+                        latitude = list[1].replace("[", "").replace("]", "").replace("]", "")
+                            .replace("|", "").toDouble(),
+                        longitude = list[2].replace("[", "").replace("]", "").replace("]", "")
+                            .replace("|", "").toDouble()
+                    )
+                   if (!savedItems.contains(output)){
+                       savedItems.add(output)
+                   }
+                }
+            }
+        myLocations = savedItems.toList()
         completion()
     }
     private fun getCurrentLocationData(completion:()->Unit) {
@@ -426,9 +439,9 @@ getSavedLocations(){
             DataFetcher.getFromUrl(url = "https://api.darksky.net/forecast/0b2f0e7f415678b66d4918b96d6672fa/${currentLocation!!.latitude},${currentLocation!!.longitude}?lang=en&units=$unit") {
                 if (it != null) {
                     println("DATAAA $it")
-                    val klaxon = Klaxon()
+                    val gson = Gson()
 
-                    val out = klaxon.parse<WeatherResponse>(it.toString())
+                    val out = gson.fromJson<WeatherResponse>(it.toString(),WeatherResponse::class.java)
                     currentLocationData = out
                     if (currentLocationData != null) {
                         val current = WeatherModel(
@@ -456,9 +469,9 @@ getSavedLocations(){
         DataFetcher.getFromUrl(url = "https://api.darksky.net/forecast/0b2f0e7f415678b66d4918b96d6672fa/${latitude},${longitude}?lang=en&units=$unit") {
             if (it != null) {
                 println("DATAAA $it")
-                val klaxon = Klaxon()
+                val gson = Gson()
 
-                val out = klaxon.parse<WeatherResponse>(it.toString())
+                val out = gson.fromJson<WeatherResponse>(it.toString(),WeatherResponse::class.java)
 
                 if (out != null) {
                     val current = WeatherModel(
@@ -478,12 +491,16 @@ getSavedLocations(){
     private fun getSavedLocationData(completion:()->Unit) {
        var out = arrayListOf<WeatherModel>()
         println("SAVED LOCATIONS ${myLocations.count()}")
+
+        locations = if (locations.isNotEmpty() && currentLocationData != null) listOf(locations[0]) else listOf()
         for ( item in myLocations) {
             println("GETTING FROM SAVED")
           getDataFromCoordinates(latitude = item.latitude,longitude = item.longitude,name = item.name){
               println("COMPLETION FROM SAVED")
               it?.let { data->
-                  locations = locations + data
+
+                      locations = locations + data
+
               }
           }
 

@@ -89,7 +89,7 @@ fun MainPageView(model: WeatherViewModel,controller:NavController) {
                 }
                 offset = 0f
             } else if (offset < 0) {
-                if (index < model.locations.count() - 1) {
+                if (index < model.locations.size - 1) {
                     index++
                 }
                 offset = 0f
@@ -106,7 +106,7 @@ fun MainPageView(model: WeatherViewModel,controller:NavController) {
         when (model.isLoading) {
             true -> LoadingView(model = model)
 
-            false -> if (model.locations.count() > 0) {
+            false -> if (model.locations.size > 0) {
                 Box(contentAlignment = Alignment.BottomCenter) {
                     MainWeatherCard(
                         data = model,
