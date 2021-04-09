@@ -121,7 +121,7 @@ Scaffold() {
         Box(modifier = Modifier
             .fillMaxWidth()
             .height(200.dp)) {
-            if (model.error == WeatherError.NOPERMISSION) {
+            if (model.error == WeatherError.NOPERMISSION || model.error == WeatherError.NOGPS) {
                 Box(modifier = Modifier
                     .padding(horizontal = 10.dp)
                     .clip(RoundedCornerShape(10))

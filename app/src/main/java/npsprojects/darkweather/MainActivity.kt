@@ -87,7 +87,7 @@ if(ContextCompat.checkSelfPermission(
     ) == PackageManager.PERMISSION_GRANTED){
         model.onPermissionGranted()
     model.hasRun()
-    if (model.error == WeatherError.NOPERMISSION) {
+    if (model.error == WeatherError.NOPERMISSION || model.error ==  WeatherError.NOGPS) {
         model.error = WeatherError.NONE
     }
     }
