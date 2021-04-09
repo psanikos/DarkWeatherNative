@@ -124,7 +124,7 @@ fun RainTimes(rainProbability:List<DataX>, rainProbabilityDaily:List<Data>){
 
     var rainDailyData = rainProbabilityDaily.toMutableList()
     rainDailyData.removeAt(0)
-        MyChartView(rainProbability = rainProbability,rainProbabilityDaily = rainDailyData)
+        MyChartView(rainProbability = rainProbability)
 
 
 //    Surface(

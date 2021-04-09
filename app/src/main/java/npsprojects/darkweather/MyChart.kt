@@ -45,7 +45,7 @@ class ChartData constructor(
 
 
 @Composable
-fun MyChartView(rainProbability:List<DataX>,rainProbabilityDaily:List<Data>) {
+fun MyChartView(rainProbability:List<DataX>) {
     var category: RainTimeCategory by remember { mutableStateOf(RainTimeCategory.HOURLY) }
     var timeUntilRain:Long? = null
     var timeUntilEnd:Long? = null
@@ -66,67 +66,26 @@ fun MyChartView(rainProbability:List<DataX>,rainProbabilityDaily:List<Data>) {
             }
         }
     }
+Box(modifier = Modifier
+    .height(320.dp)
+    .fillMaxWidth().background(color = Color.Black.copy(alpha = 0.5f),
+        shape = RoundedCornerShape(12.dp))){
+    Column(modifier = Modifier.padding(10.dp)
 
-    Column(modifier = Modifier
-        .height(410.dp)
-        .fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(40.dp), horizontalArrangement = Arrangement.Start,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+        .fillMaxSize(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
 
-            OutlinedButton(
-                onClick = {
-                    category = RainTimeCategory.HOURLY
-                },
-                modifier = Modifier
-                    .width(100.dp)
-                    .height(32.dp), shape = RoundedCornerShape(20),
-                colors = ButtonDefaults.outlinedButtonColors(
-                    backgroundColor = if (category == RainTimeCategory.HOURLY) if(isSystemInDarkTheme()) Color.DarkGray else Color.LightGray else Color.Transparent,
-                    contentColor = if(isSystemInDarkTheme()) Color.White else Color.DarkGray
-                )
-
-            ) {
-
-                Text("Hourly", style = MaterialTheme.typography.button)
-
-
-            }
-            Spacer(modifier = Modifier.width(10.dp))
-            OutlinedButton(
-                onClick = {
-                    category = RainTimeCategory.DAILY
-                },
-                modifier = Modifier
-                    .width(100.dp)
-                    .height(32.dp),
-                shape = RoundedCornerShape(20),
-                colors = ButtonDefaults.outlinedButtonColors(
-                    backgroundColor = if (category == RainTimeCategory.DAILY) if(isSystemInDarkTheme()) Color.DarkGray else Color.LightGray else Color.Transparent,
-                    contentColor = if(isSystemInDarkTheme()) Color.White else Color.DarkGray
-                )
-
-            ) {
-
-                Text("Daily", style = MaterialTheme.typography.button)
-
-            }
-        }
-        if(timeUntilRain != null) {
+        Text(
+            "Rain probability"
+            , style = MaterialTheme.typography.h4.copy(color = Color.White,fontSize = 16.sp),modifier = Modifier.padding(start = 10.dp,top = 5.dp,bottom = 5.dp)
+        )
 
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(60.dp)
-                    .background(
-                        shape = RoundedCornerShape(12),
-                        color = blue_700.copy(alpha = 0.15f)
-                    ),contentAlignment = Alignment.CenterStart
+                    .height(50.dp)
+                   ,contentAlignment = Alignment.CenterStart
             ) {
-
+                if(timeUntilRain != null) {
                 if (timeUntilRain > 0) {
             Text(
                 "Rain starts in " +
@@ -139,7 +98,7 @@ fun MyChartView(rainProbability:List<DataX>,rainProbabilityDaily:List<Data>) {
                                             timeUntilRain
                                         )
                                     )
-                        ), style = MaterialTheme.typography.body2,modifier = Modifier.padding(start = 10.dp)
+                        ), style = MaterialTheme.typography.body2.copy(color = Color.White),modifier = Modifier.padding(start = 10.dp)
             )
         }
                 else {
@@ -155,7 +114,7 @@ fun MyChartView(rainProbability:List<DataX>,rainProbabilityDaily:List<Data>) {
                                                     timeUntilEnd!!
                                                 )
                                             )
-                                ), style = MaterialTheme.typography.body2,modifier = Modifier.padding(start = 10.dp)
+                                ), style = MaterialTheme.typography.body2.copy(color = Color.White),modifier = Modifier.padding(start = 10.dp)
                     )
                 }
                     else {
@@ -166,21 +125,20 @@ fun MyChartView(rainProbability:List<DataX>,rainProbabilityDaily:List<Data>) {
             }
 
         }
-        Surface(
-            color = Color.White.copy(alpha = 0.25f), modifier = Modifier
-                .height(310.dp)
-                .fillMaxWidth(),shape = RoundedCornerShape(3)
+        Box(
+             modifier = Modifier
+                .height(260.dp)
+                .fillMaxWidth()
         ) {
 
-            Box(modifier = Modifier.padding(16.dp)) {
-                when (category) {
-                    RainTimeCategory.HOURLY -> MyChart(rainProbability = rainProbability)
-                    RainTimeCategory.DAILY -> MyChartDaily(rainProbability = rainProbabilityDaily)
-                }
 
-            }
+            MyChart(rainProbability = rainProbability)
+
+
+
         }
     }
+}
 }
 
 @Composable
@@ -340,7 +298,7 @@ fun MyChart(rainProbability:List<DataX>) {
                                     Text(
                                         SimpleDateFormat("HH").format(1000*it.time!!.toLong())
                                         ,
-                                        style = MaterialTheme.typography.caption.copy(fontSize = 9.sp)
+                                        style = MaterialTheme.typography.caption.copy(fontSize = 9.sp,color = Color.White)
                                     )
                                 }
                                 // Text(it.displayedValue, style = MaterialTheme.typography.caption.copy(fontSize = 10.sp))
@@ -362,7 +320,7 @@ fun MyChart(rainProbability:List<DataX>) {
                 // Axis****************
                 // Horizontal--------
                 drawLine(
-                    color = Color.Gray,
+                    color = Color.White,
                     start = Offset(x = freeSpace, y = canvasHeight),
                     end = Offset(x = canvasWidth, y = canvasHeight),
                     strokeWidth = 5f
@@ -381,13 +339,16 @@ fun MyChart(rainProbability:List<DataX>) {
             }
         }
    Column(modifier = Modifier
-       .fillMaxHeight()
-       .width(12.dp)
+       .fillMaxHeight(),
+       verticalArrangement = Arrangement.SpaceEvenly
        ) {
-       (0 until 110 step 10).reversed().forEach {
-           Text("$it",style = MaterialTheme.typography.caption.copy(fontSize = 7.sp),
-           modifier = Modifier.padding(bottom = (heightOfBox/11.5).dp))
-       }
+       Text("High",style = MaterialTheme.typography.caption.copy(fontSize = 7.sp,color = Color.White))
+       Text("Medium",style = MaterialTheme.typography.caption.copy(fontSize = 7.sp,color = Color.White))
+       Text("Low",style = MaterialTheme.typography.caption.copy(fontSize = 7.sp,color = Color.White))
+//       (0 until 110 step 10).reversed().forEach {
+//           Text("$it",style = MaterialTheme.typography.caption.copy(fontSize = 7.sp,color = Color.White),
+//           modifier = Modifier.padding(bottom = (heightOfBox/12).dp))
+//       }
    }
 
     }

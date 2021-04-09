@@ -217,36 +217,8 @@ fun BottomDrawer(data:WeatherViewModel,index:Int,units: WeatherUnits){
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-//                                   item{
-//                                       Box(
-//                                           modifier = Modifier
-//                                               .height(100.dp)
-//                                               .width(80.dp)
-//                                               .background(
-//                                                   color = blue_700.copy(alpha = 0.15f),
-//                                                   shape = RoundedCornerShape(12.dp)
-//                                               )
-//                                       ) {
-//                                           Column(
-//                                               modifier = Modifier
-//                                                   .padding(4.dp)
-//                                                   .height(100.dp)
-//                                                   .width(80.dp),
-//                                               verticalArrangement = Arrangement.SpaceEvenly
-//                                               ,
-//                                               horizontalAlignment = Alignment.CenterHorizontally
-//                                           ) {
-//                                               Text(
-//                                                   "Wind",
-//                                                   style = MaterialTheme.typography.button.copy(color = blue_700)
-//                                               )
-//                                               Text(
-//                                                   "${locationData.currently.windSpeed!!.roundToLong()} " + if (units == WeatherUnits.US) "mph" else "km/h",
-//                                                   style = MaterialTheme.typography.h4
-//                                               )
-//                                           }
-//                                       }
-//                                   }
+
+
                     item{
                         Box(
                             modifier = Modifier
