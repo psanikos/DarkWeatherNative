@@ -40,7 +40,7 @@ fun AddPlaceView(model: WeatherViewModel,controller: NavController){
         .background(
             brush = Brush.verticalGradient(
                 colors = listOf(
-                    blue_grey_800,
+                    Color.DarkGray,
                     Color(0xFF4A526D)
                 )
             )

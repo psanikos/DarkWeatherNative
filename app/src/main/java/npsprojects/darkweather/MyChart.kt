@@ -68,10 +68,10 @@ fun MyChartView(rainProbability:List<DataX>) {
     }
 Box(modifier = Modifier
     .height(320.dp)
-    .fillMaxWidth().background(color = Color.Black.copy(alpha = 0.5f),
+    .fillMaxWidth().background(brush = Brush.verticalGradient(colors = listOf(Color.Black.copy(alpha = 0.25f),Color.Black.copy(alpha = 0.5f))),
         shape = RoundedCornerShape(12.dp))){
-    Column(modifier = Modifier.padding(10.dp)
-
+    Column(
+        modifier = Modifier.padding(10.dp)
         .fillMaxSize(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
 
         Text(
@@ -143,7 +143,7 @@ Box(modifier = Modifier
 
 @Composable
 fun MyChart(rainProbability:List<DataX>) {
-    val freeSpace = 40f
+    val freeSpace = 50f
     val dataSpace = 140f
     var dataPoints = mutableListOf<ChartData>()
     var dataOffsets = mutableListOf<Offset>()
@@ -298,7 +298,7 @@ fun MyChart(rainProbability:List<DataX>) {
                                     Text(
                                         SimpleDateFormat("HH").format(1000*it.time!!.toLong())
                                         ,
-                                        style = MaterialTheme.typography.caption.copy(fontSize = 9.sp,color = Color.White)
+                                        style = MaterialTheme.typography.caption.copy(fontSize = 10.sp,color = Color.White)
                                     )
                                 }
                                 // Text(it.displayedValue, style = MaterialTheme.typography.caption.copy(fontSize = 10.sp))
@@ -309,7 +309,7 @@ fun MyChart(rainProbability:List<DataX>) {
                     }
                 }
                 item {
-                    Spacer(modifier = Modifier.width(50.dp))
+                    Spacer(modifier = Modifier.width(20.dp))
                 }
             }
 
@@ -342,9 +342,9 @@ fun MyChart(rainProbability:List<DataX>) {
        .fillMaxHeight(),
        verticalArrangement = Arrangement.SpaceEvenly
        ) {
-       Text("High",style = MaterialTheme.typography.caption.copy(fontSize = 7.sp,color = Color.White))
-       Text("Medium",style = MaterialTheme.typography.caption.copy(fontSize = 7.sp,color = Color.White))
-       Text("Low",style = MaterialTheme.typography.caption.copy(fontSize = 7.sp,color = Color.White))
+       Text("High",style = MaterialTheme.typography.caption.copy(fontSize = 9.sp,color = Color.White))
+       Text("Medium",style = MaterialTheme.typography.caption.copy(fontSize = 9.sp,color = Color.White))
+       Text("Low",style = MaterialTheme.typography.caption.copy(fontSize = 9.sp,color = Color.White))
 //       (0 until 110 step 10).reversed().forEach {
 //           Text("$it",style = MaterialTheme.typography.caption.copy(fontSize = 7.sp,color = Color.White),
 //           modifier = Modifier.padding(bottom = (heightOfBox/12).dp))

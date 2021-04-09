@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import npsprojects.darkweather.ui.theme.blue_500
+import npsprojects.darkweather.ui.theme.blue_grey_300
 import npsprojects.darkweather.ui.theme.blue_grey_500
 import npsprojects.darkweather.ui.theme.red_800
 import java.text.SimpleDateFormat
@@ -60,16 +61,19 @@ fun WeeklyTimes(data:List<Data>,units: WeatherUnits) {
         Column(
             modifier = Modifier
                 .fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
+            horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.SpaceEvenly
         ) {
 
+            Text(
+                "Weekly forecast"
+                , style = MaterialTheme.typography.h4.copy(color = Color.White,fontSize = 16.sp),modifier = Modifier.padding(bottom = 20.dp,top = 10.dp)
+            )
 
-            Column() {
                 data.forEach {
                     WeeklyTile(data = it,units = units)
                 }
-            }
+
 
     }
 }
@@ -96,19 +100,19 @@ fun WeeklyTile(data: Data,units: WeatherUnits){
                 )
                 Icon(Icons.Filled.ArrowUpward,contentDescription = "",tint = Color.Red,modifier = Modifier.scale(0.7f))
                 Text(data.temperatureHigh!!.toInt().toString(), style = MaterialTheme.typography.caption.copy(color = Color.Red))
-                Icon(Icons.Filled.ArrowDownward,contentDescription = "",tint = blue_grey_500,modifier = Modifier.scale(0.7f))
+                Icon(Icons.Filled.ArrowDownward,contentDescription = "",tint =                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         blue_grey_300,modifier = Modifier.scale(0.7f))
 
-                Text(data.temperatureLow!!.toInt().toString(), style = MaterialTheme.typography.caption.copy(color = blue_grey_500))
+                Text(data.temperatureLow!!.toInt().toString(), style = MaterialTheme.typography.caption.copy(color = blue_grey_300))
                 Spacer(modifier = Modifier.width(5.dp))
                 Image(
                     painter = painterResource(id = R.drawable.raining), contentDescription = "",
-                    colorFilter = ColorFilter.tint(color = MaterialTheme.colors.primary),
+                    colorFilter = ColorFilter.tint(color = Color.LightGray),
                     modifier = Modifier.size(16.dp)
                 )
 
                 Text("${(100*data.precipProbability!!).toInt()}%", style = MaterialTheme.typography.caption)
 
-                Icon(Icons.Filled.Air,contentDescription = "",tint = MaterialTheme.colors.primary, modifier = Modifier.size(16.dp))
+                Icon(Icons.Filled.Air,contentDescription = "",tint = Color.LightGray, modifier = Modifier.size(16.dp))
                 Text("${data.windSpeed!!.round(1)} " + if(units == WeatherUnits.US) "mph" else "km/h", style = MaterialTheme.typography.caption)
 
             }

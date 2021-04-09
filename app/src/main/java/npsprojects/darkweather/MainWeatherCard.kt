@@ -1,5 +1,6 @@
 package npsprojects.darkweather
 
+import android.annotation.SuppressLint
 import android.widget.LinearLayout
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
@@ -15,21 +16,21 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
+
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
+
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
+
+
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
+
+
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.Shadow
+
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -37,10 +38,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
+
 import kotlin.math.roundToInt
 import kotlin.math.roundToLong
 import androidx.compose.runtime.getValue
@@ -54,11 +52,49 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.navigate
 import npsprojects.darkweather.ui.theme.*
+import java.util.*
+import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Warning
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.intl.Locale
+import androidx.compose.ui.text.toLowerCase
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.google.android.gms.common.util.CollectionUtils.listOf
+import npsprojects.darkweather.ui.theme.blue_700
+import npsprojects.darkweather.ui.theme.orange_500
+import npsprojects.darkweather.ui.theme.red_500
 import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import com.google.android.gms.common.util.CollectionUtils.listOf
+import npsprojects.darkweather.ui.theme.blue_700
+import npsprojects.darkweather.ui.theme.orange_500
+import npsprojects.darkweather.ui.theme.red_500
 
 
-
-
+@SuppressLint("SimpleDateFormat")
 @ExperimentalMaterialApi
 @Composable
 fun MainWeatherCard(data:WeatherViewModel,index:Int,units: WeatherUnits,updateIndex:(Int)->Unit,controller: NavController){
@@ -94,11 +130,77 @@ val locationData = data.locations[index].data
                         .fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+
+                        IconButton(onClick = {
+                            data.getCurrentLocationWeather()
+                        }) {
+                            Box(
+                                modifier = Modifier
+                                    .height(30.dp)
+                                    .width(30.dp)
+                                    .background(
+                                        color = Color(0xFF202020),
+                                        shape = CircleShape
+                                    ),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    Icons.Rounded.Repeat,
+                                    tint = Color.White,
+                                    modifier = Modifier.size(20.dp),
+                                    contentDescription = ""
+                                )
+                            }
+                        }
+
+                        LazyRow(
+                            contentPadding = PaddingValues(start = 5.dp, end = 5.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+
+                            modifier = Modifier.fillMaxWidth(0.8f)
+                        ) {
+
+                            itemsIndexed(data.locations) { i, item ->
+                                Box(
+                                    modifier = Modifier
+                                        .background(
+                                            color = if (index == i) Color.White else Color.Transparent,
+                                            shape = RoundedCornerShape(50)
+                                        )
+                                        .clickable {
+                                            updateIndex(i)
+                                        },
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Row() {
+                                        if (item.isCurrent) {
+                                            Icon(
+                                                Icons.Rounded.LocationOn,
+                                                tint = if (index == i) Color.Black else Color.White,
+                                                contentDescription = "",
+                                                modifier = Modifier.size(25.dp)
+                                            )
+                                        }
+                                        Text(
+                                            item.name,
+                                            style = MaterialTheme.typography.button.copy(
+                                                color = if (index == i) Color.Black else Color.White
+                                            ),
+                                            modifier = Modifier.padding(
+                                                horizontal = 10.dp,
+                                                vertical = 5.dp
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+                        }
+
                     IconButton(onClick = {
                         controller.navigate("Settings")
                     }) {
                         Icon(
-                            Icons.Rounded.Sort,
+                            Icons.Rounded.Settings,
                             tint = Color.White,
                             modifier = Modifier.size(18.dp),
                             contentDescription = ""
@@ -116,75 +218,7 @@ val locationData = data.locations[index].data
                         )
                     }
                 }
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    IconButton(onClick = {
-                        data.getCurrentLocationWeather()
-                    }) {
-                        Box(
-                            modifier = Modifier
-                                .height(30.dp)
-                                .width(30.dp)
-                                .background(
-                                    color = Color(0xFF202020),
-                                    shape = CircleShape
-                                ),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                Icons.Rounded.Repeat,
-                                tint = Color.White,
-                                modifier = Modifier.size(20.dp),
-                                contentDescription = ""
-                            )
-                        }
-                    }
 
-                    LazyRow(
-                        contentPadding = PaddingValues(start = 10.dp, end = 10.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-
-                        modifier = Modifier.fillMaxWidth(0.9f)
-                    ) {
-
-                        itemsIndexed(data.locations) { i, item ->
-                            Box(
-                                modifier = Modifier
-                                    .background(
-                                        color = if (index == i) Color.White else Color.Transparent,
-                                        shape = RoundedCornerShape(50)
-                                    )
-                                    .clickable {
-                                        updateIndex(i)
-                                    },
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Row() {
-                                    if (item.isCurrent) {
-                                        Icon(
-                                            Icons.Rounded.LocationOn,
-                                            tint = if (index == i) Color.Black else Color.White,
-                                            contentDescription = "",
-                                            modifier = Modifier.size(25.dp)
-                                        )
-                                    }
-                                    Text(
-                                        item.name,
-                                        style = MaterialTheme.typography.button.copy(
-                                            color = if (index == i) Color.Black else Color.White
-                                        ),
-                                        modifier = Modifier.padding(
-                                            horizontal = 10.dp,
-                                            vertical = 5.dp
-                                        )
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -195,7 +229,7 @@ val locationData = data.locations[index].data
 
 item {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.padding(start = 10.dp,end=10.dp,top=20.dp).fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Top
     ) {
@@ -213,7 +247,7 @@ item {
                     )
                 ),
                 modifier = Modifier
-                    .padding(horizontal = 10.dp, vertical = 10.dp)
+                    .padding( vertical = 10.dp)
             )
 
             Text(
@@ -225,7 +259,7 @@ item {
                     )
                 ),
                 modifier = Modifier
-                    .padding(horizontal = 20.dp, vertical = 10.dp),
+                    .padding( vertical = 10.dp),
                 textAlign = TextAlign.Center
             )
             Text(
@@ -238,7 +272,7 @@ item {
                     color = pink_100
                 ),
                 modifier = Modifier
-                    .padding(horizontal = 20.dp, vertical = 10.dp),
+                    .padding(vertical = 5.dp),
                 textAlign = TextAlign.Center
             )
         }
@@ -256,7 +290,7 @@ item {
                     item {
                         Row(
                             modifier = Modifier
-                                .padding(vertical = 20.dp)
+                                .padding(top = 20.dp,bottom = 10.dp)
                                 .fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
 
@@ -320,18 +354,7 @@ item {
                         }
                     }
                     item {
-                        Row(modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.Center) {
-                            Box(modifier = Modifier
-                                .height(4.dp)
-                                .width(50.dp)
-                                .background(
-                                    color = Color.Gray,
-                                    shape = RoundedCornerShape(40)
 
-                                )
-                            )
-
-                        }
                         if (locationData.alerts.size > 0) {
 
                             Surface(
@@ -371,14 +394,14 @@ item {
 
                                         if (isExpanded) {
                                             Text(
-                                                locationData.alerts[0].description.toLowerCase(Locale.current),
+                                                locationData.alerts[0].description.toLowerCase(),
                                                 style = MaterialTheme.typography.button.copy(fontSize = 11.sp),
                                                 modifier = Modifier.padding(vertical = 5.dp),
 
                                                 )
                                         } else {
                                             Text(
-                                                locationData.alerts[0].description.toLowerCase(Locale.current),
+                                                locationData.alerts[0].description.toLowerCase(),
                                                 style = MaterialTheme.typography.button.copy(fontSize = 11.sp),
                                                 modifier = Modifier.padding(vertical = 5.dp),
                                                 maxLines = 3
