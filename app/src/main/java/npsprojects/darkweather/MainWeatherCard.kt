@@ -100,13 +100,7 @@ import npsprojects.darkweather.ui.theme.red_500
 fun MainWeatherCard(data:WeatherViewModel,index:Int,units: WeatherUnits,updateIndex:(Int)->Unit,controller: NavController){
 
 val locationData = data.locations[index].data
-    val bottomDrawerState = rememberBottomDrawerState(initialValue = BottomDrawerValue.Open,confirmStateChange = {
-      when(it){
-          BottomDrawerValue.Closed -> false
-          BottomDrawerValue.Open -> true
-          BottomDrawerValue.Expanded -> true
-      }
-    })
+
     var isExpanded:Boolean by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -654,17 +648,7 @@ item {
             }
 
 
-//     BottomDrawer(drawerContent = {
-//
-//BottomDrawer(data = data, index = index, units = units)
-//     },
-//         drawerBackgroundColor = if(isSystemInDarkTheme()) Color(0xFF252525) else Color.White
-//         ,drawerShape = RoundedCornerShape(0),
-//     drawerState = bottomDrawerState,scrimColor = Color.Transparent,drawerElevation = 0.dp) {
-//
-//
-//
-//     }
+
 
    }
 

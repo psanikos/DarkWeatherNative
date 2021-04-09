@@ -123,95 +123,11 @@ fun WeeklyTile(data: Data,units: WeatherUnits){
 @Composable
 fun RainTimes(rainProbability:List<DataX>, rainProbabilityDaily:List<Data>){
 
-    var category: RainTimeCategory by remember { mutableStateOf(RainTimeCategory.HOURLY) }
-
 
     var rainDailyData = rainProbabilityDaily.toMutableList()
     rainDailyData.removeAt(0)
         MyChartView(rainProbability = rainProbability)
 
-
-//    Surface(
-//         modifier = Modifier
-//
-//            .fillMaxWidth()
-//           ,
-//        color = Color.Transparent
-//    ) {
-//        Column(
-//            modifier = Modifier
-//                .padding(vertical = 10.dp)
-//                .fillMaxWidth(),
-//            horizontalAlignment = Alignment.CenterHorizontally,
-//            verticalArrangement = Arrangement.SpaceEvenly
-//        ) {
-//
-//            Row(modifier = Modifier
-//                .padding(vertical = 5.dp)
-//                .fillMaxWidth(),
-//                horizontalArrangement = Arrangement.Start) {
-//                Button(onClick = {
-//                    category = RainTimeCategory.HOURLY
-//                },
-//                    modifier = Modifier
-//                        .width(140.dp)
-//                        .height(34.dp),shape = RoundedCornerShape(30),
-//                    colors = ButtonDefaults.buttonColors(
-//                        backgroundColor = if(category == RainTimeCategory.HOURLY) if(isSystemInDarkTheme())  Color.Black else Color.DarkGray else Color.LightGray
-//                    ,contentColor = if(category == RainTimeCategory.HOURLY)  Color.White else Color.DarkGray)
-//
-//                ) {
-//
-//                    Text("Hourly",style = MaterialTheme.typography.button)
-//
-//
-//                }
-//                Spacer(modifier = Modifier.width(10.dp))
-//                Button( onClick = {
-//                    category = RainTimeCategory.DAILY
-//                },
-//                    modifier = Modifier
-//                        .width(140.dp)
-//                        .height(34.dp),
-//                    shape = RoundedCornerShape(30),
-//                    colors = ButtonDefaults.buttonColors(
-//                        backgroundColor = if(category == RainTimeCategory.DAILY) if(isSystemInDarkTheme())  Color.Black else Color.DarkGray else Color.LightGray,
-//                        contentColor =    if(category == RainTimeCategory.DAILY)  Color.White else Color.DarkGray,
-//
-//                        )
-//
-//                ) {
-//
-//                    Text("Daily", style = MaterialTheme.typography.button)
-//
-//                }
-//            }
-//
-//
-//
-//            when(category){
-//                RainTimeCategory.HOURLY ->          LazyRow(
-//                    modifier = Modifier.fillMaxWidth(),
-//                    horizontalArrangement = Arrangement.SpaceBetween,
-//
-//                    ) {
-//                    itemsIndexed(rainProbability) { index, item ->
-//                        RainMeter(index = index, value = item.precipProbability!!,time = item.time!!.toLong(),weekly = false)
-//                    }
-//                }
-//                RainTimeCategory.DAILY ->          LazyRow(
-//                    modifier = Modifier.fillMaxWidth(),
-//                    horizontalArrangement = Arrangement.SpaceBetween,
-//
-//                    ) {
-//                    itemsIndexed(rainProbabilityDaily) { index, item ->
-//                        RainMeter(index = index, value = item.precipProbability!!,time = item.time!!.toLong(),weekly = true)
-//                    }
-//                }
-//            }
-//        }
-//
-//    }
 }
 
 @Composable
