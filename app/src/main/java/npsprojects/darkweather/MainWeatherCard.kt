@@ -223,7 +223,9 @@ val locationData = data.locations[index].data
 
 item {
     Row(
-        modifier = Modifier.padding(start = 10.dp,end=10.dp,top=20.dp).fillMaxWidth(),
+        modifier = Modifier
+            .padding(start = 10.dp, end = 10.dp, top = 20.dp)
+            .fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.Top
     ) {
@@ -284,7 +286,7 @@ item {
                     item {
                         Row(
                             modifier = Modifier
-                                .padding(top = 20.dp,bottom = 10.dp)
+                                .padding(top = 20.dp, bottom = 10.dp)
                                 .fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween,
 
@@ -349,7 +351,7 @@ item {
                     }
                     item {
 
-                        if (locationData.alerts.size > 0) {
+                        if (locationData.alerts.isNotEmpty()) {
 
                             Surface(
                                 modifier = Modifier
@@ -428,8 +430,8 @@ item {
                                 item {
                                     Box(
                                         modifier = Modifier
-                                            .height(120.dp)
-                                            .width(90.dp)
+                                            .height(140.dp)
+                                            .width(100.dp)
                                             .padding(end = 10.dp)
                                             .background(
                                                 brush = Brush.verticalGradient(
@@ -467,6 +469,16 @@ item {
                                                 ),
                                                 style = MaterialTheme.typography.caption.copy(color = Color.White)
                                             )
+                                            Row(verticalAlignment = Alignment.CenterVertically,horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+                                                Image(painter = painterResource(id = R.drawable.drop),
+                                                    contentDescription = "",
+                                                    modifier = Modifier
+                                                        .size(16.dp))
+                                                Text(
+                                                    "${(100*it.precipProbability!!).roundToInt()}%",
+                                                    style = MaterialTheme.typography.caption.copy(color = Color.White)
+                                                )
+                                            }
                                             Image(
                                                 painter = painterResource(id = getWeatherIcon(it.icon!!)),
                                                 contentDescription = "",
@@ -477,7 +489,7 @@ item {
                                             )
                                             Text(
                                                 "${it.temperature!!.toInt()}°",
-                                                style = MaterialTheme.typography.body2.copy(
+                                                style = MaterialTheme.typography.body1.copy(
                                                     shadow = Shadow(
                                                         color = Color.Black
                                                     )
@@ -497,6 +509,9 @@ item {
                         MyChartView(rainProbability = locationData.hourly.data)
 
 
+                    }
+                    item {
+                        WeeklyTimes(data = locationData.daily.data, units = units)
                     }
                     item {
 
@@ -638,9 +653,7 @@ item {
 
 
                     }
-                    item {
-                        WeeklyTimes(data = locationData.daily.data, units = units)
-                    }
+
                     item {
                         Spacer(modifier = Modifier.height(40.dp))
                     }

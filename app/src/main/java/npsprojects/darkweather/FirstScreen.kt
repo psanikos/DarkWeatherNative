@@ -43,13 +43,8 @@ fun FirstScreen(model: WeatherViewModel) {
 
     val permissionGranted = model.permissionGranted.observeAsState()
 
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                Image(
-                    painter = painterResource(id = R.drawable.cloud1), contentDescription = "",
-                    modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Crop
-                )
-            }
+        Box(modifier = Modifier.fillMaxSize().background(color = Color(0xFF2F4276)), contentAlignment = Alignment.Center) {
+
             Column(
                 modifier = Modifier
                     .padding(top = 110.dp, bottom = 20.dp, start = 20.dp, end = 20.dp)

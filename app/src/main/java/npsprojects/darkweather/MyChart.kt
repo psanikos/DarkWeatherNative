@@ -8,6 +8,8 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.twotone.Warning
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -66,79 +68,127 @@ fun MyChartView(rainProbability:List<DataX>) {
             }
         }
     }
-Box(modifier = Modifier
-    .height(320.dp)
-    .fillMaxWidth().background(brush = Brush.verticalGradient(colors = listOf(Color.Black.copy(alpha = 0.25f),Color.Black.copy(alpha = 0.5f))),
-        shape = RoundedCornerShape(12.dp))){
-    Column(
-        modifier = Modifier.padding(10.dp)
-        .fillMaxSize(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
+    Column(modifier = Modifier.fillMaxWidth(),verticalArrangement = Arrangement.spacedBy(10.dp)) {
 
-        Text(
-            "Rain probability"
-            , style = MaterialTheme.typography.h4.copy(color = Color.White,fontSize = 16.sp),modifier = Modifier.padding(start = 10.dp,top = 5.dp,bottom = 5.dp)
-        )
-
+        if(timeUntilRain != null) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(50.dp)
-                   ,contentAlignment = Alignment.CenterStart
-            ) {
-                if(timeUntilRain != null) {
-                if (timeUntilRain > 0) {
-            Text(
-                "Rain starts in " +
-                        String.format(
-                            "%d hours and %d min",
-                            TimeUnit.MILLISECONDS.toHours(timeUntilRain),
-                            TimeUnit.MILLISECONDS.toMinutes(timeUntilRain) -
-                                    TimeUnit.HOURS.toMinutes(
-                                        TimeUnit.MILLISECONDS.toHours(
-                                            timeUntilRain
-                                        )
-                                    )
-                        ), style = MaterialTheme.typography.body2.copy(color = Color.White),modifier = Modifier.padding(start = 10.dp)
-            )
-        }
-                else {
-                    if (timeUntilEnd != null){
-                    Text(
-                        "Rain ends in " +
-                                String.format(
-                                    "%d hours and %d min",
-                                    TimeUnit.MILLISECONDS.toHours(timeUntilEnd!!),
-                                    TimeUnit.MILLISECONDS.toMinutes(timeUntilEnd!!) -
-                                            TimeUnit.HOURS.toMinutes(
-                                                TimeUnit.MILLISECONDS.toHours(
-                                                    timeUntilEnd!!
-                                                )
-                                            )
-                                ), style = MaterialTheme.typography.body2.copy(color = Color.White),modifier = Modifier.padding(start = 10.dp)
+                    .height(80.dp)
+                    .background(
+                        color = indigo_500.copy(alpha = 0.7f),
+                        shape = RoundedCornerShape(12.dp)
                     )
-                }
-                    else {
-                        Text(
-                            "The Rain will continue ", style = MaterialTheme.typography.body2,modifier = Modifier.padding(start = 10.dp)  )
+                ,contentAlignment = Alignment.CenterStart
+            ) {
+                Column(
+                    modifier = Modifier.padding(10.dp).fillMaxWidth(),
+                    verticalArrangement = Arrangement.spacedBy(10.dp),
+                    horizontalAlignment = Alignment.Start
+                ) {
+                    Text(
+                        "Rain alert",
+                        style = MaterialTheme.typography.caption,
+                        color = Color.LightGray
+                    )
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        Icon(
+                            Icons.TwoTone.Warning,
+                            tint = indigo_800,
+                            contentDescription = "",
+                            modifier = Modifier.size(30.dp)
+                        )
+                        if (timeUntilRain > 0) {
+                            Text(
+                                "Rain starts in " +
+                                        String.format(
+                                            "%d hours and %d min",
+                                            TimeUnit.MILLISECONDS.toHours(timeUntilRain),
+                                            TimeUnit.MILLISECONDS.toMinutes(timeUntilRain) -
+                                                    TimeUnit.HOURS.toMinutes(
+                                                        TimeUnit.MILLISECONDS.toHours(
+                                                            timeUntilRain
+                                                        )
+                                                    )
+                                        ),
+                                style = MaterialTheme.typography.body2.copy(color = Color.White),
+                                modifier = Modifier.padding(start = 10.dp)
+                            )
+                        } else {
+                            if (timeUntilEnd != null) {
+                                Text(
+                                    "Rain ends in " +
+                                            String.format(
+                                                "%d hours and %d min",
+                                                TimeUnit.MILLISECONDS.toHours(timeUntilEnd!!),
+                                                TimeUnit.MILLISECONDS.toMinutes(timeUntilEnd!!) -
+                                                        TimeUnit.HOURS.toMinutes(
+                                                            TimeUnit.MILLISECONDS.toHours(
+                                                                timeUntilEnd!!
+                                                            )
+                                                        )
+                                            ),
+                                    style = MaterialTheme.typography.body2.copy(color = Color.White),
+                                    modifier = Modifier.padding(start = 10.dp)
+                                )
+                            } else {
+                                Text(
+                                    "The Rain will continue ",
+                                    style = MaterialTheme.typography.body2,
+                                    modifier = Modifier.padding(start = 10.dp)
+                                )
+                            }
+                        }
                     }
+                }
             }
-            }
-
         }
-        Box(
-             modifier = Modifier
-                .height(260.dp)
-                .fillMaxWidth()
-        ) {
-
-
-            MyChart(rainProbability = rainProbability)
-
-
-
-        }
+//        Box(
+//            modifier = Modifier
+//                .height(320.dp)
+//                .fillMaxWidth()
+//                .background(
+//                    brush = Brush.verticalGradient(
+//                        colors = listOf(
+//                            Color.Black.copy(alpha = 0.25f),
+//                            Color.Black.copy(alpha = 0.5f)
+//                        )
+//                    ),
+//                    shape = RoundedCornerShape(12.dp)
+//                )
+//        ) {
+//            Column(
+//                modifier = Modifier
+//                    .padding(10.dp)
+//                    .fillMaxSize(), verticalArrangement = Arrangement.spacedBy(10.dp)
+//            ) {
+//
+//                Text(
+//                    "Rain probability",
+//                    style = MaterialTheme.typography.h4.copy(color = Color.White, fontSize = 16.sp),
+//                    modifier = Modifier.padding(start = 10.dp, top = 5.dp, bottom = 5.dp)
+//                )
+//
+//                Box(
+//                    modifier = Modifier
+//                        .height(260.dp)
+//                        .fillMaxWidth()
+//                ) {
+//
+//
+//                    MyChart(rainProbability = rainProbability)
+//
+//
+//                }
+//            }
+//        }
     }
-}
 }
 
 @Composable
