@@ -14,11 +14,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBackIosNew
 import androidx.compose.material.icons.twotone.CheckBox
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -28,52 +24,69 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.android.gms.common.util.CollectionUtils.listOf
-import npsprojects.darkweather.ui.theme.*
+import npsprojects.darkweather.ui.theme.green_400
+import npsprojects.darkweather.ui.theme.red_400
+import npsprojects.darkweather.ui.theme.red_800
 
 @ExperimentalFoundationApi
 @Composable
-fun AddPlaceView(model: WeatherViewModel,controller: NavController){
-    var searchTerm:String by remember { mutableStateOf("") }
+fun AddPlaceView(model: WeatherViewModel, controller: NavController) {
+    var searchTerm: String by remember { mutableStateOf("") }
 
-    Box(modifier = Modifier
-        .fillMaxSize()
-        .background(
-            brush = Brush.verticalGradient(
-                colors = listOf(
-                    Color.DarkGray,
-                    Color(0xFF4A526D)
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color.DarkGray,
+                        Color(0xFF4A526D)
+                    )
                 )
             )
-        )) {
-        Column(modifier = Modifier
-            .padding(top = 50.dp, start = 16.dp, end = 16.dp)
-            .fillMaxSize(),verticalArrangement = Arrangement.Top,horizontalAlignment = Alignment.CenterHorizontally) {
-         Row(modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.Start) {
-             IconButton(onClick = {
-                 controller.popBackStack()
-             }) {
-                 Icon(Icons.Rounded.ArrowBackIosNew,contentDescription = "",tint = Color.White)
-             }
-         }
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(top = 50.dp, start = 16.dp, end = 16.dp)
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
+                IconButton(onClick = {
+                    controller.popBackStack()
+                }) {
+                    Icon(Icons.Rounded.ArrowBackIosNew, contentDescription = "", tint = Color.White)
+                }
+            }
 
             Spacer(modifier = Modifier.height(30.dp))
-            Box(modifier = Modifier
+            Box(
+                modifier = Modifier
 
-                .fillMaxWidth()
+                    .fillMaxWidth()
 
-                .height(40.dp)
-                .background(color = Color.White, shape = RoundedCornerShape(12)),contentAlignment = Alignment.CenterStart){
-                BasicTextField(value = searchTerm,onValueChange = {
-                    searchTerm = it
+                    .height(40.dp)
+                    .background(color = Color.White, shape = RoundedCornerShape(12)),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                BasicTextField(
+                    value = searchTerm,
+                    onValueChange = {
+                        searchTerm = it
 
-                },keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text,imeAction = ImeAction.Search),
+                    },
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Search
+                    ),
                     keyboardActions = KeyboardActions(onSearch = {
                         model.getCoordinatesFromLocation(searchTerm)
                     }),
                     modifier = Modifier
                         .padding(start = 20.dp)
-                        .fillMaxWidth(0.9f)
-                    ,textStyle = MaterialTheme.typography.caption,
+                        .fillMaxWidth(0.9f),
+                    textStyle = MaterialTheme.typography.caption,
 
                     )
                 if (searchTerm == "") {
@@ -122,45 +135,63 @@ fun AddPlaceView(model: WeatherViewModel,controller: NavController){
                     }
                 }
             }
-            LazyColumn(modifier = Modifier
-                .padding(vertical = 6.dp)
-                .fillMaxWidth()) {
-                items(model.myLocations){
+            LazyColumn(
+                modifier = Modifier
+                    .padding(vertical = 6.dp)
+                    .fillMaxWidth()
+            ) {
+                items(model.myLocations) {
 
 
+                    Box(
+                        modifier = Modifier
+                            .padding(vertical = 5.dp)
+                            .height(50.dp)
 
+                            .fillMaxWidth()
+                            .background(
+                                brush = Brush.horizontalGradient(
+                                    colors = listOf(
+                                        Color.White.copy(
+                                            alpha = 0.4f
+                                        ), Color.White.copy(alpha = 0.2f)
+                                    )
+                                ), shape = RoundedCornerShape(12)
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
 
-                        Box(
-                            modifier = Modifier
-                                .padding(vertical = 5.dp)
-                                .height(50.dp)
+                            Text(
+                                it.name,
+                                style = MaterialTheme.typography.body2,
+                                modifier = Modifier.padding(horizontal = 10.dp)
+                            )
+                            Button(
+                                onClick = {
 
-                                .fillMaxWidth()
-                                .background(
-                                    brush = Brush.horizontalGradient(
-                                        colors = listOf(
-                                            Color.White.copy(
-                                                alpha = 0.4f
-                                            ), Color.White.copy(alpha = 0.2f)
-                                        )
-                                    ), shape = RoundedCornerShape(12)
+                                    model.remove(it)
+                                },
+                                modifier = Modifier
+                                    .width(100.dp)
+                                    .height(50.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    contentColor = red_800,
+                                    backgroundColor = red_400.copy(alpha = 0.85f)
                                 ),
-                            contentAlignment = Alignment.Center){
-                          Row(modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween,
-                              verticalAlignment = Alignment.CenterVertically) {
-
-                              Text(it.name, style = MaterialTheme.typography.body2,modifier = Modifier.padding(horizontal = 10.dp))
-                              Button(onClick = {
-
-                                  model.remove(it)
-                              },modifier = Modifier
-                                  .width(100.dp)
-                                  .height(50.dp),colors = ButtonDefaults.buttonColors(
-                                  contentColor = red_800,backgroundColor = red_400.copy(alpha = 0.85f)),shape = RoundedCornerShape( bottomEndPercent = 12,topEndPercent = 12)) {
-                                  Text("Remove",style = MaterialTheme.typography.body2 )
-                              }
-                          }
+                                shape = RoundedCornerShape(
+                                    bottomEndPercent = 12,
+                                    topEndPercent = 12
+                                )
+                            ) {
+                                Text("Remove", style = MaterialTheme.typography.body2)
+                            }
                         }
+                    }
 
 
                 }

@@ -37,25 +37,28 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun BottomDrawer(data:WeatherViewModel,index:Int,units: WeatherUnits){
+fun BottomDrawer(data: WeatherViewModel, index: Int, units: WeatherUnits) {
 
-    var isExpanded:Boolean by remember { mutableStateOf(false) }
+    var isExpanded: Boolean by remember { mutableStateOf(false) }
 
     val locationData = data.locations[index].data
 
-    LazyColumn(modifier = Modifier
-        .padding(vertical = 10.dp, horizontal = 16.dp)
-        .fillMaxWidth(),verticalArrangement = Arrangement.spacedBy(30.dp)) {
+    LazyColumn(
+        modifier = Modifier
+            .padding(vertical = 10.dp, horizontal = 16.dp)
+            .fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(30.dp)
+    ) {
         item {
-            Row(modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.Center) {
-                Box(modifier = Modifier
-                    .height(4.dp)
-                    .width(50.dp)
-                    .background(
-                        color = Color.Gray,
-                        shape = RoundedCornerShape(40)
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+                Box(
+                    modifier = Modifier
+                        .height(4.dp)
+                        .width(50.dp)
+                        .background(
+                            color = Color.Gray,
+                            shape = RoundedCornerShape(40)
 
-                    )
+                        )
                 )
 
             }
@@ -114,9 +117,7 @@ fun BottomDrawer(data:WeatherViewModel,index:Int,units: WeatherUnits){
 
                             Text(
                                 "Until: " +
-                                        SimpleDateFormat("EEEE dd  HH:mm").format(1000 * locationData.alerts[0].expires.toLong())
-
-                                ,
+                                        SimpleDateFormat("EEEE dd  HH:mm").format(1000 * locationData.alerts[0].expires.toLong()),
                                 style = MaterialTheme.typography.h4.copy(fontSize = 12.sp),
                                 lineHeight = 10.sp
                             )
@@ -202,7 +203,7 @@ fun BottomDrawer(data:WeatherViewModel,index:Int,units: WeatherUnits){
                 }
             }
         }
-        item{
+        item {
             BannerAdView()
         }
         item {
@@ -219,7 +220,7 @@ fun BottomDrawer(data:WeatherViewModel,index:Int,units: WeatherUnits){
                 ) {
 
 
-                    item{
+                    item {
                         Box(
                             modifier = Modifier
                                 .height(100.dp)
@@ -234,12 +235,14 @@ fun BottomDrawer(data:WeatherViewModel,index:Int,units: WeatherUnits){
                                     .padding(4.dp)
                                     .height(100.dp)
                                     .width(80.dp),
-                                verticalArrangement = Arrangement.SpaceEvenly
-                                ,
+                                verticalArrangement = Arrangement.SpaceEvenly,
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                Image(painter = painterResource(id = R.drawable.humidity),contentDescription = "",
-                                    modifier = Modifier.size(25.dp))
+                                Image(
+                                    painter = painterResource(id = R.drawable.humidity),
+                                    contentDescription = "",
+                                    modifier = Modifier.size(25.dp)
+                                )
                                 Text(
                                     "${(100 * locationData.currently.humidity!!).toInt()}%",
                                     style = MaterialTheme.typography.h4
@@ -247,7 +250,7 @@ fun BottomDrawer(data:WeatherViewModel,index:Int,units: WeatherUnits){
                             }
                         }
                     }
-                    item{
+                    item {
                         Box(
                             modifier = Modifier
                                 .height(100.dp)
@@ -267,12 +270,14 @@ fun BottomDrawer(data:WeatherViewModel,index:Int,units: WeatherUnits){
                                     .padding(4.dp)
                                     .height(100.dp)
                                     .width(80.dp),
-                                verticalArrangement = Arrangement.SpaceEvenly
-                                ,
+                                verticalArrangement = Arrangement.SpaceEvenly,
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                Image(painter = painterResource(id = R.drawable.uv),contentDescription = "",
-                                    modifier = Modifier.size(25.dp))
+                                Image(
+                                    painter = painterResource(id = R.drawable.uv),
+                                    contentDescription = "",
+                                    modifier = Modifier.size(25.dp)
+                                )
                                 Text(
                                     "${locationData.currently.uvIndex}",
                                     style = MaterialTheme.typography.h4
@@ -281,7 +286,7 @@ fun BottomDrawer(data:WeatherViewModel,index:Int,units: WeatherUnits){
                         }
 
                     }
-                    item{
+                    item {
                         Box(
                             modifier = Modifier
                                 .height(100.dp)
@@ -296,12 +301,14 @@ fun BottomDrawer(data:WeatherViewModel,index:Int,units: WeatherUnits){
                                     .padding(4.dp)
                                     .height(100.dp)
                                     .width(80.dp),
-                                verticalArrangement = Arrangement.SpaceEvenly
-                                ,
+                                verticalArrangement = Arrangement.SpaceEvenly,
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                Image(painter = painterResource(id = R.drawable.hot),contentDescription = "",
-                                    modifier = Modifier.size(25.dp))
+                                Image(
+                                    painter = painterResource(id = R.drawable.hot),
+                                    contentDescription = "",
+                                    modifier = Modifier.size(25.dp)
+                                )
                                 Text(
                                     "${locationData.currently.apparentTemperature!!.toInt()}°",
                                     style = MaterialTheme.typography.h4
@@ -309,7 +316,7 @@ fun BottomDrawer(data:WeatherViewModel,index:Int,units: WeatherUnits){
                             }
                         }
                     }
-                    item{
+                    item {
                         Box(
                             modifier = Modifier
                                 .height(100.dp)
@@ -324,22 +331,23 @@ fun BottomDrawer(data:WeatherViewModel,index:Int,units: WeatherUnits){
                                     .padding(4.dp)
                                     .height(100.dp)
                                     .width(80.dp),
-                                verticalArrangement = Arrangement.SpaceEvenly
-                                ,
+                                verticalArrangement = Arrangement.SpaceEvenly,
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                Image(painter = painterResource(id = R.drawable.sunrise),contentDescription = "",
-                                    modifier = Modifier.size(25.dp))
+                                Image(
+                                    painter = painterResource(id = R.drawable.sunrise),
+                                    contentDescription = "",
+                                    modifier = Modifier.size(25.dp)
+                                )
                                 Text(
 
-                                    SimpleDateFormat("HH:mm").format(1000*locationData.daily.data[0].sunriseTime!!.toLong())
-                                    ,
+                                    SimpleDateFormat("HH:mm").format(1000 * locationData.daily.data[0].sunriseTime!!.toLong()),
                                     style = MaterialTheme.typography.h4
                                 )
                             }
                         }
                     }
-                    item{
+                    item {
                         Box(
                             modifier = Modifier
                                 .height(100.dp)
@@ -354,14 +362,16 @@ fun BottomDrawer(data:WeatherViewModel,index:Int,units: WeatherUnits){
                                     .padding(4.dp)
                                     .height(100.dp)
                                     .width(80.dp),
-                                verticalArrangement = Arrangement.SpaceEvenly
-                                ,
+                                verticalArrangement = Arrangement.SpaceEvenly,
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
-                                Image(painter = painterResource(id = R.drawable.sunset),contentDescription = "",
-                                    modifier = Modifier.size(25.dp))
+                                Image(
+                                    painter = painterResource(id = R.drawable.sunset),
+                                    contentDescription = "",
+                                    modifier = Modifier.size(25.dp)
+                                )
                                 Text(
-                                    SimpleDateFormat("HH:mm").format(1000*locationData.daily.data[0].sunsetTime!!.toLong()),
+                                    SimpleDateFormat("HH:mm").format(1000 * locationData.daily.data[0].sunsetTime!!.toLong()),
                                     style = MaterialTheme.typography.h4
                                 )
                             }
@@ -370,10 +380,7 @@ fun BottomDrawer(data:WeatherViewModel,index:Int,units: WeatherUnits){
                 }
 
 
-
             }
-
-
 
 
         }

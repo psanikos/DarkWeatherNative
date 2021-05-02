@@ -7,70 +7,63 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Warning
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.focusModifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.PointMode
-import androidx.compose.ui.graphics.drawscope.DrawStyle
-import androidx.compose.ui.layout.VerticalAlignmentLine
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import npsprojects.darkweather.ui.theme.*
-import java.lang.reflect.Array.get
+import npsprojects.darkweather.ui.theme.blue_700
+import npsprojects.darkweather.ui.theme.indigo_500
+import npsprojects.darkweather.ui.theme.indigo_800
+import npsprojects.darkweather.ui.theme.red_700
 import java.text.SimpleDateFormat
-import java.time.Duration
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.concurrent.TimeUnit
-import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 
 class ChartData constructor(
-    val index:Int,
-    val offsets:Offset,
-    val time:Long,
-    val displayedValue:String
+    val index: Int,
+    val offsets: Offset,
+    val time: Long,
+    val displayedValue: String
 )
 
 
 @Composable
-fun MyChartView(rainProbability:List<DataX>) {
+fun MyChartView(rainProbability: List<DataX>) {
     var category: RainTimeCategory by remember { mutableStateOf(RainTimeCategory.HOURLY) }
-    var timeUntilRain:Long? = null
-    var timeUntilEnd:Long? = null
-    var firstRainTimeIndex:Int? = rainProbability.indexOfFirst { it.precipProbability!! >= 0.5 }
+    var timeUntilRain: Long? = null
+    var timeUntilEnd: Long? = null
+    var firstRainTimeIndex: Int? = rainProbability.indexOfFirst { it.precipProbability!! >= 0.5 }
 
-    if (firstRainTimeIndex != null && firstRainTimeIndex >= 0 ) {
+    if (firstRainTimeIndex != null && firstRainTimeIndex >= 0) {
         timeUntilRain =
             (1000 * rainProbability[firstRainTimeIndex].time!!.toLong() - Calendar.getInstance().timeInMillis)
     }
-    if (firstRainTimeIndex != null && firstRainTimeIndex >= 0 ) {
+    if (firstRainTimeIndex != null && firstRainTimeIndex >= 0) {
         rainProbability.forEachIndexed { index, item ->
             if (index > firstRainTimeIndex) {
                 if (timeUntilEnd == null) {
                     if (item.precipProbability!! <= 0.4) {
-                        timeUntilEnd = 1000*item.time!!.toLong() - Calendar.getInstance().timeInMillis
+                        timeUntilEnd =
+                            1000 * item.time!!.toLong() - Calendar.getInstance().timeInMillis
                     }
                 }
             }
         }
     }
-    Column(modifier = Modifier.fillMaxWidth(),verticalArrangement = Arrangement.spacedBy(10.dp)) {
+    Column(modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(10.dp)) {
 
-        if(timeUntilRain != null) {
+        if (timeUntilRain != null) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -78,11 +71,12 @@ fun MyChartView(rainProbability:List<DataX>) {
                     .background(
                         color = indigo_500.copy(alpha = 0.7f),
                         shape = RoundedCornerShape(12.dp)
-                    )
-                ,contentAlignment = Alignment.CenterStart
+                    ), contentAlignment = Alignment.CenterStart
             ) {
                 Column(
-                    modifier = Modifier.padding(10.dp).fillMaxWidth(),
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .fillMaxWidth(),
                     verticalArrangement = Arrangement.spacedBy(10.dp),
                     horizontalAlignment = Alignment.Start
                 ) {
@@ -192,18 +186,18 @@ fun MyChartView(rainProbability:List<DataX>) {
 }
 
 @Composable
-fun MyChart(rainProbability:List<DataX>) {
+fun MyChart(rainProbability: List<DataX>) {
     val freeSpace = 50f
     val dataSpace = 140f
     var dataPoints = mutableListOf<ChartData>()
     var dataOffsets = mutableListOf<Offset>()
     val state = rememberScrollState()
-    val lineColor = if(isSystemInDarkTheme()) red_700 else blue_700
+    val lineColor = if (isSystemInDarkTheme()) red_700 else blue_700
 
 
 
-    BoxWithConstraints(contentAlignment = Alignment.TopStart, modifier = Modifier.fillMaxSize() ) {
-    val heightOfBox = this.maxHeight.value - freeSpace*2
+    BoxWithConstraints(contentAlignment = Alignment.TopStart, modifier = Modifier.fillMaxSize()) {
+        val heightOfBox = this.maxHeight.value - freeSpace * 2
 
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomStart) {
             LazyRow(modifier = Modifier.fillMaxSize()) {
@@ -221,20 +215,17 @@ fun MyChart(rainProbability:List<DataX>) {
                             val canvasWidth = size.width
                             val canvasHeight = size.height - freeSpace
 
-                                    rainProbability.forEachIndexed { index, item ->
-                                        val offset = Offset(
-                                            x = index * dataSpace,
-                                            y = (canvasHeight - item.precipProbability!! * canvasHeight).toFloat()
-                                        )
-                                        val input = ChartData(
-                                            index = index, offsets = offset, time = item.time!!.toLong(),
-                                            displayedValue = "${(100 * item.precipProbability!!).roundToInt()}%"
-                                        )
-                                        dataPoints.add(input)
-                                    }
-
-
-
+                            rainProbability.forEachIndexed { index, item ->
+                                val offset = Offset(
+                                    x = index * dataSpace,
+                                    y = (canvasHeight - item.precipProbability!! * canvasHeight).toFloat()
+                                )
+                                val input = ChartData(
+                                    index = index, offsets = offset, time = item.time!!.toLong(),
+                                    displayedValue = "${(100 * item.precipProbability!!).roundToInt()}%"
+                                )
+                                dataPoints.add(input)
+                            }
 
 
                             //Create Chart------------
@@ -263,7 +254,10 @@ fun MyChart(rainProbability:List<DataX>) {
 //                                                    dy3 = value.offsets.y - preValue.y
 //                                                )
                                                 relativeQuadraticBezierTo(
-                                                    dx1 = dataSpace/2,dy1 = (value.offsets.y - preValue.y)/2,dx2 =  dataSpace,dy2 = value.offsets.y - preValue.y
+                                                    dx1 = dataSpace / 2,
+                                                    dy1 = (value.offsets.y - preValue.y) / 2,
+                                                    dx2 = dataSpace,
+                                                    dy2 = value.offsets.y - preValue.y
                                                 )
 //                                                relativeLineTo(
 //                                                    dx = dataSpace,
@@ -279,14 +273,17 @@ fun MyChart(rainProbability:List<DataX>) {
                                                 val preValue = dataPoints[i - 1].offsets
 
                                                 relativeQuadraticBezierTo(
-                                                    dx1 = dataSpace/2,dy1 = (value.offsets.y - preValue.y)/2,dx2 =  dataSpace,dy2 = value.offsets.y - preValue.y
+                                                    dx1 = dataSpace / 2,
+                                                    dy1 = (value.offsets.y - preValue.y) / 2,
+                                                    dx2 = dataSpace,
+                                                    dy2 = value.offsets.y - preValue.y
                                                 )
 //                                                relativeLineTo(
 //                                                    dx = dataSpace,
 //                                                    dy = value.offsets.y - preValue.y
 //                                                )
-                                         }
-                                       }
+                                            }
+                                        }
 
 
                                     }
@@ -318,9 +315,11 @@ fun MyChart(rainProbability:List<DataX>) {
                                     contentAlignment = Alignment.CenterStart
                                 ) {
                                     Text(
-                                        SimpleDateFormat("HH").format(1000*it.time!!.toLong())
-                                        ,
-                                        style = MaterialTheme.typography.caption.copy(fontSize = 10.sp,color = Color.White)
+                                        SimpleDateFormat("HH").format(1000 * it.time!!.toLong()),
+                                        style = MaterialTheme.typography.caption.copy(
+                                            fontSize = 10.sp,
+                                            color = Color.White
+                                        )
                                     )
                                 }
                                 // Text(it.displayedValue, style = MaterialTheme.typography.caption.copy(fontSize = 10.sp))
@@ -360,18 +359,28 @@ fun MyChart(rainProbability:List<DataX>) {
                 //****************
             }
         }
-   Column(modifier = Modifier
-       .fillMaxHeight(),
-       verticalArrangement = Arrangement.SpaceEvenly
-       ) {
-       Text("High",style = MaterialTheme.typography.caption.copy(fontSize = 9.sp,color = Color.White))
-       Text("Medium",style = MaterialTheme.typography.caption.copy(fontSize = 9.sp,color = Color.White))
-       Text("Low",style = MaterialTheme.typography.caption.copy(fontSize = 9.sp,color = Color.White))
+        Column(
+            modifier = Modifier
+                .fillMaxHeight(),
+            verticalArrangement = Arrangement.SpaceEvenly
+        ) {
+            Text(
+                "High",
+                style = MaterialTheme.typography.caption.copy(fontSize = 9.sp, color = Color.White)
+            )
+            Text(
+                "Medium",
+                style = MaterialTheme.typography.caption.copy(fontSize = 9.sp, color = Color.White)
+            )
+            Text(
+                "Low",
+                style = MaterialTheme.typography.caption.copy(fontSize = 9.sp, color = Color.White)
+            )
 //       (0 until 110 step 10).reversed().forEach {
 //           Text("$it",style = MaterialTheme.typography.caption.copy(fontSize = 7.sp,color = Color.White),
 //           modifier = Modifier.padding(bottom = (heightOfBox/12).dp))
 //       }
-   }
+        }
 
     }
 }

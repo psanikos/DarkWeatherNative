@@ -14,7 +14,8 @@ import androidx.core.content.ContextCompat
 class LocationHelper {
 
     private val LOCATION_REFRESH_TIME = 1000 // 3 seconds. The Minimum Time to get location update
-    private val LOCATION_REFRESH_DISTANCE = 300 // 30 meters. The Minimum Distance to be changed to get location update
+    private val LOCATION_REFRESH_DISTANCE =
+        300 // 30 meters. The Minimum Distance to be changed to get location update
     private val MY_PERMISSIONS_REQUEST_LOCATION = 100
 
     var myLocationListener: MyLocationListener? = null
@@ -77,7 +78,7 @@ class LocationHelper {
             }
 
         } else {
-         return
+            return
         }
     }
 }

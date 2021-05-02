@@ -18,33 +18,27 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.common.util.CollectionUtils.listOf
-
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.gson.Gson
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import okhttp3.CacheControl
-import okhttp3.Call
-import okhttp3.Callback
-import okhttp3.OkHttpClient
-import okhttp3.Request
-import okhttp3.Response
+import okhttp3.*
 import okio.IOException
-import java.util.Locale
+import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.math.round
 
 
 class WeatherModel constructor(
-    val name:String,
+    val name: String,
     val data: WeatherResponse,
-    val isCurrent:Boolean
+    val isCurrent: Boolean
 )
 
 class SavedLocation constructor(
-    val name:String,
+    val name: String,
     val latitude: Double,
     val longitude: Double
 ) {
@@ -60,94 +54,93 @@ fun Double.round(decimals: Int): Double {
     return round(this * multiplier) / multiplier
 }
 
-class WeatherViewModel: ViewModel() {
+class WeatherViewModel : ViewModel() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private val locator = LocationHelper()
     var isLoading by mutableStateOf(true)
-    var currentLocation: Location? by  mutableStateOf(null)
-    var currentLocationData: WeatherResponse? by  mutableStateOf(null)
-    var currentLocationName:String by mutableStateOf("My Location")
-    var locations:List<WeatherModel> by mutableStateOf(listOf())
-    var units: WeatherUnits by  mutableStateOf(WeatherUnits.AUTO)
-    var searchedAdresses:MutableList<Address> by mutableStateOf(mutableListOf())
-    var myLocations:List<SavedLocation> by mutableStateOf(listOf())
+    var currentLocation: Location? by mutableStateOf(null)
+    var currentLocationData: WeatherResponse? by mutableStateOf(null)
+    var currentLocationName: String by mutableStateOf("My Location")
+    var locations: List<WeatherModel> by mutableStateOf(listOf())
+    var units: WeatherUnits by mutableStateOf(WeatherUnits.AUTO)
+    var searchedAdresses: MutableList<Address> by mutableStateOf(mutableListOf())
+    var myLocations: List<SavedLocation> by mutableStateOf(listOf())
     var error: WeatherError by mutableStateOf(WeatherError.NONE)
-    var hasInit:Boolean by mutableStateOf(false)
+    var hasInit: Boolean by mutableStateOf(false)
     private val _permissionGranted = MutableLiveData(false)
     val permissionGranted = _permissionGranted
 
     fun onPermissionGranted() = _permissionGranted.postValue(true)
 
 
-
-
     init {
         isInit()
     }
 
-    fun hasRun(){
+    fun hasRun() {
         val context = MyApp.context
 
         val pref: SharedPreferences = context
             .getSharedPreferences("MyPref", 0)
-        with (pref.edit()) {
-            putBoolean("init",true)
+        with(pref.edit()) {
+            putBoolean("init", true)
             apply()
         }
         hasInit = true
     }
-    fun isInit(){
+
+    fun isInit() {
         val context = MyApp.context
 
         val pref: SharedPreferences = context
             .getSharedPreferences("MyPref", 0)
 
-        val initStatus =  pref.getBoolean("init", false)
+        val initStatus = pref.getBoolean("init", false)
         hasInit = initStatus
     }
 
-   fun askPermission() {
+    fun askPermission() {
         val permissionFineLocation = android.Manifest.permission.ACCESS_FINE_LOCATION
         val permissionCoarseLocation = android.Manifest.permission.ACCESS_COARSE_LOCATION
         val context = MyApp.context
         val REQUEST_CODE_LOCATION = 100
 
-       when {
-           ContextCompat.checkSelfPermission(
-               context,
-               Manifest.permission.ACCESS_COARSE_LOCATION
-           ) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
-               context,
-               Manifest.permission.ACCESS_FINE_LOCATION
-           ) == PackageManager.PERMISSION_GRANTED -> {
-               GlobalScope.launch {
-                   hasRun()
-               }
-               getCurrentLocationWeather()
+        when {
+            ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                GlobalScope.launch {
+                    hasRun()
+                }
+                getCurrentLocationWeather()
 
 
-       }
-           else -> {
-               requestPermissions(
-                   MyApp.activity,
-                   arrayOf(permissionFineLocation, permissionCoarseLocation),
-                   REQUEST_CODE_LOCATION
-               )
-           }
-       }
-
-
+            }
+            else -> {
+                requestPermissions(
+                    MyApp.activity,
+                    arrayOf(permissionFineLocation, permissionCoarseLocation),
+                    REQUEST_CODE_LOCATION
+                )
+            }
         }
 
-    fun askContinueWithout(){
+
+    }
+
+    fun askContinueWithout() {
         error = WeatherError.NONE
         isLoading = false
     }
 
-    fun getCoordinatesFromLocation(input:String){
+    fun getCoordinatesFromLocation(input: String) {
         if (input != "") {
             searchedAdresses.clear()
-        val context = MyApp.context
+            val context = MyApp.context
 
             val geocoder: Geocoder = Geocoder(context, Locale.getDefault())
             val addresses = geocoder.getFromLocationName(input, 3)
@@ -155,7 +148,12 @@ class WeatherViewModel: ViewModel() {
         }
     }
 
-    private fun getNameFromCoordinates(context: Context, latitude:Double, longitude:Double, completion:(String)->Unit){
+    private fun getNameFromCoordinates(
+        context: Context,
+        latitude: Double,
+        longitude: Double,
+        completion: (String) -> Unit
+    ) {
         val addresses: List<Address>?
         val geocoder: Geocoder = Geocoder(context, Locale.getDefault())
 
@@ -167,29 +165,28 @@ class WeatherViewModel: ViewModel() {
 //        val address: String =
 //            addresses[0].getAddressLine(0) // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
 
-        if (addresses != null && addresses[0] != null){
+        if (addresses != null && addresses[0] != null) {
             val city: String = addresses[0].locality
 //        val state: String = addresses[0].getAdminArea()
 //        val country: String = addresses[0].getCountryName()
 //        val postalCode: String = addresses[0].getPostalCode()
 //        val knownName: String = addresses[0].getFeatureName() //
             completion(city)
+        } else {
+            completion("My location")
         }
-          else {
-              completion("My location")
-          }
     }
 
-    fun remove(item: SavedLocation){
+    fun remove(item: SavedLocation) {
         isLoading = true
         //----List of locations----
-      var items = locations.toMutableList()
-      var places =   myLocations.toMutableList()
+        var items = locations.toMutableList()
+        var places = myLocations.toMutableList()
         places.removeIf { it.name == item.name }
         myLocations = places.toList()
-      items.removeIf { it.name == item.name }
+        items.removeIf { it.name == item.name }
         locations = items.toList()
-      //---------------------------
+        //---------------------------
 
         val context = MyApp.context
         val pref: SharedPreferences = context
@@ -202,28 +199,30 @@ class WeatherViewModel: ViewModel() {
             }?.toMutableList()
                 ?: mutableListOf<String>()
 
-        var savedItems = if(itemsSaved.size > 0) itemsSaved.map { saved ->
+        var savedItems = if (itemsSaved.size > 0) itemsSaved.map { saved ->
             saved.replace("[", "").replace("]", "")
             val list = saved.split("|")
             SavedLocation(
                 name = list[0].replace("[", "").replace("]", "").replace("|", ""),
-                latitude = list[1].replace("[", "").replace("]", "").replace("]", "").replace("|", "").toDouble(),
-                longitude = list[2].replace("[", "").replace("]", "").replace("]", "").replace("|", "").toDouble()
+                latitude = list[1].replace("[", "").replace("]", "").replace("]", "")
+                    .replace("|", "").toDouble(),
+                longitude = list[2].replace("[", "").replace("]", "").replace("]", "")
+                    .replace("|", "").toDouble()
             )
         }.toMutableList() else mutableListOf<SavedLocation>()
 
-      savedItems.removeIf { it.name == item.name }
+        savedItems.removeIf { it.name == item.name }
 
-        with (pref.edit()) {
+        with(pref.edit()) {
             putString("locations", savedItems.toString())
             apply()
         }
 
-        getSavedLocations(){}
+        getSavedLocations() {}
         isLoading = false
     }
 
-    fun getCurrentLocationWeather(){
+    fun getCurrentLocationWeather() {
         val context = MyApp.context
         isLoading = true
 
@@ -231,7 +230,7 @@ class WeatherViewModel: ViewModel() {
         println("LOADING DATA ")
 
         getCurrentLocation {
-            if(it != null) {
+            if (it != null) {
                 currentLocation = it
                 getNameFromCoordinates(
                     context = context,
@@ -240,8 +239,8 @@ class WeatherViewModel: ViewModel() {
                 ) {
                     currentLocationName = it
                     getCurrentLocationData() {
-                        getSavedLocations(){
-                            getSavedLocationData(){
+                        getSavedLocations() {
+                            getSavedLocationData() {
                                 GlobalScope.launch {
                                     delay(2000)
                                     println("loading complete")
@@ -253,10 +252,9 @@ class WeatherViewModel: ViewModel() {
 
                     }
                 }
-            }
-            else {
-                getSavedLocations(){
-                    getSavedLocationData(){
+            } else {
+                getSavedLocations() {
+                    getSavedLocationData() {
                         GlobalScope.launch {
                             delay(2000)
                             println("loading complete")
@@ -268,6 +266,7 @@ class WeatherViewModel: ViewModel() {
             }
         }
     }
+
     fun canGetLocation(): Boolean {
         return isLocationEnabled(MyApp.context) // application context
     }
@@ -290,93 +289,94 @@ class WeatherViewModel: ViewModel() {
         }
     }
 
-    private fun getCurrentLocation(completion: (Location?) -> Unit){
-     val context = MyApp.context
-      val permissionFineLocation=android.Manifest.permission.ACCESS_FINE_LOCATION
-     val permissionCoarseLocation=android.Manifest.permission.ACCESS_COARSE_LOCATION
+    private fun getCurrentLocation(completion: (Location?) -> Unit) {
+        val context = MyApp.context
+        val permissionFineLocation = android.Manifest.permission.ACCESS_FINE_LOCATION
+        val permissionCoarseLocation = android.Manifest.permission.ACCESS_COARSE_LOCATION
 
-    val REQUEST_CODE_LOCATION=100
-    if (canGetLocation()) {
+        val REQUEST_CODE_LOCATION = 100
+        if (canGetLocation()) {
 
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
-        //       fusedLocationClient.
-        // checking location permission
-        if (ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            error = WeatherError.NOPERMISSION
-            //requestPermissions(MyApp.activity, arrayOf(permissionFineLocation, permissionCoarseLocation), REQUEST_CODE_LOCATION)
-            completion(null)
-            return
-        }
-        fusedLocationClient.lastLocation
-            .addOnSuccessListener { location: Location? ->
-                if (location != null) {
-                    completion(location)
-                } else {
-                    println("GOT NULL LOCATION ")
-                    locator.startListeningUserLocation(
-                        context,
-                        object : LocationHelper.MyLocationListener {
-                            override fun onLocationChanged(location: Location) {
-                                completion(location)
-                            }
-                        })
+            fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
+            //       fusedLocationClient.
+            // checking location permission
+            if (ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.ACCESS_FINE_LOCATION
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                error = WeatherError.NOPERMISSION
+                //requestPermissions(MyApp.activity, arrayOf(permissionFineLocation, permissionCoarseLocation), REQUEST_CODE_LOCATION)
+                completion(null)
+                return
+            }
+            fusedLocationClient.lastLocation
+                .addOnSuccessListener { location: Location? ->
+                    if (location != null) {
+                        completion(location)
+                    } else {
+                        println("GOT NULL LOCATION ")
+                        locator.startListeningUserLocation(
+                            context,
+                            object : LocationHelper.MyLocationListener {
+                                override fun onLocationChanged(location: Location) {
+                                    completion(location)
+                                }
+                            })
+
+                    }
 
                 }
 
-            }
+                .addOnFailureListener {
+                    error = WeatherError.NOGPS
+                    println("NO LOCATION GOT")
+                    completion(null)
+                }
 
-            .addOnFailureListener {
-                error = WeatherError.NOGPS
-                println("NO LOCATION GOT")
-                completion(null)
-            }
-
-    }
-        else {
-        error = WeatherError.NOGPS
-        println("NO LOCATION GOT")
-        completion(null)
-        }
-}
-
-    private fun getDataFromUserDefaults(){
-    val context = MyApp.context
-
-        val pref: SharedPreferences = context
-            .getSharedPreferences("MyPref", 0) // 0 - for private mode
-
-       val savedUnit =  pref.getString("unit", null)
-        if (savedUnit != null) {
-            units = if(savedUnit == "si" ) WeatherUnits.SI else if (savedUnit == "us") WeatherUnits.US else WeatherUnits.AUTO
+        } else {
+            error = WeatherError.NOGPS
+            println("NO LOCATION GOT")
+            completion(null)
         }
     }
 
-    fun saveUnit(inputUnit: WeatherUnits){
+    private fun getDataFromUserDefaults() {
         val context = MyApp.context
-        val unit = if (inputUnit == WeatherUnits.AUTO) "auto" else if (inputUnit == WeatherUnits.SI) "si" else "us"
+
         val pref: SharedPreferences = context
             .getSharedPreferences("MyPref", 0) // 0 - for private mode
-        with (pref.edit()) {
+
+        val savedUnit = pref.getString("unit", null)
+        if (savedUnit != null) {
+            units =
+                if (savedUnit == "si") WeatherUnits.SI else if (savedUnit == "us") WeatherUnits.US else WeatherUnits.AUTO
+        }
+    }
+
+    fun saveUnit(inputUnit: WeatherUnits) {
+        val context = MyApp.context
+        val unit =
+            if (inputUnit == WeatherUnits.AUTO) "auto" else if (inputUnit == WeatherUnits.SI) "si" else "us"
+        val pref: SharedPreferences = context
+            .getSharedPreferences("MyPref", 0) // 0 - for private mode
+        with(pref.edit()) {
             putString("unit", unit)
             apply()
         }
 
-            units = inputUnit
+        units = inputUnit
 
     }
 
-    fun saveLocation(address:Address){
+    fun saveLocation(address: Address) {
         val context = MyApp.context
         val pref: SharedPreferences = context
             .getSharedPreferences("MyPref", 0) // 0 - for private mode
-        val savedLocations =  pref.getString("locations", null)
+        val savedLocations = pref.getString("locations", null)
         println("SAVED $savedLocations ")
         val items = if (savedLocations != null && savedLocations != "[]")
             savedLocations.trimStart().trimEnd().split(",").map {
@@ -384,24 +384,27 @@ class WeatherViewModel: ViewModel() {
             }.toMutableList()
         else mutableListOf<String>()
 
-        val itemToAdd = SavedLocation(name = if (address.featureName != null) address.featureName else if (address.subLocality != null) address.subLocality else address.locality ,latitude = address.latitude.round(3),longitude = address.longitude.round(3)).toString()
-       if (!items.contains(itemToAdd)){
-           items.add(itemToAdd )
-       }
+        val itemToAdd = SavedLocation(
+            name = if (address.featureName != null) address.featureName else if (address.subLocality != null) address.subLocality else address.locality,
+            latitude = address.latitude.round(3),
+            longitude = address.longitude.round(3)
+        ).toString()
+        if (!items.contains(itemToAdd)) {
+            items.add(itemToAdd)
+        }
 
-        with (pref.edit()) {
+        with(pref.edit()) {
             putString("locations", items.toString())
             apply()
         }
 
-getSavedLocations(){
-  //  getCurrentLocationWeather()
-}
+        getSavedLocations() {
+            //  getCurrentLocationWeather()
+        }
     }
 
 
-
-    private fun getSavedLocations(completion:()->Unit) {
+    private fun getSavedLocations(completion: () -> Unit) {
         val context = MyApp.context
 
         val pref: SharedPreferences = context
@@ -412,36 +415,39 @@ getSavedLocations(){
             savedLocations.trimStart().trimEnd().split(",").map {
                 it
             }.toMutableList()
-                else mutableListOf<String>()
+        else mutableListOf<String>()
         val savedItems = mutableListOf<SavedLocation>()
-            if (items.size > 0) {
-                items.forEach { saved ->
-                    saved.replace("[", "").replace("]", "")
-                    val list = saved.split("|")
-                   val output = SavedLocation(
-                        name = list[0].replace("[", "").replace("]", "").replace("|", ""),
-                        latitude = list[1].replace("[", "").replace("]", "").replace("]", "")
-                            .replace("|", "").toDouble(),
-                        longitude = list[2].replace("[", "").replace("]", "").replace("]", "")
-                            .replace("|", "").toDouble()
-                    )
-                   if (!savedItems.contains(output)){
-                       savedItems.add(output)
-                   }
+        if (items.size > 0) {
+            items.forEach { saved ->
+                saved.replace("[", "").replace("]", "")
+                val list = saved.split("|")
+                val output = SavedLocation(
+                    name = list[0].replace("[", "").replace("]", "").replace("|", ""),
+                    latitude = list[1].replace("[", "").replace("]", "").replace("]", "")
+                        .replace("|", "").toDouble(),
+                    longitude = list[2].replace("[", "").replace("]", "").replace("]", "")
+                        .replace("|", "").toDouble()
+                )
+                if (!savedItems.contains(output)) {
+                    savedItems.add(output)
                 }
             }
+        }
         myLocations = savedItems.toList()
         completion()
     }
-    private fun getCurrentLocationData(completion:()->Unit) {
-        val unit = if (units == WeatherUnits.AUTO) "auto" else if (units == WeatherUnits.SI) "si" else "us"
+
+    private fun getCurrentLocationData(completion: () -> Unit) {
+        val unit =
+            if (units == WeatherUnits.AUTO) "auto" else if (units == WeatherUnits.SI) "si" else "us"
         if (currentLocation != null) {
             DataFetcher.getFromUrl(url = "https://api.darksky.net/forecast/0b2f0e7f415678b66d4918b96d6672fa/${currentLocation!!.latitude},${currentLocation!!.longitude}?lang=en&units=$unit") {
                 if (it != null) {
                     println("DATAAA $it")
                     val gson = Gson()
 
-                    val out = gson.fromJson<WeatherResponse>(it.toString(),WeatherResponse::class.java)
+                    val out =
+                        gson.fromJson<WeatherResponse>(it.toString(), WeatherResponse::class.java)
                     currentLocationData = out
                     if (currentLocationData != null) {
                         val current = WeatherModel(
@@ -458,12 +464,17 @@ getSavedLocations(){
                 }
             }
         } else {
-           completion()
+            completion()
         }
 
     }
 
-    private fun getDataFromCoordinates(latitude: Double,longitude: Double,name: String,completion:(WeatherModel?)->Unit){
+    private fun getDataFromCoordinates(
+        latitude: Double,
+        longitude: Double,
+        name: String,
+        completion: (WeatherModel?) -> Unit
+    ) {
         val unit =
             if (units == WeatherUnits.AUTO) "auto" else if (units == WeatherUnits.SI) "si" else "us"
         DataFetcher.getFromUrl(url = "https://api.darksky.net/forecast/0b2f0e7f415678b66d4918b96d6672fa/${latitude},${longitude}?lang=en&units=$unit") {
@@ -471,7 +482,7 @@ getSavedLocations(){
                 println("DATAAA $it")
                 val gson = Gson()
 
-                val out = gson.fromJson<WeatherResponse>(it.toString(),WeatherResponse::class.java)
+                val out = gson.fromJson<WeatherResponse>(it.toString(), WeatherResponse::class.java)
 
                 if (out != null) {
                     val current = WeatherModel(
@@ -488,36 +499,38 @@ getSavedLocations(){
         }
     }
 
-    private fun getSavedLocationData(completion:()->Unit) {
-       var out = arrayListOf<WeatherModel>()
+    private fun getSavedLocationData(completion: () -> Unit) {
+        var out = arrayListOf<WeatherModel>()
         println("SAVED LOCATIONS ${myLocations.count()}")
 
-        locations = if (locations.isNotEmpty() && currentLocationData != null) listOf(locations[0]) else listOf()
-        for ( item in myLocations) {
+        locations =
+            if (locations.isNotEmpty() && currentLocationData != null) listOf(locations[0]) else listOf()
+        for (item in myLocations) {
             println("GETTING FROM SAVED")
-          getDataFromCoordinates(latitude = item.latitude,longitude = item.longitude,name = item.name){
-              println("COMPLETION FROM SAVED")
-              it?.let { data->
+            getDataFromCoordinates(
+                latitude = item.latitude,
+                longitude = item.longitude,
+                name = item.name
+            ) {
+                println("COMPLETION FROM SAVED")
+                it?.let { data ->
 
-                      locations = locations + data
+                    locations = locations + data
 
-              }
-          }
+                }
+            }
 
         }
 //        if (locations.count() > 0) {
 //            out.add(0, locations.first())
 //        }
-       println("TOTALLY GOT ${locations.count()} PLACES")
+        println("TOTALLY GOT ${locations.count()} PLACES")
 //            locations = out.toList()
         completion()
     }
 
 
-
 }
-
-
 
 
 //'https://api.darksky.net/forecast/0b2f0e7f415678b66d4918b96d6672fa/${position

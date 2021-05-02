@@ -12,19 +12,19 @@ import java.util.*
 data class WeatherAlert(
 
     @SerializedName("title")
-    val title:String = "",
+    val title: String = "",
     @SerializedName("regions")
-    val regions:List<String> = listOf(),
+    val regions: List<String> = listOf(),
     @SerializedName("severity")
-    val severity:String = "",
+    val severity: String = "",
     @SerializedName("time")
-    val time:Int = Calendar.MILLISECOND,
+    val time: Int = Calendar.MILLISECOND,
     @SerializedName("expires")
-    val expires:Int = Calendar.MILLISECOND,
+    val expires: Int = Calendar.MILLISECOND,
     @SerializedName("description")
-    val description:String = "",
+    val description: String = "",
     @SerializedName("uri")
-    val uri:String = ""
+    val uri: String = ""
 ) : Parcelable
 
 
@@ -48,7 +48,7 @@ data class WeatherResponse(
     @SerializedName("timezone")
     val timezone: String = "",
     @SerializedName("alerts")
-    val alerts:List<WeatherAlert> = listOf()
+    val alerts: List<WeatherAlert> = listOf()
 ) : Parcelable
 
 @SuppressLint("ParcelCreator")
@@ -252,14 +252,14 @@ data class DataX(
 
 fun getWeatherColor(input: String): Color {
     return when (input) {
-        "clear-day" -> Color(0xFF26b1f6)
+        "clear-day" -> Color(0xFF1ca6f0)
         "clear-night" -> Color(0xFF183050)
         "rain" -> Color(0xFF305c81)
         "snow" -> Color(0xFFbadbe3)
         "sleet" -> Color(0xFFc5e1e8)
         "wind" -> Color(0xFF90a699)
         "fog" -> Color(0xFF85a588)
-        "cloudy" -> Color(0xFF77807a)
+        "cloudy" -> Color(0xFF5a6469)
         "partly-cloudy-day" -> Color(0xFF1d4c70)
         "partly-cloudy-night" -> Color(0xFF1d4c57)
         "hail" -> Color(0xFFc5e1e8)

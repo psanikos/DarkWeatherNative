@@ -6,22 +6,11 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Icon
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Air
 import androidx.compose.material.icons.filled.ArrowDownward
@@ -38,10 +27,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
-import npsprojects.darkweather.ui.theme.blue_500
-import npsprojects.darkweather.ui.theme.blue_grey_300
-import npsprojects.darkweather.ui.theme.blue_grey_500
-import npsprojects.darkweather.ui.theme.red_800
+import npsprojects.darkweather.ui.theme.*
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDateTime
@@ -49,60 +35,83 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 
-enum class RainTimeCategory{
-    HOURLY,DAILY
+enum class RainTimeCategory {
+    HOURLY, DAILY
 }
 
 @Composable
-fun WeeklyTimes(data:List<Data>,units: WeatherUnits) {
+fun WeeklyTimes(data: List<Data>, units: WeatherUnits) {
 
 
+    Column(
+        modifier = Modifier
+            .fillMaxWidth(),
+        horizontalAlignment = Alignment.Start,
+        verticalArrangement = Arrangement.SpaceEvenly
+    ) {
 
-        Column(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.SpaceEvenly
-        ) {
+        Text(
+            "Weekly forecast",
+            style = MaterialTheme.typography.h4.copy(color = Color.White, fontSize = 16.sp),
+            modifier = Modifier.padding(bottom = 20.dp, top = 10.dp)
+        )
 
-            Text(
-                "Weekly forecast"
-                , style = MaterialTheme.typography.h4.copy(color = Color.White,fontSize = 16.sp),modifier = Modifier.padding(bottom = 20.dp,top = 10.dp)
-            )
-
-                data.forEach {
-                    WeeklyTile(data = it,units = units)
-                }
+        data.forEach {
+            WeeklyTile(data = it, units = units)
+        }
 
 
     }
 }
 
 @Composable
-fun WeeklyTile(data: Data,units: WeatherUnits){
-    Box(){
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .height(50.dp),horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically) {
+fun WeeklyTile(data: Data, units: WeatherUnits) {
+    Box() {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp), horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             Text(
-                SimpleDateFormat("EEEE").format(1000*data.time!!.toLong())
-                , style = MaterialTheme.typography.body2,modifier = Modifier.fillMaxWidth(0.25F))
-            Row(modifier = Modifier
-                .fillMaxWidth(0.85F)
-                .height(40.dp),horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically){
+                SimpleDateFormat("EEEE").format(1000 * data.time!!.toLong()),
+                style = MaterialTheme.typography.body2,
+                modifier = Modifier.fillMaxWidth(0.25F)
+            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(0.85F)
+                    .height(40.dp), horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Image(
-                    painter = painterResource(id = getWeatherIcon(data.icon!!)), contentDescription = "",
+                    painter = painterResource(id = getWeatherIcon(data.icon!!)),
+                    contentDescription = "",
                     modifier = Modifier
                         .height(25.dp)
                         .width(25.dp)
                 )
-                Icon(Icons.Filled.ArrowUpward,contentDescription = "",tint = Color.Red,modifier = Modifier.scale(0.7f))
-                Text(data.temperatureHigh!!.toInt().toString(), style = MaterialTheme.typography.caption.copy(color = Color.Red))
-                Icon(Icons.Filled.ArrowDownward,contentDescription = "",tint =                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         blue_grey_300,modifier = Modifier.scale(0.7f))
+                Icon(
+                    Icons.Filled.ArrowUpward,
+                    contentDescription = "",
+                    tint = Color.Red,
+                    modifier = Modifier.scale(0.7f)
+                )
+                Text(
+                    data.temperatureHigh!!.toInt().toString(),
+                    style = MaterialTheme.typography.caption.copy(color = Color.Red)
+                )
+                Icon(
+                    Icons.Filled.ArrowDownward,
+                    contentDescription = "",
+                    tint = light_blue_100,
+                    modifier = Modifier.scale(0.7f)
+                )
 
-                Text(data.temperatureLow!!.toInt().toString(), style = MaterialTheme.typography.caption.copy(color = blue_grey_300))
+                Text(
+                    data.temperatureLow!!.toInt().toString(),
+                    style = MaterialTheme.typography.caption.copy(color = light_blue_100)
+                )
                 Spacer(modifier = Modifier.width(5.dp))
                 Image(
                     painter = painterResource(id = R.drawable.raining), contentDescription = "",
@@ -110,10 +119,21 @@ fun WeeklyTile(data: Data,units: WeatherUnits){
                     modifier = Modifier.size(16.dp)
                 )
 
-                Text("${(100*data.precipProbability!!).toInt()}%", style = MaterialTheme.typography.caption)
+                Text(
+                    "${(100 * data.precipProbability!!).toInt()}%",
+                    style = MaterialTheme.typography.caption
+                )
 
-                Icon(Icons.Filled.Air,contentDescription = "",tint = Color.LightGray, modifier = Modifier.size(16.dp))
-                Text("${data.windSpeed!!.round(1)} " + if(units == WeatherUnits.US) "mph" else "km/h", style = MaterialTheme.typography.caption)
+                Icon(
+                    Icons.Filled.Air,
+                    contentDescription = "",
+                    tint = Color.LightGray,
+                    modifier = Modifier.size(16.dp)
+                )
+                Text(
+                    "${data.windSpeed!!.round(1)} " + if (units == WeatherUnits.US) "mph" else "km/h",
+                    style = MaterialTheme.typography.caption
+                )
 
             }
         }
@@ -121,60 +141,81 @@ fun WeeklyTile(data: Data,units: WeatherUnits){
 }
 
 @Composable
-fun RainTimes(rainProbability:List<DataX>, rainProbabilityDaily:List<Data>){
+fun RainTimes(rainProbability: List<DataX>, rainProbabilityDaily: List<Data>) {
 
 
     var rainDailyData = rainProbabilityDaily.toMutableList()
     rainDailyData.removeAt(0)
-        MyChartView(rainProbability = rainProbability)
+    MyChartView(rainProbability = rainProbability)
 
 }
 
 @Composable
-fun RainMeter(index:Int,value:Double,time:Long,weekly:Boolean){
+fun RainMeter(index: Int, value: Double, time: Long, weekly: Boolean) {
 
-    val target = (value*140).toInt()
+    val target = (value * 140).toInt()
 
     var isLoaded by remember { mutableStateOf(false) }
-    val height: Dp by animateDpAsState(targetValue = if (isLoaded) target.dp else 0.dp,
-        animationSpec = tween(durationMillis = 500 + (index*150), easing = FastOutSlowInEasing)
+    val height: Dp by animateDpAsState(
+        targetValue = if (isLoaded) target.dp else 0.dp,
+        animationSpec = tween(durationMillis = 500 + (index * 150), easing = FastOutSlowInEasing)
     )
 
     var barColor = remember { Animatable(blue_500) }
 
 
 
-    LaunchedEffect(key1 = "Meter"){
+    LaunchedEffect(key1 = "Meter") {
         delay(500)
         isLoaded = true
         delay(800)
         barColor.animateTo(if (value > 0.65) red_800 else blue_500)
     }
 
-    Column(modifier = Modifier
-        .height(220.dp)
-        .padding(end = 10.dp),verticalArrangement = Arrangement.SpaceEvenly) {
-        Box(contentAlignment = Alignment.Center,modifier = Modifier
-            .height(140.dp)
-            .width(28.dp)
-            .background(color = Color.LightGray, shape = RoundedCornerShape(30))
-            .clip(shape = RoundedCornerShape(30))) {
-            Column(modifier = Modifier.fillMaxHeight(),verticalArrangement = Arrangement.Bottom) {
-                Box(modifier = Modifier
-                    .height(height)
-                    .width(28.dp)
-                    .background(
-                        color = barColor.value,
-                        shape = RoundedCornerShape(bottomEndPercent = 30, bottomStartPercent = 30)
+    Column(
+        modifier = Modifier
+            .height(220.dp)
+            .padding(end = 10.dp), verticalArrangement = Arrangement.SpaceEvenly
+    ) {
+        Box(
+            contentAlignment = Alignment.Center, modifier = Modifier
+                .height(140.dp)
+                .width(28.dp)
+                .background(color = Color.LightGray, shape = RoundedCornerShape(30))
+                .clip(shape = RoundedCornerShape(30))
+        ) {
+            Column(modifier = Modifier.fillMaxHeight(), verticalArrangement = Arrangement.Bottom) {
+                Box(
+                    modifier = Modifier
+                        .height(height)
+                        .width(28.dp)
+                        .background(
+                            color = barColor.value,
+                            shape = RoundedCornerShape(
+                                bottomEndPercent = 30,
+                                bottomStartPercent = 30
+                            )
 
-                    ))
+                        )
+                )
             }
 
-            Text("${(100*value).toInt()}%",style = MaterialTheme.typography.caption.copy(Color.DarkGray,fontSize = 11.sp))
+            Text(
+                "${(100 * value).toInt()}%",
+                style = MaterialTheme.typography.caption.copy(Color.DarkGray, fontSize = 11.sp)
+            )
 
         }
-        Text(if (weekly) DateTimeFormatter.ofPattern("EEE").format(LocalDateTime.ofInstant(Instant.ofEpochMilli(1000*time), ZoneId.systemDefault())) else DateTimeFormatter.ofPattern("HH:mm").format(
-            LocalDateTime.ofInstant(Instant.ofEpochMilli(1000*time), ZoneId.systemDefault())), style = MaterialTheme.typography.caption)
+        Text(
+            if (weekly) DateTimeFormatter.ofPattern("EEE").format(
+                LocalDateTime.ofInstant(
+                    Instant.ofEpochMilli(1000 * time),
+                    ZoneId.systemDefault()
+                )
+            ) else DateTimeFormatter.ofPattern("HH:mm").format(
+                LocalDateTime.ofInstant(Instant.ofEpochMilli(1000 * time), ZoneId.systemDefault())
+            ), style = MaterialTheme.typography.caption
+        )
 
     }
 }
