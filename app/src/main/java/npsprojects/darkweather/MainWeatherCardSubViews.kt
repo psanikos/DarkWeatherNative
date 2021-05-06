@@ -42,24 +42,18 @@ enum class RainTimeCategory {
 @Composable
 fun WeeklyTimes(data: List<Data>, units: WeatherUnits) {
 
-
+Box(modifier = Modifier.fillMaxWidth().background(color = Color.White,shape = RoundedCornerShape(20.dp))){
     Column(
         modifier = Modifier
-            .fillMaxWidth(),
+            .padding(10.dp).fillMaxWidth(),
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
 
-        Text(
-            "Weekly forecast",
-            style = MaterialTheme.typography.h4.copy(color = Color.White, fontSize = 16.sp),
-            modifier = Modifier.padding(bottom = 20.dp, top = 10.dp)
-        )
-
         data.forEach {
             WeeklyTile(data = it, units = units)
         }
-
+    }
 
     }
 }

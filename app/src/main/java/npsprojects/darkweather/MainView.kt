@@ -68,71 +68,78 @@ fun MainPageView(model: WeatherViewModel, controller: NavController) {
         when (model.isLoading) {
             true -> LoadingView(model = model)
 
-            false -> if (model.locations.size > 0) {
-                Box(contentAlignment = Alignment.BottomCenter) {
-                    MainWeatherCard(
-                        data = model,
-                        index = index,
-
-                        units = model.units,
-                        updateIndex = {
-                            index = it
-                        }, controller = controller
-                    )
-
-                }
-            } else {
-                Box(
-                    modifier = Modifier
-                        .background(color = getWeatherColor(""))
-                        .fillMaxSize(), contentAlignment = Alignment.Center
-                ) {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .padding(top = 50.dp, start = 16.dp, end = 16.dp)
-                                .fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            IconButton(onClick = {
-                                controller.navigate("Settings")
-                            }) {
-                                Icon(
-                                    Icons.Rounded.Sort,
-                                    tint = Color.White,
-                                    modifier = Modifier.size(18.dp),
-                                    contentDescription = ""
-                                )
-                            }
-
-                            IconButton(onClick = {
-                                controller.navigate("Add")
-                            }) {
-                                Icon(
-                                    Icons.Rounded.LocationCity,
-                                    tint = Color.White,
-                                    modifier = Modifier.size(18.dp),
-                                    contentDescription = ""
-                                )
-                            }
-                        }
-                        Text(
-                            "No places added yet and there is no access to your location.",
-                            style = MaterialTheme.typography.body1.copy(
-                                color = Color.White,
-
-                                ),
-                            modifier = Modifier.padding(20.dp),
-                            textAlign = TextAlign.Center
-                        )
-                        Spacer(modifier = Modifier.height(80.dp))
-                    }
-                }
+            false ->  if (model.locations.isNotEmpty()) {
+                NewMapView(model = model,controller=controller)
 
             }
+            else {
+                Text("No data")
+            }
+//                if (model.locations.size > 0) {
+//                Box(contentAlignment = Alignment.BottomCenter) {
+//                    MainWeatherCard(
+//                        data = model,
+//                        index = index,
+//
+//                        units = model.units,
+//                        updateIndex = {
+//                            index = it
+//                        }, controller = controller
+//                    )
+//
+//                }
+//            } else {
+//                Box(
+//                    modifier = Modifier
+//                        .background(color = getWeatherColor(""))
+//                        .fillMaxSize(), contentAlignment = Alignment.Center
+//                ) {
+//                    Column(
+//                        modifier = Modifier.fillMaxSize(),
+//                        verticalArrangement = Arrangement.SpaceBetween
+//                    ) {
+//                        Row(
+//                            modifier = Modifier
+//                                .padding(top = 50.dp, start = 16.dp, end = 16.dp)
+//                                .fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
+//                            verticalAlignment = Alignment.CenterVertically
+//                        ) {
+//                            IconButton(onClick = {
+//                                controller.navigate("Settings")
+//                            }) {
+//                                Icon(
+//                                    Icons.Rounded.Sort,
+//                                    tint = Color.White,
+//                                    modifier = Modifier.size(18.dp),
+//                                    contentDescription = ""
+//                                )
+//                            }
+//
+//                            IconButton(onClick = {
+//                                controller.navigate("Add")
+//                            }) {
+//                                Icon(
+//                                    Icons.Rounded.LocationCity,
+//                                    tint = Color.White,
+//                                    modifier = Modifier.size(18.dp),
+//                                    contentDescription = ""
+//                                )
+//                            }
+//                        }
+//                        Text(
+//                            "No places added yet and there is no access to your location.",
+//                            style = MaterialTheme.typography.body1.copy(
+//                                color = Color.White,
+//
+//                                ),
+//                            modifier = Modifier.padding(20.dp),
+//                            textAlign = TextAlign.Center
+//                        )
+//                        Spacer(modifier = Modifier.height(80.dp))
+//                    }
+//                }
+//
+//            }
 
         }
 

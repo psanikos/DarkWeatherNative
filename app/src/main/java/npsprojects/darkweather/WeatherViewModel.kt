@@ -211,7 +211,7 @@ class WeatherViewModel : ViewModel() {
             )
         }.toMutableList() else mutableListOf<SavedLocation>()
 
-        savedItems.removeIf { it.name == item.name }
+        savedItems.removeIf { it.name == item.name  }
 
         with(pref.edit()) {
             putString("locations", savedItems.toString())
@@ -372,7 +372,7 @@ class WeatherViewModel : ViewModel() {
 
     }
 
-    fun saveLocation(address: Address) {
+    fun saveLocation(address: SavedLocation) {
         val context = MyApp.context
         val pref: SharedPreferences = context
             .getSharedPreferences("MyPref", 0) // 0 - for private mode
@@ -384,11 +384,7 @@ class WeatherViewModel : ViewModel() {
             }.toMutableList()
         else mutableListOf<String>()
 
-        val itemToAdd = SavedLocation(
-            name = if (address.featureName != null) address.featureName else if (address.subLocality != null) address.subLocality else address.locality,
-            latitude = address.latitude.round(3),
-            longitude = address.longitude.round(3)
-        ).toString()
+        val itemToAdd = address.toString()
         if (!items.contains(itemToAdd)) {
             items.add(itemToAdd)
         }
@@ -469,7 +465,7 @@ class WeatherViewModel : ViewModel() {
 
     }
 
-    private fun getDataFromCoordinates(
+  fun getDataFromCoordinates(
         latitude: Double,
         longitude: Double,
         name: String,
@@ -561,8 +557,9 @@ object DataFetcher {
                 response.use {
                     if (!response.isSuccessful) {
                         println("RESPONSE UNSUCCESSFUL")
-                        throw   IOException("Unexpected code $response")
+
                         completion(null)
+                        throw   IOException("Unexpected code $response")
                     }
 
                     if (response.body != null) {

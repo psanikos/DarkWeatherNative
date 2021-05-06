@@ -618,13 +618,13 @@ fun MainWeatherCard(
 
 
                 }
-                item {
-                    MapScreen(
-                        latitude = locationData.latitude.toString(),
-                        longitude = locationData.longitude.toString()
-                    )
-
-                }
+//                item {
+//                    MapScreen(
+//                        latitude = locationData.latitude.toString(),
+//                        longitude = locationData.longitude.toString()
+//                    )
+//
+//                }
                 item {
                     WeeklyTimes(data = locationData.daily.data, units = units)
                 }

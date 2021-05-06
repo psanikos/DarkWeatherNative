@@ -30,7 +30,7 @@ import npsprojects.darkweather.ui.theme.red_800
 
 @ExperimentalFoundationApi
 @Composable
-fun AddPlaceView(model: WeatherViewModel, controller: NavController) {
+fun AddPlaceView(model: WeatherViewModel) {
     var searchTerm: String by remember { mutableStateOf("") }
 
     Box(
@@ -52,15 +52,7 @@ fun AddPlaceView(model: WeatherViewModel, controller: NavController) {
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start) {
-                IconButton(onClick = {
-                    controller.popBackStack()
-                }) {
-                    Icon(Icons.Rounded.ArrowBackIosNew, contentDescription = "", tint = Color.White)
-                }
-            }
 
-            Spacer(modifier = Modifier.height(30.dp))
             Box(
                 modifier = Modifier
 
@@ -112,7 +104,7 @@ fun AddPlaceView(model: WeatherViewModel, controller: NavController) {
                                 shape = RoundedCornerShape(12)
                             )
                             .clickable {
-                                model.saveLocation(address = it)
+                               // model.saveLocation(address = it)
                                 searchTerm = ""
                                 model.searchedAdresses.clear()
                             },
