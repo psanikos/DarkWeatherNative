@@ -6,6 +6,7 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
@@ -42,7 +43,7 @@ enum class RainTimeCategory {
 @Composable
 fun WeeklyTimes(data: List<Data>, units: WeatherUnits) {
 
-Box(modifier = Modifier.fillMaxWidth().background(color = Color.White,shape = RoundedCornerShape(20.dp))){
+Box(modifier = Modifier.fillMaxWidth().background(color = if (isSystemInDarkTheme()) Color(0xFF101010) else Color.White,shape = RoundedCornerShape(20.dp))){
     Column(
         modifier = Modifier
             .padding(10.dp).fillMaxWidth(),

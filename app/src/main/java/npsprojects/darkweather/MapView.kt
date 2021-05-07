@@ -25,6 +25,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.rounded.Autorenew
 import androidx.compose.material.icons.rounded.LocationOn
 import androidx.compose.material.icons.rounded.Repeat
 import androidx.compose.material.icons.rounded.Settings
@@ -65,6 +66,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.graphics.scale
 import androidx.navigation.NavController
 import androidx.navigation.compose.navigate
+import kotlinx.coroutines.launch
 import npsprojects.darkweather.ui.theme.*
 import java.text.SimpleDateFormat
 import java.time.Instant
@@ -174,6 +176,7 @@ class CustomInfoWindowForGoogleMap(context: Context) : GoogleMap.InfoWindowAdapt
 @Composable
 fun NewMapView(model: WeatherViewModel,  controller: NavController) {
     val map = rememberMapViewWithLifecycle()
+    val scope = rememberCoroutineScope()
     var mapType by remember { mutableStateOf("clouds_new") }
     var coordinates by remember { mutableStateOf(if(model.locations.isNotEmpty())  LatLng(model.locations[0].data.latitude,model.locations[0].data.longitude) else LatLng(37.9838, 23.7275)
     ) }
@@ -181,13 +184,15 @@ fun NewMapView(model: WeatherViewModel,  controller: NavController) {
     var index:Int by remember { mutableStateOf(0)}
     val overlays: MutableList<TileOverlay> by remember { mutableStateOf(ArrayList<TileOverlay>()) }
     var searchTerm by remember { mutableStateOf("")}
-var isLoading by remember { mutableStateOf(false)}
+    val backColor = if (isSystemInDarkTheme()) Color(0xFF202020) else Color(0xFFF5F5F5)
+    val cardColor =  if (isSystemInDarkTheme()) Color(0xFF101010) else Color.White
+    var isLoading by remember { mutableStateOf(false)}
     BottomSheetScaffold(sheetContent = {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(750.dp)
-                .background(Color(0xFFF5F5F5))
+                .background(backColor)
         ) {
             if (!isLoading) {
                 Column(modifier = Modifier
@@ -218,7 +223,7 @@ var isLoading by remember { mutableStateOf(false)}
 
                                     .height(45.dp)
                                     .background(
-                                        color = Color.White,
+                                        color = cardColor,
                                         shape = RoundedCornerShape(20.dp)
                                     ),
                                 contentAlignment = Alignment.CenterStart
@@ -234,7 +239,9 @@ var isLoading by remember { mutableStateOf(false)}
                                         imeAction = ImeAction.Search
                                     ),
                                     keyboardActions = KeyboardActions(onSearch = {
-                                        model.getCoordinatesFromLocation(searchTerm)
+                                      scope.launch {
+                                          model.getCoordinatesFromLocation(searchTerm)
+                                      }
                                     }),
                                     modifier = Modifier
                                         .padding(start = 20.dp)
@@ -245,7 +252,7 @@ var isLoading by remember { mutableStateOf(false)}
                                 if (searchTerm == "") {
                                     Text(
                                         "Search a new place",
-                                        style = MaterialTheme.typography.caption.copy(color = Color.DarkGray),
+                                        style = MaterialTheme.typography.caption,
                                         modifier = Modifier
                                             .padding(start = 20.dp)
                                     )
@@ -263,27 +270,30 @@ var isLoading by remember { mutableStateOf(false)}
                                             .fillMaxWidth()
                                             .height(50.dp)
                                             .background(
-                                                color = Color.White,
+                                                color = cardColor,
                                                 shape = RoundedCornerShape(20.dp)
                                             )
                                             .clickable {
                                                 isLoading = true
-                                                model.getDataFromCoordinates(
-                                                    latitude = it.latitude,
-                                                    it.longitude,
-                                                    (if (it.subLocality != null) it.subLocality else it.locality)
-                                                ) { locationData ->
-                                                    if (locationData != null) {
-                                                        var savedLocations =
-                                                            model.locations.toMutableList()
-                                                        savedLocations.add(locationData)
-                                                        model.locations = savedLocations.toList()
+                                                scope.launch {
+                                                    model.getDataFromCoordinates(
+                                                        latitude = it.latitude,
+                                                        it.longitude,
+                                                        (if (it.subLocality != null) it.subLocality else it.locality)
+                                                    ) { locationData ->
+                                                        if (locationData != null) {
+                                                            var savedLocations =
+                                                                model.locations.toMutableList()
+                                                            savedLocations.add(locationData)
+                                                            model.locations =
+                                                                savedLocations.toList()
+                                                        }
+                                                        isLoading = false
+                                                        searchTerm = ""
+                                                        model.searchedAdresses.clear()
                                                     }
-                                                    isLoading = false
-                                                    searchTerm = ""
-                                                    model.searchedAdresses.clear()
                                                 }
-                                                //  model.saveLocation(address = it)
+
 
                                             },
                                         horizontalArrangement = Arrangement.Center,
@@ -318,13 +328,13 @@ var isLoading by remember { mutableStateOf(false)}
                                                 .height(30.dp)
                                                 .width(30.dp)
                                                 .background(
-                                                    color = Color(0xFF202020),
+                                                    color = Color(0xFF101010),
                                                     shape = CircleShape
                                                 ),
                                             contentAlignment = Alignment.Center
                                         ) {
                                             Icon(
-                                                Icons.Rounded.Repeat,
+                                                Icons.Rounded.Autorenew,
                                                 tint = Color.White,
                                                 modifier = Modifier.size(20.dp),
                                                 contentDescription = ""
@@ -336,7 +346,7 @@ var isLoading by remember { mutableStateOf(false)}
                                     Box(
                                         modifier = Modifier
                                             .background(
-                                                color = if (index == i) Color.White else Color.Transparent,
+                                                color = if (index == i) cardColor else Color.Transparent,
                                                 shape = RoundedCornerShape(50)
                                             )
                                             .clickable {
@@ -351,7 +361,7 @@ var isLoading by remember { mutableStateOf(false)}
                                             if (item.isCurrent) {
                                                 Icon(
                                                     Icons.Rounded.LocationOn,
-                                                    tint = if (index == i) Color.Black else Color.Gray,
+                                                    tint = if (index == i) (if (isSystemInDarkTheme()) Color.White else Color.Black) else Color.Gray,
                                                     contentDescription = "",
                                                     modifier = Modifier.size(25.dp)
                                                 )
@@ -359,7 +369,7 @@ var isLoading by remember { mutableStateOf(false)}
                                             Text(
                                                 item.name,
                                                 style = MaterialTheme.typography.button.copy(
-                                                    color = if (index == i) Color.Black else Color.Gray
+                                                    color = if (index == i) (if (isSystemInDarkTheme()) Color.White else Color.Black)  else Color.Gray
                                                 ),
                                                 modifier = Modifier.padding(
                                                     horizontal = 10.dp,
@@ -386,8 +396,8 @@ var isLoading by remember { mutableStateOf(false)}
 
                                     },
                                     colors = ButtonDefaults.buttonColors(
-                                        contentColor = Color.Blue,
-                                        backgroundColor = Color.Blue.copy(alpha = if (mapType == "clouds_new") 0.4f else 0.1f)
+                                        contentColor = blue_500,
+                                        backgroundColor = indigo_500.copy(alpha = if (mapType == "clouds_new") 0.4f else 0.1f)
                                     ),
                                     contentPadding = PaddingValues(12.dp),
                                     shape = RoundedCornerShape(20.dp),
@@ -403,6 +413,7 @@ var isLoading by remember { mutableStateOf(false)}
                                 ) {
 
                                     Icon(Icons.Filled.Cloud, contentDescription = null)
+                                    Spacer(modifier = Modifier.width(2.dp))
                                     Text("Clouds", style = MaterialTheme.typography.caption)
                                 }
 
@@ -411,8 +422,8 @@ var isLoading by remember { mutableStateOf(false)}
                                         mapType = "precipitation_new"
                                     },
                                     colors = ButtonDefaults.buttonColors(
-                                        contentColor = Color.Blue,
-                                        backgroundColor = Color.Blue.copy(alpha = if (mapType == "precipitation_new") 0.4f else 0.1f)
+                                        contentColor = blue_500,
+                                        backgroundColor = indigo_500.copy(alpha = if (mapType == "precipitation_new") 0.4f else 0.1f)
                                     ),
                                     contentPadding = PaddingValues(12.dp),
                                     shape = RoundedCornerShape(20.dp),
@@ -426,6 +437,7 @@ var isLoading by remember { mutableStateOf(false)}
                                     )
                                 ) {
                                     Icon(Icons.Filled.Opacity, contentDescription = null)
+                                    Spacer(modifier = Modifier.width(2.dp))
                                     Text("Rain", style = MaterialTheme.typography.caption)
                                 }
                                 Button(
@@ -435,8 +447,8 @@ var isLoading by remember { mutableStateOf(false)}
 
                                     },
                                     colors = ButtonDefaults.buttonColors(
-                                        contentColor = Color.Blue,
-                                        backgroundColor = Color.Blue.copy(alpha = if (mapType == "temp_new") 0.4f else 0.1f)
+                                        contentColor = blue_500,
+                                        backgroundColor = indigo_500.copy(alpha = if (mapType == "temp_new") 0.4f else 0.1f)
                                     ),
                                     contentPadding = PaddingValues(12.dp),
                                     shape = RoundedCornerShape(20.dp),
@@ -450,6 +462,7 @@ var isLoading by remember { mutableStateOf(false)}
                                     )
                                 ) {
                                     Icon(Icons.Filled.Thermostat, contentDescription = null)
+                                    Spacer(modifier = Modifier.width(2.dp))
                                     Text("Temperature", style = MaterialTheme.typography.caption)
                                 }
                                 Button(
@@ -457,8 +470,8 @@ var isLoading by remember { mutableStateOf(false)}
                                         mapType = "wind_new"
                                     },
                                     colors = ButtonDefaults.buttonColors(
-                                        contentColor = Color.Blue,
-                                        backgroundColor = Color.Blue.copy(alpha = if (mapType == "wind_new") 0.4f else 0.1f)
+                                        contentColor = blue_500,
+                                        backgroundColor = indigo_500.copy(alpha = if (mapType == "wind_new") 0.4f else 0.1f)
                                     ),
                                     contentPadding = PaddingValues(12.dp),
                                     shape = RoundedCornerShape(20.dp),
@@ -472,6 +485,7 @@ var isLoading by remember { mutableStateOf(false)}
                                     )
                                 ) {
                                     Icon(Icons.Filled.Air, contentDescription = null)
+                                    Spacer(modifier = Modifier.width(2.dp))
                                     Text("Wind", style = MaterialTheme.typography.caption)
                                 }
                             }
@@ -482,7 +496,7 @@ var isLoading by remember { mutableStateOf(false)}
                                     .fillMaxWidth()
                                     .height(140.dp)
                                     .background(
-                                        color = Color.White,
+                                        color = cardColor,
                                         shape = RoundedCornerShape(20.dp)
                                     )
                             ) {
@@ -588,7 +602,7 @@ Row() {
                 Icon(
                     Icons.Filled.Air,
                     contentDescription = "",
-                    tint = Color.Black,
+
                     modifier = Modifier.size(16.dp)
                 )
                 Spacer(modifier = Modifier.width(3.dp))
@@ -724,7 +738,7 @@ Row() {
                                             .height(100.dp)
                                             .width(80.dp)
                                             .background(
-                                                color = Color.White.copy(alpha = 0.85f),
+                                                color = cardColor,
                                                 shape = RoundedCornerShape(20.dp)
                                             )
                                     ) {
@@ -790,7 +804,7 @@ Row() {
                                             .height(100.dp)
                                             .width(80.dp)
                                             .background(
-                                                color = Color.White.copy(alpha = 0.85f),
+                                                color = cardColor,
                                                 shape = RoundedCornerShape(20.dp)
                                             )
                                     ) {
@@ -820,7 +834,7 @@ Row() {
                                             .height(100.dp)
                                             .width(80.dp)
                                             .background(
-                                                color = Color.White.copy(alpha = 0.85f),
+                                                color = cardColor,
                                                 shape = RoundedCornerShape(20.dp)
                                             )
                                     ) {
@@ -866,13 +880,19 @@ Row() {
                                         .clickable {
                                             val oldIndex = index
                                             index = 0
-                                            model.remove(
-                                                SavedLocation(
-                                                    model.locations[oldIndex].name,
-                                                    model.locations[oldIndex].data.latitude.round(2),
-                                                    model.locations[oldIndex].data.longitude.round(2)
+                                            scope.launch {
+                                                model.remove(
+                                                    SavedLocation(
+                                                        model.locations[oldIndex].name,
+                                                        model.locations[oldIndex].data.latitude.round(
+                                                            2
+                                                        ),
+                                                        model.locations[oldIndex].data.longitude.round(
+                                                            2
+                                                        )
+                                                    )
                                                 )
-                                            )
+                                            }
                                         },contentAlignment = Alignment.Center) {
                                         Text(
                                             "Remove from list",
@@ -891,15 +911,19 @@ Row() {
                                         )
                                         .clickable {
                                             if (!model.myLocations.any { it.name == model.locations[index].name }) {
-                                                model.saveLocation(
-                                                    SavedLocation(
-                                                        model.locations[index].name,
-                                                        model.locations[index].data.latitude.round(2),
-                                                        model.locations[index].data.longitude.round(
-                                                            2
+                                                scope.launch {
+                                                    model.saveLocation(
+                                                        SavedLocation(
+                                                            model.locations[index].name,
+                                                            model.locations[index].data.latitude.round(
+                                                                2
+                                                            ),
+                                                            model.locations[index].data.longitude.round(
+                                                                2
+                                                            )
                                                         )
                                                     )
-                                                )
+                                                }
                                             }
                                         }, contentAlignment = Alignment.Center
                                     ) {
@@ -937,7 +961,10 @@ Row() {
                       index = index
                   )
               }
-              Row(modifier = Modifier.padding(10.dp).padding(top = 10.dp).fillMaxWidth(),horizontalArrangement = Arrangement.End) {
+              Row(modifier = Modifier
+                  .padding(10.dp)
+                  .padding(top = 10.dp)
+                  .fillMaxWidth(),horizontalArrangement = Arrangement.End) {
                   IconButton(onClick = {
                       controller.navigate("Settings")
                   }) {
@@ -983,11 +1010,14 @@ private fun MapViewContainer(
     var hasOverlay by remember { mutableStateOf(false)}
     val coordinates = LatLng(latitude,longitude)
     var overlays:MutableList<TileOverlay>  by remember { mutableStateOf(  ArrayList<TileOverlay>())}
-Box(contentAlignment = Alignment.CenterEnd,modifier = Modifier.fillMaxSize()) {
+val darkTheme = isSystemInDarkTheme()
+    Box(contentAlignment = Alignment.CenterEnd,modifier = Modifier.fillMaxSize()) {
     AndroidView({ map }) { mapView ->
 
         val mapZoom = zoom
+
         mapView.getMapAsync {
+            it.setMapStyle(if(darkTheme) MapStyleOptions.loadRawResourceStyle(context,R.raw.map_in_dark) else null)
             val tileProvider: TileProvider = object : UrlTileProvider(256, 256) {
                 override fun getTileUrl(x: Int, y: Int, zoom: Int): URL? {
 
