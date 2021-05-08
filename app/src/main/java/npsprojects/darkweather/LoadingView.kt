@@ -40,6 +40,9 @@ import kotlin.math.cos
 import kotlin.math.pow
 import kotlin.math.sin
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.text.style.TextAlign
+import npsprojects.darkweather.ui.theme.orange_500
+import npsprojects.darkweather.ui.theme.yellow_500
 
 enum class WeatherError {
     NONETWORK, NOGPS, NOPERMISSION, NONE
@@ -81,21 +84,22 @@ fun LoadingView(model: WeatherViewModel) {
 
                 WeatherError.NOPERMISSION ->
                     Column(
-                        modifier = Modifier.fillMaxSize(),
+                        Modifier
+                            .padding(horizontal = 16.dp)
+                            .fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+
+                        Icon(
+                            Icons.TwoTone.Warning,
+                            modifier = Modifier.size(50.dp),
+                            contentDescription = "",
+                            tint = yellow_500
+                        )
+                          Text("Location access is denied. You can enable it in Settings",style = MaterialTheme.typography.h4,textAlign = TextAlign.Center)
 
 
-                        ) {
-                        Box(
-                            modifier = Modifier
-                                .padding(bottom = 100.dp)
-                                .fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) {
-
-                            LoadingAnimation()
-
-                        }
                     }
                 WeatherError.NOGPS ->
                     Column(
@@ -104,14 +108,22 @@ fun LoadingView(model: WeatherViewModel) {
 
 
                         ) {
-                        Box(
-                            modifier = Modifier
-                                .padding(bottom = 100.dp)
+                        Column(
+                            Modifier
+                                .padding(horizontal = 16.dp)
                                 .fillMaxSize(),
-                            contentAlignment = Alignment.Center
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
                         ) {
 
-                            LoadingAnimation()
+                            Icon(
+                                Icons.TwoTone.Warning,
+                                modifier = Modifier.size(50.dp),
+                                contentDescription = "",
+                                tint = orange_500
+                            )
+                            Text("We cannot find your location",style = MaterialTheme.typography.h4,textAlign = TextAlign.Center)
+
 
                         }
                     }
@@ -119,20 +131,19 @@ fun LoadingView(model: WeatherViewModel) {
                 WeatherError.NONETWORK -> Column(
                     Modifier
                         .padding(horizontal = 16.dp)
-                        .fillMaxSize()
+                        .fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
                 ) {
-                    Spacer(modifier = Modifier.height(200.dp))
+
                     Icon(
                         Icons.TwoTone.Warning,
                         modifier = Modifier.size(50.dp),
                         contentDescription = "",
                         tint = red_500
                     )
-                    Text(
-                        "Error while getting your data, please check your internet connection.",
-                        style = MaterialTheme.typography.body2,
-                        modifier = Modifier.padding(vertical = 10.dp)
-                    )
+                   Text("There is a problem with your internet connection",style = MaterialTheme.typography.h4,textAlign = TextAlign.Center)
+
 
                 }
 

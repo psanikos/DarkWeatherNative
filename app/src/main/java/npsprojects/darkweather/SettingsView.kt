@@ -85,7 +85,7 @@ fun SettingsView(model: WeatherViewModel, controller: NavController) {
                     modifier = Modifier
                         .height(30.dp)
                         .width(180.dp)
-                        .clip(RoundedCornerShape(20)), color = Color.LightGray
+                        .clip(RoundedCornerShape(20.dp)), color = Color.LightGray
                 ) {
                     Row() {
                         Box(modifier = Modifier

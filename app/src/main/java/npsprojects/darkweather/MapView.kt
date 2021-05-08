@@ -207,7 +207,10 @@ fun MapViewContainer(
                     .tileProvider(tileProvider).fadeIn(true)
             )
 
+
             tile?.let { overlay ->
+                overlay.transparency = 0.2f
+              
                 overlays.add(overlay)
             }
             overlays.forEachIndexed { index, item ->

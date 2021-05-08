@@ -1,5 +1,6 @@
 package npsprojects.darkweather
 
+import android.util.Log
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.*
@@ -32,8 +33,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.navigate
+import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.TileOverlay
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import npsprojects.darkweather.MyApp.context
 import npsprojects.darkweather.ui.theme.*
@@ -197,7 +200,7 @@ fun NewMapView(model: WeatherViewModel,  controller: NavController) {
                                     modifier = Modifier
                                         .padding(start = 20.dp)
                                         .fillMaxWidth(0.9f),
-                                    textStyle = MaterialTheme.typography.caption,
+                                    textStyle = MaterialTheme.typography.caption.copy(color = if(isSystemInDarkTheme()) Color.LightGray else Color.DarkGray),
 
                                     )
                                 if (searchTerm == "") {
@@ -274,6 +277,7 @@ fun NewMapView(model: WeatherViewModel,  controller: NavController) {
                                 ) {
                                     item {
                                         IconButton(onClick = {
+                                            model.error = WeatherError.NONE
                                             model.getCurrentLocationWeather()
                                         }) {
                                             Box(
@@ -703,7 +707,7 @@ fun NewMapView(model: WeatherViewModel,  controller: NavController) {
                             item {
                                 Text(
                                      if(isOnline())"No locations added yet and there is not access to your location" else "You are not connected to the internet",
-                                    style = MaterialTheme.typography.body2.copy(color = Color.Gray),modifier = Modifier.padding(10.dp)
+                                    style = MaterialTheme.typography.body2.copy(color = Color.Gray),modifier = Modifier.padding(10.dp),textAlign = TextAlign.Center
                                 )
                             }
                         }

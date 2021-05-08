@@ -267,15 +267,34 @@ class WeatherViewModel : ViewModel() {
                 } else {
                     getSavedLocations() {
                         getSavedLocationData() {
-                            GlobalScope.launch {
-                                delay(2000)
-                                println("loading complete")
+                            if(ContextCompat.checkSelfPermission(
+                                    context,
+                                    Manifest.permission.ACCESS_COARSE_LOCATION
+                                ) == PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(
+                                    context,
+                                    Manifest.permission.ACCESS_FINE_LOCATION
+                                ) == PackageManager.PERMISSION_GRANTED) {
                                 error = WeatherError.NOGPS
+                            }
+                            else {
+                                error = WeatherError.NOPERMISSION
+                            }
+                            GlobalScope.launch {
+                                delay(3000)
+                                println("loading complete")
+
                                 isLoading = false
                             }
                         }
                     }
                 }
+            }
+        }
+        else {
+            error = WeatherError.NONETWORK
+            GlobalScope.launch {
+                delay(3000)
+                isLoading = false
             }
         }
     }

@@ -6,6 +6,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -18,7 +19,11 @@ import androidx.core.view.WindowCompat
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.*
+import com.google.android.gms.ads.initialization.InitializationStatus
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
+import kotlinx.coroutines.*
 import npsprojects.darkweather.ui.theme.DarkWeatherTheme
 
 
@@ -38,7 +43,8 @@ object MyApp {
 class MainActivity : ComponentActivity() {
 
     private val model by viewModels<WeatherViewModel>()
-
+    private var mInterstitialAd: InterstitialAd? = null
+    private final var TAG = "MainActivity"
     @ExperimentalFoundationApi
     @ExperimentalAnimationApi
     @ExperimentalMaterialApi
@@ -55,7 +61,43 @@ class MainActivity : ComponentActivity() {
             MobileAds.initialize(
                 this
             ) {
+                val adRequest = AdRequest.Builder().build()
+                val adId = "ca-app-pub-9340838273925003/2192844146"
+                val testId = "ca-app-pub-3940256099942544/1033173712"
+                InterstitialAd.load(this,adId, adRequest, object : InterstitialAdLoadCallback() {
+                    override fun onAdFailedToLoad(adError: LoadAdError) {
+                        Log.d(TAG, adError?.message)
+                        mInterstitialAd = null
+                    }
 
+                    override fun onAdLoaded(interstitialAd: InterstitialAd) {
+                        Log.d(TAG, "Ad was loaded.")
+                        mInterstitialAd = interstitialAd
+                        GlobalScope.launch(Dispatchers.Main){
+
+                            delay(8000)
+                            if (mInterstitialAd != null) {
+                                mInterstitialAd?.show(MyApp.activity)
+                            } else {
+                                Log.d("TAG", "The interstitial ad wasn't ready yet.")
+                            }
+                        }
+                    }
+                })
+                mInterstitialAd?.fullScreenContentCallback = object: FullScreenContentCallback() {
+                    override fun onAdDismissedFullScreenContent() {
+                        Log.d(TAG, "Ad was dismissed.")
+                    }
+
+                    override fun onAdFailedToShowFullScreenContent(adError: AdError?) {
+                        Log.d(TAG, "Ad failed to show.")
+                    }
+
+                    override fun onAdShowedFullScreenContent() {
+                        Log.d(TAG, "Ad showed fullscreen content.")
+                        mInterstitialAd = null;
+                    }
+                }
             }
             DarkWeatherTheme {
 
@@ -66,6 +108,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+
     }
 
 

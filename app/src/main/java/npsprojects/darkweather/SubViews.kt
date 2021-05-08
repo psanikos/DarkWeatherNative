@@ -1,5 +1,6 @@
 package npsprojects.darkweather
 
+import android.text.Layout
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -15,11 +16,13 @@ import androidx.compose.material.icons.filled.Opacity
 import androidx.compose.material.icons.twotone.Warning
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -49,10 +52,11 @@ fun RainTimeAlert(rainProbability: List<DataX>) {
     var timeUntilRain: Long? = null
     var timeUntilEnd: Long? = null
     var firstRainTimeIndex: Int? = rainProbability.indexOfFirst { it.precipProbability!! >= 0.5 }
-
+    var precip = "rain"
     if (firstRainTimeIndex != null && firstRainTimeIndex >= 0) {
         timeUntilRain =
             (1000 * rainProbability[firstRainTimeIndex].time!!.toLong() - Calendar.getInstance().timeInMillis)
+        precip = rainProbability[firstRainTimeIndex].precipType ?: "rain"
     }
     if (firstRainTimeIndex != null && firstRainTimeIndex >= 0) {
         rainProbability.forEachIndexed { index, item ->
@@ -61,6 +65,7 @@ fun RainTimeAlert(rainProbability: List<DataX>) {
                     if (item.precipProbability!! <= 0.4) {
                         timeUntilEnd =
                             1000 * item.time!!.toLong() - Calendar.getInstance().timeInMillis
+                        precip = item.precipType ?: "rain"
                     }
                 }
             }
@@ -96,12 +101,12 @@ fun RainTimeAlert(rainProbability: List<DataX>) {
                             modifier = Modifier.padding(6.dp).height(90.dp)
                         ) {
                             Text(
-                                "Rain alert",
+                                if(precip == "rain") "Rain alert" else "Snow alert",
                                 style = MaterialTheme.typography.h4.copy(fontSize = 14.sp)
                             )
                         if (timeUntilRain > 0) {
                             Text(
-                                "Rain starts in " +
+                                (if(precip == "rain") "Rain starts in " else "Snow starts") +
                                         String.format(
                                             "%d hours and %d min",
                                             TimeUnit.MILLISECONDS.toHours(timeUntilRain),
@@ -119,7 +124,7 @@ fun RainTimeAlert(rainProbability: List<DataX>) {
                         } else {
                             if (timeUntilEnd != null) {
                                 Text(
-                                    "Rain ends in " +
+                                    (if(precip == "rain") "Rain ends in " else "Snow ends in") +
                                             String.format(
                                                 "%d hours and %d min",
                                                 TimeUnit.MILLISECONDS.toHours(timeUntilEnd!!),
@@ -135,7 +140,7 @@ fun RainTimeAlert(rainProbability: List<DataX>) {
                                 )
                             } else {
                                 Text(
-                                    "The Rain will continue ",
+                                    if(precip == "rain") "The Rain will continue " else "It will continue to snow",
                                     style = MaterialTheme.typography.body2,
                                     modifier = Modifier.padding(vertical = 5.dp)
                                 )
@@ -162,77 +167,98 @@ fun HourlyView(model: WeatherViewModel,index: Int){
 
         model.locations[index].data.hourly.data.forEach {
             item {
-                Box(
-                    modifier = Modifier
-                        .height(140.dp)
-                        .width(100.dp)
-                        .padding(end = 10.dp)
-                        .background(
-                            brush = Brush.verticalGradient(
-                                colors = listOf(
-                                    if (!isSystemInDarkTheme()) Color.White
-                                    else Color.Black,
-                                    if (!isSystemInDarkTheme()) Color.White.copy(
-                                        alpha = 0.55F
-                                    ) else Color.Black.copy(
-                                        alpha = 0.55F
-                                    )
-
-                                )
-                            ), shape = RoundedCornerShape(20.dp)
-                        ),
-                    contentAlignment = Alignment.Center
-
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    Column(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.SpaceEvenly,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-
-                        ) {
-
-                        Text(
-                            DateTimeFormatter.ofPattern("HH:mm").format(
-                                LocalDateTime.ofInstant(
-                                    Instant.ofEpochMilli(1000 * it.time!!.toLong()),
-                                    ZoneId.systemDefault()
-                                )
-                            ),
-                            style = MaterialTheme.typography.caption
-                        )
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(5.dp)
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.drop),
-                                contentDescription = "",
-                                modifier = Modifier
-                                    .size(16.dp),
-                                colorFilter = ColorFilter.tint(color = indigo_500)
+                    if(DateTimeFormatter.ofPattern("HH:mm").format(
+                            LocalDateTime.ofInstant(
+                                Instant.ofEpochMilli(1000 * it.time!!.toLong()),
+                                ZoneId.systemDefault()
                             )
+                        ) == "00:00"){
+                        Text(DateTimeFormatter.ofPattern("EEEE").format(
+                            LocalDateTime.ofInstant(
+                                Instant.ofEpochMilli(1000 * it.time!!.toLong()),
+                                ZoneId.systemDefault()
+                            )
+                        ),style = MaterialTheme.typography.body1.copy(fontWeight = FontWeight.Bold))
+                    }
+
+                    Box(
+                        modifier = Modifier
+                            .height(140.dp)
+                            .width(100.dp)
+                            .padding(end = 10.dp)
+                            .background(
+                                brush = Brush.verticalGradient(
+                                    colors = listOf(
+                                        if (!isSystemInDarkTheme()) Color.White
+                                        else Color.Black,
+                                        if (!isSystemInDarkTheme()) Color.White.copy(
+                                            alpha = 0.55F
+                                        ) else Color.Black.copy(
+                                            alpha = 0.55F
+                                        )
+
+                                    )
+                                ), shape = RoundedCornerShape(20.dp)
+                            ),
+                        contentAlignment = Alignment.Center
+
+                    ) {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.SpaceEvenly,
+                            horizontalAlignment = Alignment.CenterHorizontally,
+
+                            ) {
+
                             Text(
-                                "${(100 * it.precipProbability!!).roundToInt()}%",
+                                DateTimeFormatter.ofPattern("HH:mm").format(
+                                    LocalDateTime.ofInstant(
+                                        Instant.ofEpochMilli(1000 * it.time!!.toLong()),
+                                        ZoneId.systemDefault()
+                                    )
+                                ),
                                 style = MaterialTheme.typography.caption
                             )
-                        }
-                        Image(
-                            painter = painterResource(id = getWeatherIcon(it.icon!!)),
-                            contentDescription = "",
-                            modifier = Modifier
-                                .height(40.dp)
-                                .width(40.dp)
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(5.dp)
+                            ) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.drop),
+                                    contentDescription = "",
+                                    modifier = Modifier
+                                        .size(16.dp),
+                                    colorFilter = ColorFilter.tint(color = indigo_500)
+                                )
+                                Text(
+                                    "${(100 * it.precipProbability!!).roundToInt()}%",
+                                    style = MaterialTheme.typography.caption
+                                )
+                            }
+                            Image(
+                                painter = painterResource(id = getWeatherIcon(it.icon!!)),
+                                contentDescription = "",
+                                modifier = Modifier
+                                    .height(40.dp)
+                                    .width(40.dp)
 
-                        )
-                        Text(
-                            "${it.temperature!!.toInt()}°",
-                            style = MaterialTheme.typography.body1.copy(
-                                shadow = Shadow(
-                                    color = Color.Black
+                            )
+                            Text(
+                                "${it.temperature!!.toInt()}°",
+                                style = MaterialTheme.typography.body1.copy(
+                                    shadow = Shadow(
+                                        color = Color.Black
+                                    )
                                 )
                             )
-                        )
+                        }
                     }
+
+
                 }
             }
         }
