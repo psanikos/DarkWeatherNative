@@ -103,9 +103,6 @@ fun MyApp(model: WeatherViewModel) {
         composable("Main") {
             MainPageView(model = model, controller = controller)
         }
-        composable("Add") {
-            AddPlaceView(model = model)
-        }
         composable("Settings") {
             SettingsView(model = model, controller = controller)
         }
