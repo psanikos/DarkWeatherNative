@@ -15,8 +15,8 @@ android {
         applicationId "npsprojects.darkweather"
         minSdkVersion 27
         targetSdkVersion 30
-        versionCode 29
-        versionName '1.4.0'
+        versionCode 30
+        versionName '1.4.1'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -46,7 +46,7 @@ android {
 
 dependencies {
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.0-alpha01'
-
+    implementation "com.google.accompanist:accompanist-insets:0.9.1"
     implementation 'com.google.android.gms:play-services-maps:17.0.1'
     implementation 'com.google.android.gms:play-services-location:18.0.0'
     implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'

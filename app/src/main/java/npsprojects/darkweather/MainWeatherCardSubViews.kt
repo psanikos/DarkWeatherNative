@@ -24,6 +24,8 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -43,10 +45,16 @@ enum class RainTimeCategory {
 @Composable
 fun WeeklyTimes(data: List<Data>, units: WeatherUnits) {
 
-Box(modifier = Modifier.fillMaxWidth().background(color = if (isSystemInDarkTheme()) Color(0xFF101010) else Color.White,shape = RoundedCornerShape(20.dp))){
+Box(modifier = Modifier
+    .fillMaxWidth()
+    .background(
+        color = if (isSystemInDarkTheme()) Color(0xFF101010) else Color.White,
+        shape = RoundedCornerShape(20.dp)
+    )){
     Column(
         modifier = Modifier
-            .padding(10.dp).fillMaxWidth(),
+            .padding(10.dp)
+            .fillMaxWidth(),
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
@@ -132,5 +140,73 @@ fun WeeklyTile(data: Data, units: WeatherUnits) {
 
             }
         }
+    }
+}
+
+@Composable
+fun AirQualityView(index:Int){
+    val color = when(index){
+        1-> teal_500
+        2-> yellow_500
+        3-> orange_500
+        4-> pink_500
+        else -> red_500
+    }
+    val name = when(index){
+        1-> "Good"
+        2-> "Fair"
+        3-> "Moderate"
+        4-> "Poor"
+        else -> "Very poor"
+    }
+    val summary = when(index){
+        1-> "Air quality is considered satisfactory, and air pollution poses little or no risk"
+        2-> "Air quality is acceptable; however, for some pollutants there may be a moderate health concern for a very small number of people who are unusually sensitive to air pollution."
+        3-> "Members of sensitive groups may experience health effects. The general public is not likely to be affected."
+        4-> "Everyone may begin to experience health effects; members of sensitive groups may experience more serious health effects"
+        else -> "Health warnings of emergency conditions. The entire population is more likely to be affected."
+    }
+    Box(modifier = Modifier
+        .fillMaxWidth()
+        .height(160.dp)
+        .background(
+            color = if (isSystemInDarkTheme()) Color.Black else Color.White,
+            shape = RoundedCornerShape(20.dp)
+        )){
+        Column(modifier = Modifier.fillMaxSize(),horizontalAlignment = Alignment.Start,verticalArrangement = Arrangement.SpaceBetween) {
+          Row(modifier = Modifier
+              .padding(top= 10.dp,start = 10.dp,end = 10.dp)
+              .fillMaxWidth(),verticalAlignment = Alignment.CenterVertically,horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+            Icon(Icons.Filled.Air,contentDescription = "")
+            Text("Air quality",style = MaterialTheme.typography.caption)
+          }
+            Row(modifier = Modifier
+                .padding(horizontal = 10.dp)
+                .fillMaxWidth(),verticalAlignment = Alignment.CenterVertically,horizontalArrangement = Arrangement.Start) {
+
+                    Text("$index",style = MaterialTheme.typography.h1.copy(fontWeight = FontWeight.Black,color = color),
+                        modifier = Modifier.padding(end = 10.dp))
+
+                Column(horizontalAlignment = Alignment.Start,verticalArrangement = Arrangement.Top) {
+
+                    Text(name, style = MaterialTheme.typography.body1.copy(color = Color.Gray,fontWeight = FontWeight.Bold),modifier = Modifier.padding(bottom = 4.dp))
+
+                    Text(
+                        summary,
+                        style = MaterialTheme.typography.caption,
+                        letterSpacing = 1.1.sp,lineHeight = 14.sp
+
+                    )
+
+                } }
+            Text("")
+
+        }
+    }
+}
+@Preview
+@Composable fun Previews() {
+    Box(modifier = Modifier.fillMaxWidth().height(200.dp).background(color = Color(0xFFEFEFEF))) {
+        AirQualityView(index = 5)
     }
 }

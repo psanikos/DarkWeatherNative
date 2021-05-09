@@ -19,6 +19,7 @@ import androidx.core.view.WindowCompat
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.android.gms.ads.*
 import com.google.android.gms.ads.initialization.InitializationStatus
 import com.google.android.gms.ads.interstitial.InterstitialAd
@@ -99,12 +100,14 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
-            DarkWeatherTheme {
 
-                if (model.hasInit) {
-                    MyApp(model = model)
-                } else {
-                    FirstScreen(model = model)
+            DarkWeatherTheme {
+                ProvideWindowInsets {
+                    if (model.hasInit) {
+                        MyApp(model = model)
+                    } else {
+                        FirstScreen(model = model)
+                    }
                 }
             }
         }

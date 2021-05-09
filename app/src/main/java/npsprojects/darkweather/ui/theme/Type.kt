@@ -31,8 +31,7 @@ private val appFont = FontFamily(
         Font(
             resId = R.font.latothin,
             weight = FontWeight.Thin
-        ),
-    )
+        ))
 )
 
 // Set of Material typography styles to start with

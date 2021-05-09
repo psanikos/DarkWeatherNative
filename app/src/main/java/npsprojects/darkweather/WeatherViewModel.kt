@@ -34,12 +34,44 @@ import java.net.Socket
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.math.round
+import com.google.gson.annotations.SerializedName
 
+
+const val openWeatherKey = "e1e45feaea76d66517c25291f2633d9a"
+
+class LocationGeocoding : ArrayList<LocationGeocodingItem>()
+
+data class LocationGeocodingItem(
+    @SerializedName("country")
+    val country: String? = "",
+    @SerializedName("lat")
+    val lat: Double? = 0.0,
+    @SerializedName("local_names")
+    val localNames: LocalNames? = LocalNames(),
+    @SerializedName("lon")
+    val lon: Double? = 0.0,
+    @SerializedName("name")
+    val name: String? = "",
+    @SerializedName("state")
+    val state: String? = ""
+)
+
+data class LocalNames(
+    @SerializedName("ascii")
+    val ascii: String? = "",
+    @SerializedName("ca")
+    val ca: String? = "",
+    @SerializedName("en")
+    val en: String? = "",
+    @SerializedName("feature_name")
+    val featureName: String? = ""
+)
 
 class WeatherModel constructor(
     val name: String,
     val data: WeatherResponse,
-    val isCurrent: Boolean
+    val isCurrent: Boolean,
+    val airQuality: AirQuality?
 )
 
 class SavedLocation constructor(
@@ -51,6 +83,46 @@ class SavedLocation constructor(
         return "[$name|${latitude.round(5)}|${longitude.round(5)}]"
     }
 }
+
+data class AirQuality(
+//    @SerializedName("coord")
+//    val coord: List<Int>? = listOf(),
+    @SerializedName("list")
+    val list: List<DetailsList>? = listOf()
+)
+
+data class DetailsList(
+//    @SerializedName("components")
+//    val components: Components? = Components(),
+//    @SerializedName("dt")
+//    val dt: Int? = 0,
+    @SerializedName("main")
+    val main: Main? = Main()
+)
+
+data class Components(
+    @SerializedName("co")
+    val co: Double? = 0.0,
+    @SerializedName("nh3")
+    val nh3: Double? = 0.0,
+    @SerializedName("no")
+    val no: Double? = 0.0,
+    @SerializedName("no2")
+    val no2: Double? = 0.0,
+    @SerializedName("o3")
+    val o3: Double? = 0.0,
+    @SerializedName("pm10")
+    val pm10: Double? = 0.0,
+    @SerializedName("pm2_5")
+    val pm25: Double? = 0.0,
+    @SerializedName("so2")
+    val so2: Double? = 0.0
+)
+
+data class Main(
+    @SerializedName("aqi")
+    val aqi: Int? = 0
+)
 
 
 fun Double.round(decimals: Int): Double {
@@ -68,13 +140,14 @@ class WeatherViewModel : ViewModel() {
     var currentLocationName: String by mutableStateOf("My Location")
     var locations: List<WeatherModel> by mutableStateOf(listOf())
     var units: WeatherUnits by mutableStateOf(WeatherUnits.AUTO)
-    var searchedAdresses: MutableList<Address> by mutableStateOf(mutableListOf())
+    var searchedAdresses: MutableList<LocationGeocodingItem> by mutableStateOf(mutableListOf())
     var myLocations: List<SavedLocation> by mutableStateOf(listOf())
     var error: WeatherError by mutableStateOf(WeatherError.NONE)
     var hasInit: Boolean by mutableStateOf(false)
     private val _permissionGranted = MutableLiveData(false)
     val permissionGranted = _permissionGranted
 
+fun airApiCallString(lat:Double,lon:Double):String = "https://api.openweathermap.org/data/2.5/air_pollution?lat=$lat&lon=$lon&appid=$openWeatherKey"
 
     fun onPermissionGranted() = _permissionGranted.postValue(true)
 
@@ -84,7 +157,23 @@ class WeatherViewModel : ViewModel() {
         isInit()
     }
 
+fun getAirDataFromCoordinates(lat:Double,lon:Double,completion:(AirQuality?)->Unit){
+    DataFetcher.getFromUrl(url = airApiCallString(lat = lat,lon = lon)) {
+        if (it != null) {
+            println("DATAAA $it")
+            val gson = Gson()
 
+            val out =
+                gson.fromJson<AirQuality>(it.toString(), AirQuality::class.java)
+
+            completion(out)
+        } else {
+
+            completion(null)
+        }
+    }
+
+}
 
 
     fun hasRun() {
@@ -151,10 +240,22 @@ class WeatherViewModel : ViewModel() {
         if (input != "" && isOnline()) {
             searchedAdresses.clear()
             val context = MyApp.context
+            println("searching ${input}")
+            val url = "https://api.openweathermap.org/geo/1.0/direct?q=$input&limit=3&appid=$openWeatherKey"
+            DataFetcher.getFromUrl(url = url) {
+                if (it != null) {
+                    val gson = Gson()
 
-            val geocoder: Geocoder = Geocoder(context, Locale.getDefault())
-            val addresses = geocoder.getFromLocationName(input, 3)
-            searchedAdresses = addresses
+                    val out =
+                        gson.fromJson<LocationGeocoding>(it.toString(), LocationGeocoding::class.java)
+                    searchedAdresses = out.toMutableList()
+                    println("got ${searchedAdresses.size}")
+                }
+            }
+//            val geocoder: Geocoder = Geocoder(context, Locale.getDefault())
+//            val addresses = geocoder.getFromLocationName(input, 3)
+//            searchedAdresses = addresses
+//            println("got ${searchedAdresses.size}")
         }
     }
 
@@ -478,13 +579,18 @@ class WeatherViewModel : ViewModel() {
                         gson.fromJson<WeatherResponse>(it.toString(), WeatherResponse::class.java)
                     currentLocationData = out
                     if (currentLocationData != null) {
+                 getAirDataFromCoordinates(lat = currentLocation!!.latitude,lon = currentLocation!!.longitude) {
                         val current = WeatherModel(
                             name = currentLocationName,
                             data = currentLocationData!!,
-                            isCurrent = true
+                            isCurrent = true,
+                            airQuality = it
                         )
-                        locations = listOf(current)
-                        completion()
+                     locations = listOf(current)
+                     completion()
+                 }
+
+
                     }
                 } else {
                     error = WeatherError.NONETWORK
@@ -506,7 +612,7 @@ class WeatherViewModel : ViewModel() {
       val unit =
           if (units == WeatherUnits.AUTO) "auto" else if (units == WeatherUnits.SI) "si" else "us"
       if (isOnline()) {
-          DataFetcher.getFromUrl(url = "https://api.darksky.net/forecast/0b2f0e7f415678b66d4918b96d6672fa/${latitude},${longitude}?lang=en&units=$unit") {
+          DataFetcher.getFromUrl(url = "https://api.darksky.net/forecast/0b2f0e7f415678b66d4918b96d6672fa/${latitude},${longitude}?lang=en&units=$unit") { it ->
               if (it != null) {
                   println("DATAAA $it")
                   val gson = Gson()
@@ -515,13 +621,17 @@ class WeatherViewModel : ViewModel() {
                       gson.fromJson<WeatherResponse>(it.toString(), WeatherResponse::class.java)
 
                   if (out != null) {
-                      val current = WeatherModel(
-                          name = name,
-                          data = out,
-                          isCurrent = false
-                      )
+              getAirDataFromCoordinates(lat = latitude,lon = longitude){ air ->
+                  val current = WeatherModel(
+                      name = name,
+                      data = out,
+                      isCurrent = false,
+                      airQuality = air
+                  )
+                  completion(current)
+              }
 
-                      completion(current)
+
                   }
               } else {
                   completion(null)

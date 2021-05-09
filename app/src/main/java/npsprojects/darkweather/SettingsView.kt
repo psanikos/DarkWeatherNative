@@ -85,7 +85,7 @@ fun SettingsView(model: WeatherViewModel, controller: NavController) {
                     modifier = Modifier
                         .height(30.dp)
                         .width(180.dp)
-                        .clip(RoundedCornerShape(20.dp)), color = Color.LightGray
+                        .clip(RoundedCornerShape(12.dp)), color = Color.LightGray
                 ) {
                     Row() {
                         Box(modifier = Modifier
@@ -141,7 +141,7 @@ fun SettingsView(model: WeatherViewModel, controller: NavController) {
                     Box(
                         modifier = Modifier
                             .padding(horizontal = 10.dp)
-                            .clip(RoundedCornerShape(10))
+                            .clip(RoundedCornerShape(20.dp))
                             .fillMaxWidth()
                             .height(200.dp)
                             .background(
@@ -180,7 +180,7 @@ fun SettingsView(model: WeatherViewModel, controller: NavController) {
                                     model.askPermission()
                                 }, colors = ButtonDefaults.buttonColors(
                                     contentColor = green_200, backgroundColor = green_600
-                                )
+                                ),shape = RoundedCornerShape(20.dp)
                             ) {
                                 Text("Allow access", style = MaterialTheme.typography.button)
                             }
