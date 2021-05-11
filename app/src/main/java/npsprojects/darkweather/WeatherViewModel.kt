@@ -236,7 +236,7 @@ fun getAirDataFromCoordinates(lat:Double,lon:Double,completion:(AirQuality?)->Un
         isLoading = false
     }
 
-    fun getCoordinatesFromLocation(input: String) {
+    fun getCoordinatesFromLocation(input: String,completion:(Boolean)->Unit) {
         if (input != "" && isOnline()) {
             searchedAdresses.clear()
             val context = MyApp.context
@@ -249,7 +249,16 @@ fun getAirDataFromCoordinates(lat:Double,lon:Double,completion:(AirQuality?)->Un
                     val out =
                         gson.fromJson<LocationGeocoding>(it.toString(), LocationGeocoding::class.java)
                     searchedAdresses = out.toMutableList()
+                    if (out.size == 0){
+                        completion(false)
+                    }
+                    else {
+                        completion(true)
+                    }
                     println("got ${searchedAdresses.size}")
+                }
+                else {
+                    completion(false)
                 }
             }
 //            val geocoder: Geocoder = Geocoder(context, Locale.getDefault())
@@ -265,24 +274,29 @@ fun getAirDataFromCoordinates(lat:Double,lon:Double,completion:(AirQuality?)->Un
         longitude: Double,
         completion: (String) -> Unit
     ) {
-        val addresses: List<Address>?
-        val geocoder: Geocoder = Geocoder(context, Locale.getDefault())
+        var addresses: List<Address>
+        val geocoder: Geocoder = Geocoder(context)
         if (isOnline()) {
-            addresses = geocoder.getFromLocation(
-                latitude,
-                longitude,
-                1
-            )
+            try {
+                addresses = geocoder.getFromLocation(
+                    latitude,
+                    longitude,
+                    1
+                )
+            } catch (error:IOException ) {
+              println(error.message)
+                addresses = listOf()
+            }
 //        val address: String =
 //            addresses[0].getAddressLine(0) // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
 
-            if (addresses != null && addresses[0] != null) {
-                val city: String = addresses[0].locality
+            if (addresses != null && addresses.isNotEmpty()) {
+                val city: String? = addresses[0].locality ?: addresses[0].featureName ?: addresses[0].subLocality
 //        val state: String = addresses[0].getAdminArea()
 //        val country: String = addresses[0].getCountryName()
 //        val postalCode: String = addresses[0].getPostalCode()
 //        val knownName: String = addresses[0].getFeatureName() //
-                completion(city)
+                completion(city ?: "My location")
             } else {
                 completion("My location")
             }

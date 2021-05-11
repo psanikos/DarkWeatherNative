@@ -129,6 +129,7 @@ fun isOnline() : Boolean {
 }
 
 
+
 @ExperimentalFoundationApi
 @ExperimentalMaterialApi
 
@@ -155,6 +156,7 @@ fun NewMapView(model: WeatherViewModel,  controller: NavController) {
     var isAlertExpanded by remember { mutableStateOf(false) }
     val insets = LocalWindowInsets.current
     val state = rememberBottomSheetScaffoldState(drawerState = DrawerState(initialValue = DrawerValue.Closed))
+    var showAlert:Boolean by remember { mutableStateOf(false)}
     BottomSheetScaffold(
             sheetContent = {
 
@@ -210,7 +212,12 @@ fun NewMapView(model: WeatherViewModel,  controller: NavController) {
                                             ),
                                             keyboardActions = KeyboardActions(onSearch = {
                                                 scope.launch {
-                                                    model.getCoordinatesFromLocation(searchTerm)
+                                                    model.getCoordinatesFromLocation(searchTerm){
+                                                        success ->
+                                                        if (!success){
+                                                            showAlert = true
+                                                        }
+                                                    }
                                                 }
                                             }),
                                             modifier = Modifier
@@ -249,7 +256,7 @@ fun NewMapView(model: WeatherViewModel,  controller: NavController) {
                                                             model.getDataFromCoordinates(
                                                                 latitude = it.lat!!,
                                                                 longitude = it.lon!!,
-                                                               name=it.name
+                                                                name = it.name
                                                             )
                                                             { locationData ->
                                                                 if (locationData != null) {
@@ -889,6 +896,62 @@ fun NewMapView(model: WeatherViewModel,  controller: NavController) {
 
 
                         }
+                    }
+                    if (showAlert) {
+                        // below line is use to
+                        // display a alert dialog.
+                        AlertDialog(
+                            // on dialog dismiss we are setting
+                            // our dialog value to false.
+                            onDismissRequest = { showAlert = false },
+
+                            // below line is use to display title of our dialog
+                            // box and we are setting text color to white.
+                            title = { Text(text = "No results found", style = MaterialTheme.typography.h4) },
+
+                            // below line is use to display
+                            // description to our alert dialog.
+                            text = { Text("Try searching with a different name", style = MaterialTheme.typography.body2) },
+
+                            // in below line we are displaying
+                            // our confirm button.
+                            confirmButton = {
+                                // below line we are adding on click
+                                // listener for our confirm button.
+                                TextButton(
+                                    onClick = {
+                                        showAlert = false
+                                        searchTerm = ""
+
+                                    }
+                                ) {
+                                    // in this line we are adding
+                                    // text for our confirm button.
+                                    Text("Confirm", style = MaterialTheme.typography.button.copy(color = teal_500))
+                                }
+                            },
+                            // in below line we are displaying
+                            // our dismiss button.
+                            dismissButton = {
+                                // in below line we are displaying
+                                // our text button
+                                TextButton(
+                                    // adding on click listener for this button
+                                    onClick = {
+                                        showAlert = false
+
+                                    }
+                                ) {
+                                    // adding text to our button.
+                                    Text("Dismiss", style = MaterialTheme.typography.button.copy(color = red_500))
+                                }
+                            },
+                            // below line is use to add background color to our alert dialog
+                            backgroundColor = if(isSystemInDarkTheme()) Color.DarkGray else Color.White,
+
+                            // below line is use to add content color for our alert dialog.
+                            contentColor = if(isSystemInDarkTheme()) Color.White else Color.Black
+                        )
                     }
                 }
             }

@@ -180,7 +180,7 @@ fun SettingsView(model: WeatherViewModel, controller: NavController) {
                                     model.askPermission()
                                 }, colors = ButtonDefaults.buttonColors(
                                     contentColor = green_200, backgroundColor = green_600
-                                ),shape = RoundedCornerShape(20.dp)
+                                ),shape = RoundedCornerShape(12.dp)
                             ) {
                                 Text("Allow access", style = MaterialTheme.typography.button)
                             }
