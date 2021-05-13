@@ -589,8 +589,8 @@ fun getAirDataFromCoordinates(lat:Double,lon:Double,completion:(AirQuality?)->Un
                     println("DATAAA $it")
                     val gson = Gson()
 
-                    val out =
-                        gson.fromJson<WeatherResponse>(it.toString(), WeatherResponse::class.java)
+
+                    val out =  try {gson.fromJson<WeatherResponse>(it.toString(), WeatherResponse::class.java) } catch (e:IOException){ null }
                     currentLocationData = out
                     if (currentLocationData != null) {
                  getAirDataFromCoordinates(lat = currentLocation!!.latitude,lon = currentLocation!!.longitude) {

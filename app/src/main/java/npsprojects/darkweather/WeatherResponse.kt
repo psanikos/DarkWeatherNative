@@ -13,8 +13,6 @@ data class WeatherAlert(
 
     @SerializedName("title")
     val title: String = "",
-    @SerializedName("regions")
-    val regions: List<String> = listOf(),
     @SerializedName("severity")
     val severity: String = "",
     @SerializedName("time")
@@ -35,18 +33,14 @@ data class WeatherResponse(
     val currently: Currently = Currently(),
     @SerializedName("daily")
     val daily: Daily = Daily(),
-    @SerializedName("flags")
-    val flags: Flags = Flags(),
+
     @SerializedName("hourly")
     val hourly: Hourly = Hourly(),
     @SerializedName("latitude")
     val latitude: Double = 0.0,
     @SerializedName("longitude")
     val longitude: Double = 0.0,
-    @SerializedName("offset")
-    val offset: Int = 0,
-    @SerializedName("timezone")
-    val timezone: String = "",
+
     @SerializedName("alerts")
     val alerts: List<WeatherAlert> = listOf()
 ) : Parcelable
@@ -58,8 +52,7 @@ data class Currently(
     val apparentTemperature: Double? = 0.0,
     @SerializedName("cloudCover")
     val cloudCover: Double? = 0.0,
-    @SerializedName("dewPoint")
-    val dewPoint: Double? = 0.0,
+
     @SerializedName("humidity")
     val humidity: Double? = 0.0,
     @SerializedName("icon")
@@ -101,18 +94,7 @@ data class Daily(
     val summary: String? = ""
 ) : Parcelable
 
-@SuppressLint("ParcelCreator")
-@Parcelize
-data class Flags(
-    @SerializedName("meteoalarm-license")
-    val meteoalarmLicense: String? = "",
-    @SerializedName("nearest-station")
-    val nearestStation: Double? = 0.0,
-    @SerializedName("sources")
-    val sources: List<String>? = listOf(),
-    @SerializedName("units")
-    val units: String? = ""
-) : Parcelable
+
 
 @SuppressLint("ParcelCreator")
 @Parcelize
@@ -146,8 +128,6 @@ data class Data(
     val apparentTemperatureMinTime: Int? = 0,
     @SerializedName("cloudCover")
     val cloudCover: Double? = 0.0,
-    @SerializedName("dewPoint")
-    val dewPoint: Double? = 0.0,
     @SerializedName("humidity")
     val humidity: Double? = 0.0,
     @SerializedName("icon")
@@ -215,8 +195,7 @@ data class DataX(
     val apparentTemperature: Double? = 0.0,
     @SerializedName("cloudCover")
     val cloudCover: Double? = 0.0,
-    @SerializedName("dewPoint")
-    val dewPoint: Double? = 0.0,
+
     @SerializedName("humidity")
     val humidity: Double? = 0.0,
     @SerializedName("icon")
