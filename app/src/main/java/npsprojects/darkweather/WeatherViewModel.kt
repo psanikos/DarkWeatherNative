@@ -36,6 +36,10 @@ import java.util.concurrent.TimeUnit
 import kotlin.math.round
 import com.google.gson.annotations.SerializedName
 
+import npsprojects.darkweather.MyApp.context
+import java.lang.StringBuilder
+import java.lang.reflect.Array
+
 
 const val openWeatherKey = "e1e45feaea76d66517c25291f2633d9a"
 
@@ -140,7 +144,7 @@ class WeatherViewModel : ViewModel() {
     var currentLocationName: String by mutableStateOf("My Location")
     var locations: List<WeatherModel> by mutableStateOf(listOf())
     var units: WeatherUnits by mutableStateOf(WeatherUnits.AUTO)
-    var searchedAdresses: MutableList<LocationGeocodingItem> by mutableStateOf(mutableListOf())
+    var searchedAdresses: MutableList<Address> by mutableStateOf(mutableListOf())
     var myLocations: List<SavedLocation> by mutableStateOf(listOf())
     var error: WeatherError by mutableStateOf(WeatherError.NONE)
     var hasInit: Boolean by mutableStateOf(false)
@@ -240,27 +244,24 @@ fun getAirDataFromCoordinates(lat:Double,lon:Double,completion:(AirQuality?)->Un
         if (input != "" && isOnline()) {
             searchedAdresses.clear()
             val context = MyApp.context
-            println("searching ${input}")
-            val url = "https://api.openweathermap.org/geo/1.0/direct?q=$input&limit=3&appid=$openWeatherKey"
-            DataFetcher.getFromUrl(url = url) {
-                if (it != null) {
-                    val gson = Gson()
-
-                    val out =
-                        gson.fromJson<LocationGeocoding>(it.toString(), LocationGeocoding::class.java)
-                    searchedAdresses = out.toMutableList()
-                    if (out.size == 0){
+            val geocoder = Geocoder(context, Locale.getDefault())
+            try {
+                val addressList = geocoder.getFromLocationName(input,3)
+                if (addressList != null && addressList.size > 0) {
+                searchedAdresses = addressList
+                    if (searchedAdresses.size == 0){
                         completion(false)
                     }
                     else {
                         completion(true)
                     }
-                    println("got ${searchedAdresses.size}")
                 }
-                else {
-                    completion(false)
-                }
+            } catch (e: IOException) {
+              completion(false)
             }
+            println("searching ${input}")
+            val url = "https://api.openweathermap.org/geo/1.0/direct?q=$input&limit=3&appid=$openWeatherKey"
+
 //            val geocoder: Geocoder = Geocoder(context, Locale.getDefault())
 //            val addresses = geocoder.getFromLocationName(input, 3)
 //            searchedAdresses = addresses
@@ -275,7 +276,8 @@ fun getAirDataFromCoordinates(lat:Double,lon:Double,completion:(AirQuality?)->Un
         completion: (String) -> Unit
     ) {
         var addresses: List<Address>
-        val geocoder: Geocoder = Geocoder(context)
+        val myContext = MyApp.context
+        val geocoder = Geocoder(myContext, Locale.getDefault())
         if (isOnline()) {
             try {
                 addresses = geocoder.getFromLocation(
@@ -290,18 +292,18 @@ fun getAirDataFromCoordinates(lat:Double,lon:Double,completion:(AirQuality?)->Un
 //        val address: String =
 //            addresses[0].getAddressLine(0) // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
 
-            if (addresses != null && addresses.isNotEmpty()) {
+            if (addresses.isNotEmpty()) {
                 val city: String? = addresses[0].locality ?: addresses[0].featureName ?: addresses[0].subLocality
 //        val state: String = addresses[0].getAdminArea()
 //        val country: String = addresses[0].getCountryName()
 //        val postalCode: String = addresses[0].getPostalCode()
 //        val knownName: String = addresses[0].getFeatureName() //
-                completion(city ?: "My location")
+                completion(city ?: "")
             } else {
-                completion("My location")
+                completion("")
             }
         }
-        else completion("No internet")
+        else completion("")
     }
 
     fun remove(item: SavedLocation) {
@@ -584,7 +586,12 @@ fun getAirDataFromCoordinates(lat:Double,lon:Double,completion:(AirQuality?)->Un
         val unit =
             if (units == WeatherUnits.AUTO) "auto" else if (units == WeatherUnits.SI) "si" else "us"
         if (currentLocation != null && isOnline()) {
-            DataFetcher.getFromUrl(url = "https://api.darksky.net/forecast/0b2f0e7f415678b66d4918b96d6672fa/${currentLocation!!.latitude},${currentLocation!!.longitude}?lang=en&units=$unit") {
+
+            val locale = context.resources.configuration.locales
+
+            val language: String = if(locale.isEmpty) "en" else locale[0].language
+            val searchLanguage = if (language == "el") "el" else "en"
+            DataFetcher.getFromUrl(url = "https://api.darksky.net/forecast/0b2f0e7f415678b66d4918b96d6672fa/${currentLocation!!.latitude},${currentLocation!!.longitude}?lang=$searchLanguage&units=$unit") {
                 if (it != null) {
                     println("DATAAA $it")
                     val gson = Gson()
@@ -626,7 +633,11 @@ fun getAirDataFromCoordinates(lat:Double,lon:Double,completion:(AirQuality?)->Un
       val unit =
           if (units == WeatherUnits.AUTO) "auto" else if (units == WeatherUnits.SI) "si" else "us"
       if (isOnline()) {
-          DataFetcher.getFromUrl(url = "https://api.darksky.net/forecast/0b2f0e7f415678b66d4918b96d6672fa/${latitude},${longitude}?lang=en&units=$unit") { it ->
+          val locale = context.resources.configuration.locales
+
+          val language: String = if(locale.isEmpty) "en" else locale[0].language
+          val searchLanguage = if (language == "el") "el" else "en"
+          DataFetcher.getFromUrl(url = "https://api.darksky.net/forecast/0b2f0e7f415678b66d4918b96d6672fa/${latitude},${longitude}?lang=$searchLanguage&units=$unit") { it ->
               if (it != null) {
                   println("DATAAA $it")
                   val gson = Gson()

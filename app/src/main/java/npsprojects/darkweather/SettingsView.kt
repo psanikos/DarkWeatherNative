@@ -22,6 +22,7 @@ import androidx.core.content.res.TypedArrayUtils.getString
 import androidx.navigation.NavController
 import npsprojects.darkweather.ui.theme.green_200
 import npsprojects.darkweather.ui.theme.green_600
+import npsprojects.darkweather.ui.theme.light_blue_500
 import npsprojects.darkweather.ui.theme.orange_500
 
 enum class WeatherUnits {
@@ -39,7 +40,9 @@ fun SettingsView(model: WeatherViewModel, controller: NavController) {
     var units: WeatherUnits by remember { mutableStateOf(model.units) }
 
 
-    Scaffold() {
+    Scaffold(
+        backgroundColor = if(isSystemInDarkTheme()) Color(0xFF303030) else Color(0xFFf0f0f7)
+    ) {
         Column(
             modifier = Modifier
 
@@ -49,7 +52,7 @@ fun SettingsView(model: WeatherViewModel, controller: NavController) {
 
         ) {
             Surface(
-                color = Color.White, modifier = Modifier
+                color = if(isSystemInDarkTheme()) Color.Black else Color.White, modifier = Modifier
                     .fillMaxWidth()
                     .height(240.dp)
             ) {
@@ -65,13 +68,13 @@ fun SettingsView(model: WeatherViewModel, controller: NavController) {
                             Icon(
                                 Icons.Rounded.ArrowBackIosNew,
                                 contentDescription = "",
-                                tint = Color.Black
+                                tint = light_blue_500
                             )
                         }
                     }
                     Text(
                         stringResource(R.string.SettingsTitle),
-                        style = MaterialTheme.typography.h1.copy(color = Color.Black),
+                        style = MaterialTheme.typography.h1,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 20.dp)
                     )
                 }
@@ -94,7 +97,7 @@ fun SettingsView(model: WeatherViewModel, controller: NavController) {
                     Row() {
                         Box(modifier = Modifier
                             .height(30.dp)
-                            .width(60.dp)
+                            .width(80.dp)
                             .background(color = if (units == WeatherUnits.AUTO) Color.DarkGray else Color.LightGray)
                             .clickable {
                                 units = WeatherUnits.AUTO

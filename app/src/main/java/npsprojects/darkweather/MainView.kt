@@ -151,8 +151,8 @@ fun NewMapView(model: WeatherViewModel,  controller: NavController) {
     var index: Int by remember { mutableStateOf(0) }
     val overlays: MutableList<TileOverlay> by remember { mutableStateOf(ArrayList<TileOverlay>()) }
     var searchTerm by remember { mutableStateOf("") }
-    val backColor = if (isSystemInDarkTheme()) Color(0xFF202020) else Color(0xFFF5F5F5)
-    val cardColor = if (isSystemInDarkTheme()) Color(0xFF101010) else Color.White
+    val backColor = if (isSystemInDarkTheme()) Color(0xFF303030) else Color(0xFFf0f0f7)
+    val cardColor = if (isSystemInDarkTheme()) Color(0xFF151515) else Color.White
     var isLoading by remember { mutableStateOf(false) }
     var isAlertExpanded by remember { mutableStateOf(false) }
     val insets = LocalWindowInsets.current
@@ -240,7 +240,7 @@ fun NewMapView(model: WeatherViewModel,  controller: NavController) {
 
 
                                 model.searchedAdresses.forEach {
-                                    if(it.name != null) {
+                                    if(it.locality != null || it.featureName != null) {
                                         item {
                                             Row(
                                                 modifier = Modifier
@@ -255,9 +255,9 @@ fun NewMapView(model: WeatherViewModel,  controller: NavController) {
                                                         isLoading = true
                                                         scope.launch {
                                                             model.getDataFromCoordinates(
-                                                                latitude = it.lat!!,
-                                                                longitude = it.lon!!,
-                                                                name = it.name
+                                                                latitude = it.latitude,
+                                                                longitude = it.longitude,
+                                                                name = it.locality ?: it.featureName
                                                             )
                                                             { locationData ->
                                                                 if (locationData != null) {
@@ -279,7 +279,7 @@ fun NewMapView(model: WeatherViewModel,  controller: NavController) {
                                                 verticalAlignment = Alignment.CenterVertically
                                             ) {
                                                 Text(
-                                                    it.name,
+                                                    it.locality ?: it.featureName,
                                                     style = MaterialTheme.typography.body2,
                                                     modifier = Modifier.padding(
                                                         horizontal = 16.dp,
@@ -287,7 +287,7 @@ fun NewMapView(model: WeatherViewModel,  controller: NavController) {
                                                     )
                                                 )
 
-                                Text(it.country ?: "",   style = MaterialTheme.typography.caption,
+                                Text(it.countryName ?: "",   style = MaterialTheme.typography.caption,
                                     modifier = Modifier.padding( horizontal = 20.dp,vertical = 8.dp))
                                             }
                                         }
@@ -389,7 +389,7 @@ fun NewMapView(model: WeatherViewModel,  controller: NavController) {
                                                 contentPadding = PaddingValues(10.dp),
                                                 shape = RoundedCornerShape(50),
                                                 modifier = Modifier
-                                                    .width(80.dp)
+                                                    .width(90.dp)
                                                     .height(35.dp),
 
                                                 elevation = ButtonDefaults.elevation(
@@ -422,7 +422,7 @@ fun NewMapView(model: WeatherViewModel,  controller: NavController) {
                                                 contentPadding = PaddingValues(10.dp),
                                                 shape = RoundedCornerShape(50),
                                                 modifier = Modifier
-                                                    .width(70.dp)
+                                                    .width(75.dp)
                                                     .height(35.dp),
                                                 elevation = ButtonDefaults.elevation(
                                                     defaultElevation = 0.dp,
@@ -454,7 +454,7 @@ fun NewMapView(model: WeatherViewModel,  controller: NavController) {
                                                 contentPadding = PaddingValues(10.dp),
                                                 shape = RoundedCornerShape(50),
                                                 modifier = Modifier
-                                                    .width(110.dp)
+                                                    .width(115.dp)
                                                     .height(35.dp),
                                                 elevation = ButtonDefaults.elevation(
                                                     defaultElevation = 0.dp,
@@ -484,7 +484,7 @@ fun NewMapView(model: WeatherViewModel,  controller: NavController) {
                                                 contentPadding = PaddingValues(10.dp),
                                                 shape = RoundedCornerShape(50),
                                                 modifier = Modifier
-                                                    .width(70.dp)
+                                                    .width(75.dp)
                                                     .height(35.dp),
                                                 elevation = ButtonDefaults.elevation(
                                                     defaultElevation = 0.dp,
