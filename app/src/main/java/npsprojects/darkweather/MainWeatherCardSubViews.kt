@@ -24,6 +24,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -153,18 +154,18 @@ fun AirQualityView(index:Int){
         else -> red_500
     }
     val name = when(index){
-        1-> "Good"
-        2-> "Fair"
-        3-> "Moderate"
-        4-> "Poor"
-        else -> "Very poor"
+        1-> stringResource(id = R.string.Good)
+        2-> stringResource(id = R.string.Fair)
+        3-> stringResource(id = R.string.Moderate)
+        4-> stringResource(id = R.string.Poor)
+        else -> stringResource(id = R.string.VeryPoor)
     }
     val summary = when(index){
-        1-> "Air quality is considered satisfactory, and air pollution poses little or no risk"
-        2-> "Air quality is acceptable; however, for some pollutants there may be a moderate health concern for a very small number of people who are unusually sensitive to air pollution."
-        3-> "Members of sensitive groups may experience health effects. The general public is not likely to be affected."
-        4-> "Everyone may begin to experience health effects; members of sensitive groups may experience more serious health effects"
-        else -> "Health warnings of emergency conditions. The entire population is more likely to be affected."
+        1-> stringResource(id = R.string.GoodText)
+        2-> stringResource(id = R.string.FairText)
+        3-> stringResource(id = R.string.ModerateText)
+        4-> stringResource(id = R.string.PoorText)
+        else -> stringResource(id = R.string.VeryPoorText)
     }
     Box(modifier = Modifier
         .fillMaxWidth()
@@ -175,10 +176,10 @@ fun AirQualityView(index:Int){
         )){
         Column(modifier = Modifier.fillMaxSize(),horizontalAlignment = Alignment.Start,verticalArrangement = Arrangement.SpaceBetween) {
           Row(modifier = Modifier
-              .padding(top= 10.dp,start = 10.dp,end = 10.dp)
+              .padding(top = 10.dp, start = 10.dp, end = 10.dp)
               .fillMaxWidth(),verticalAlignment = Alignment.CenterVertically,horizontalArrangement = Arrangement.spacedBy(10.dp)) {
             Icon(Icons.Filled.Air,contentDescription = "")
-            Text("Air quality",style = MaterialTheme.typography.caption)
+            Text(stringResource(R.string.AirQ),style = MaterialTheme.typography.caption)
           }
             Row(modifier = Modifier
                 .padding(horizontal = 10.dp)
@@ -206,7 +207,10 @@ fun AirQualityView(index:Int){
 }
 @Preview
 @Composable fun Previews() {
-    Box(modifier = Modifier.fillMaxWidth().height(200.dp).background(color = Color(0xFFEFEFEF))) {
+    Box(modifier = Modifier
+        .fillMaxWidth()
+        .height(200.dp)
+        .background(color = Color(0xFFEFEFEF))) {
         AirQualityView(index = 5)
     }
 }

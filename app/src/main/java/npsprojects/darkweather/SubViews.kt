@@ -22,6 +22,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -92,23 +93,28 @@ fun RainTimeAlert(rainProbability: List<DataX>) {
                             Icons.TwoTone.Warning,
                             tint = indigo_800,
                             contentDescription = "",
-                            modifier = Modifier    .padding(6.dp)
+                            modifier = Modifier
+                                .padding(6.dp)
                                 .size(30.dp),
                         )
                         Column(
                             horizontalAlignment = Alignment.Start,
                             verticalArrangement = Arrangement.SpaceBetween,
-                            modifier = Modifier.padding(6.dp).height(90.dp)
+                            modifier = Modifier
+                                .padding(6.dp)
+                                .height(90.dp)
                         ) {
                             Text(
-                                if(precip == "rain") "Rain alert" else "Snow alert",
+                                if(precip == "rain") stringResource(id = R.string.RainAlert) else stringResource(
+                                    id = R.string.SnowAlert
+                                ),
                                 style = MaterialTheme.typography.h4.copy(fontSize = 14.sp)
                             )
                         if (timeUntilRain > 0) {
                             Text(
-                                (if(precip == "rain") "Rain starts in " else "Snow starts") +
+                                (if(precip == "rain") stringResource(id = R.string.RainStarts) else stringResource(id = R.string.SnowStarts)) +
                                         String.format(
-                                            "%d hours and %d min",
+                                            "%d h, %d min",
                                             TimeUnit.MILLISECONDS.toHours(timeUntilRain),
                                             TimeUnit.MILLISECONDS.toMinutes(timeUntilRain) -
                                                     TimeUnit.HOURS.toMinutes(
@@ -124,9 +130,9 @@ fun RainTimeAlert(rainProbability: List<DataX>) {
                         } else {
                             if (timeUntilEnd != null) {
                                 Text(
-                                    (if(precip == "rain") "Rain ends in " else "Snow ends in") +
+                                    (if(precip == "rain") stringResource(id = R.string.RainEnds) else stringResource(id = R.string.RainEnds)) +
                                             String.format(
-                                                "%d hours and %d min",
+                                                "%d h, %d min",
                                                 TimeUnit.MILLISECONDS.toHours(timeUntilEnd!!),
                                                 TimeUnit.MILLISECONDS.toMinutes(timeUntilEnd!!) -
                                                         TimeUnit.HOURS.toMinutes(
@@ -140,7 +146,7 @@ fun RainTimeAlert(rainProbability: List<DataX>) {
                                 )
                             } else {
                                 Text(
-                                    if(precip == "rain") "The Rain will continue " else "It will continue to snow",
+                                    if(precip == "rain") stringResource(id = R.string.RainContinue) else stringResource(id = R.string.RainContinue),
                                     style = MaterialTheme.typography.body2,
                                     modifier = Modifier.padding(vertical = 5.dp)
                                 )
@@ -319,7 +325,7 @@ fun WeatherMain(model: WeatherViewModel,index:Int){
                         textAlign = TextAlign.Center
                     )
                     Text(
-                        text = "Feels like ${model.locations[index].data.currently.apparentTemperature!!.toInt()}°",
+                        text = stringResource(R.string.Feels) + " ${model.locations[index].data.currently.apparentTemperature!!.toInt()}°",
                         style = MaterialTheme.typography.caption.copy(
                             shadow = Shadow(
                                 color = Color.Black,

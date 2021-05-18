@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -228,7 +229,7 @@ fun NewMapView(model: WeatherViewModel,  controller: NavController) {
                                             )
                                         if (searchTerm == "") {
                                             Text(
-                                                "Search a new place",
+                                                stringResource(R.string.searchText),
                                                 style = MaterialTheme.typography.caption,
                                                 modifier = Modifier
                                                     .padding(start = 20.dp)
@@ -405,7 +406,7 @@ fun NewMapView(model: WeatherViewModel,  controller: NavController) {
                                                 )
                                                 Spacer(modifier = Modifier.width(2.dp))
                                                 Text(
-                                                    "Clouds",
+                                                    stringResource(R.string.clouds),
                                                     style = MaterialTheme.typography.caption
                                                 )
                                             }
@@ -436,7 +437,7 @@ fun NewMapView(model: WeatherViewModel,  controller: NavController) {
                                                 )
                                                 Spacer(modifier = Modifier.width(2.dp))
                                                 Text(
-                                                    "Rain",
+                                                    stringResource(R.string.rain),
                                                     style = MaterialTheme.typography.caption
                                                 )
                                             }
@@ -468,7 +469,7 @@ fun NewMapView(model: WeatherViewModel,  controller: NavController) {
                                                 )
                                                 Spacer(modifier = Modifier.width(2.dp))
                                                 Text(
-                                                    "Temperature",
+                                                    stringResource(R.string.Temperature),
                                                     style = MaterialTheme.typography.caption
                                                 )
                                             }
@@ -498,7 +499,7 @@ fun NewMapView(model: WeatherViewModel,  controller: NavController) {
                                                 )
                                                 Spacer(modifier = Modifier.width(2.dp))
                                                 Text(
-                                                    "Wind",
+                                                    stringResource(R.string.Wind),
                                                     style = MaterialTheme.typography.caption
                                                 )
                                             }
@@ -700,7 +701,7 @@ fun NewMapView(model: WeatherViewModel,  controller: NavController) {
                                                         }, contentAlignment = Alignment.Center
                                                 ) {
                                                     Text(
-                                                        "Remove from list",
+                                                        stringResource(id = R.string.ListRemove),
                                                         style = MaterialTheme.typography.h4.copy(
                                                             color = Color.White
                                                         )
@@ -736,7 +737,7 @@ fun NewMapView(model: WeatherViewModel,  controller: NavController) {
                                                         }, contentAlignment = Alignment.Center
                                                 ) {
                                                     Text(
-                                                        "Add to list",
+                                                        stringResource(id = R.string.ListAdd),
                                                         style = MaterialTheme.typography.h4.copy(
                                                             color = Color.White
                                                         )
@@ -751,7 +752,9 @@ fun NewMapView(model: WeatherViewModel,  controller: NavController) {
                                 } else {
                                     item {
                                         Text(
-                                            if (isOnline()) "No locations added yet and there is not access to your location" else "You are not connected to the internet",
+                                            if (isOnline()) stringResource(id = R.string.NoLocationNoAccess) else stringResource(
+                                                id = R.string.NoInternet
+                                            ),
                                             style = MaterialTheme.typography.body2.copy(color = Color.Gray),
                                             modifier = Modifier.padding(10.dp),
                                             textAlign = TextAlign.Center
@@ -907,11 +910,11 @@ fun NewMapView(model: WeatherViewModel,  controller: NavController) {
 
                             // below line is use to display title of our dialog
                             // box and we are setting text color to white.
-                            title = { Text(text = "No results found", style = MaterialTheme.typography.h4) },
+                            title = { Text(text = stringResource(id = R.string.NoResults), style = MaterialTheme.typography.h4) },
 
                             // below line is use to display
                             // description to our alert dialog.
-                            text = { Text("Try searching with a different name", style = MaterialTheme.typography.body2) },
+                            text = { Text(stringResource(id = R.string.ChangeSearch), style = MaterialTheme.typography.body2) },
 
                             // in below line we are displaying
                             // our confirm button.
@@ -927,7 +930,7 @@ fun NewMapView(model: WeatherViewModel,  controller: NavController) {
                                 ) {
                                     // in this line we are adding
                                     // text for our confirm button.
-                                    Text("Confirm", style = MaterialTheme.typography.button.copy(color = teal_500))
+                                    Text("OK", style = MaterialTheme.typography.button.copy(color = teal_500))
                                 }
                             },
                             // in below line we are displaying
@@ -943,7 +946,7 @@ fun NewMapView(model: WeatherViewModel,  controller: NavController) {
                                     }
                                 ) {
                                     // adding text to our button.
-                                    Text("Dismiss", style = MaterialTheme.typography.button.copy(color = red_500))
+                                    Text(stringResource(id = R.string.Back), style = MaterialTheme.typography.button.copy(color = red_500))
                                 }
                             },
                             // below line is use to add background color to our alert dialog

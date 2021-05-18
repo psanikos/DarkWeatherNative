@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -63,15 +64,19 @@ fun FirstScreen(model: WeatherViewModel) {
 
                     .fillMaxWidth()
                     .fillMaxHeight(0.6f)
-                    .background(color = Color.White,shape = RoundedCornerShape(topEnd = 20.dp,topStart = 20.dp))
+                    .background(
+                        color = Color.White,
+                        shape = RoundedCornerShape(topEnd = 20.dp, topStart = 20.dp)
+                    )
 
             ) {
-                Column(modifier = Modifier.padding(10.dp).fillMaxSize(),verticalArrangement = Arrangement.SpaceEvenly) {
+                Column(modifier = Modifier
+                    .padding(10.dp)
+                    .fillMaxSize(),verticalArrangement = Arrangement.SpaceEvenly) {
 
 
                     Text(
-                        "Welcome to DarkWeather! You can use the app with or without access to your location. To see your current location please allow access or add places by searching.",
-                        style = MaterialTheme.typography.body2.copy(color = Color.DarkGray),
+                          stringResource(id = R.string.WelcomeText)  ,  style = MaterialTheme.typography.body2.copy(color = Color.DarkGray),
                         modifier = Modifier.padding(12.dp),
                         lineHeight = 26.sp,
                         textAlign = TextAlign.Start,
@@ -113,7 +118,7 @@ fun FirstScreen(model: WeatherViewModel) {
                                 elevation = ButtonDefaults.elevation(defaultElevation = 0.dp),
                                 shape = RoundedCornerShape(50)
                             ) {
-                                Text("Tap to give access", style = MaterialTheme.typography.button)
+                                Text(stringResource(id = R.string.AllowAccess), style = MaterialTheme.typography.button)
                             }
 
 
@@ -134,7 +139,7 @@ fun FirstScreen(model: WeatherViewModel) {
                                 elevation = ButtonDefaults.elevation(defaultElevation = 0.dp),
                                 shape = RoundedCornerShape(50)
                             ) {
-                                Text("Continue without", style = MaterialTheme.typography.button)
+                                Text(stringResource(id = R.string.Continue), style = MaterialTheme.typography.button)
 
                             }
                         }

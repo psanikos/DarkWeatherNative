@@ -1,5 +1,6 @@
 package npsprojects.darkweather
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -15,7 +16,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.res.TypedArrayUtils.getString
 import androidx.navigation.NavController
 import npsprojects.darkweather.ui.theme.green_200
 import npsprojects.darkweather.ui.theme.green_600
@@ -26,6 +29,7 @@ enum class WeatherUnits {
 }
 
 
+@SuppressLint("RestrictedApi")
 @Composable
 fun SettingsView(model: WeatherViewModel, controller: NavController) {
 
@@ -66,7 +70,7 @@ fun SettingsView(model: WeatherViewModel, controller: NavController) {
                         }
                     }
                     Text(
-                        "Settings",
+                        stringResource(R.string.SettingsTitle),
                         style = MaterialTheme.typography.h1.copy(color = Color.Black),
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 20.dp)
                     )
@@ -78,7 +82,7 @@ fun SettingsView(model: WeatherViewModel, controller: NavController) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    "Units",
+                    stringResource(R.string.Units),
                     style = MaterialTheme.typography.body1.copy(color = if (isSystemInDarkTheme()) Color.White else Color.Black)
                 )
                 Surface(
@@ -97,7 +101,7 @@ fun SettingsView(model: WeatherViewModel, controller: NavController) {
                                 model.saveUnit(inputUnit = units)
                             }, contentAlignment = Alignment.Center) {
                             Text(
-                                "Auto",
+                                stringResource(R.string.Auto),
                                 style = MaterialTheme.typography.button.copy(color = if (units == WeatherUnits.AUTO) Color.White else Color.Gray)
                             )
                         }
@@ -166,8 +170,8 @@ fun SettingsView(model: WeatherViewModel, controller: NavController) {
                                 tint = orange_500
                             )
                             Text(
-                                "No location access is provided, if you want to see your current location please tap to allow access.",
-                                style = MaterialTheme.typography.body2.copy(
+                                stringResource(id = R.string.LocationDenied)
+                                ,style = MaterialTheme.typography.body2.copy(
                                     color = Color.White,
 
                                     ),
@@ -182,7 +186,7 @@ fun SettingsView(model: WeatherViewModel, controller: NavController) {
                                     contentColor = green_200, backgroundColor = green_600
                                 ),shape = RoundedCornerShape(12.dp)
                             ) {
-                                Text("Allow access", style = MaterialTheme.typography.button)
+                                Text(stringResource(id = R.string.AllowAccess), style = MaterialTheme.typography.button)
                             }
                         }
                     }
