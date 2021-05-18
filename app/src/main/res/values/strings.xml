@@ -31,7 +31,7 @@
     <string name="SnowAlert">Snow alert</string>
     <string name="ListRemove">Remove from list</string>
     <string name="ListAdd">Save to list</string>
-    <string name="NoLocationNoAccess">No locations added yet and there is not access to your location</string>
+    <string name="NoLocationNoAccess">No location added yet and there is not access to your location</string>
 <string name="NoInternet">You are not connected to the internet</string>
     <string name="NoResults">No results found</string>
     <string name="ChangeSearch">Try searching with a different name</string>

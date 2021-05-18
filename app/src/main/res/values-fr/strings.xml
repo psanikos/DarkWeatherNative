@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">DarkWeather</string>
+    <string name="searchText">Rechercher</string>
+    <string name="clouds">Nuages</string>
+    <string name="rain">Pluie</string>
+    <string name="Temperature">Température</string>
+    <string name="Wind">Vent</string>
+    <string name="Feels">Feels comme</string>
+    <string name="AirQ">Qualité de l\'air</string>
+    <string name="SettingsTitle">Paramètres</string>
+    <string name="Units">Unités</string>
+    <string name="Auto">Auto</string>
+    <string name="Good">Bien</string>
+    <string name="Fair">Foire</string>
+    <string name="Moderate">Modéré</string>
+    <string name="Poor">Mauvais</string>
+    <string name="VeryPoor">Tres Mauvais</string>
+    <string name="GoodText">La qualité de l\'air est considérée comme satisfaisante et la pollution de l\'air pose peu ou pas de risque</string>
+    <string name="FairText">La qualité de l\'air est acceptable; cependant, pour certains polluants, il peut y avoir un problème de santé modéré pour un très petit nombre de personnes qui sont inhabituellement sensibles à la pollution atmosphérique.</string>
+    <string name="ModerateText">Les membres de groupes sensibles peuvent subir des effets sur la santé. Le grand public ne sera probablement pas touché.</string>
+    <string name="PoorText">Tout le monde peut commencer à ressentir des effets sur la santé; les membres de groupes sensibles peuvent subir des effets plus graves sur la santé</string>
+    <string name="VeryPoorText">Avertissements sanitaires des conditions d\'urgence. La population entière est plus susceptible d\'être touchée.</string>
+    <string name="RainEnds">La pluie se termine</string>
+    <string name="SnowEnds">La neige finit par</string>
+    <string name="RainStarts">La pluie commence dans</string>
+    <string name="SnowStarts">La neige commence dans</string>
+    <string name="RainContinue">La pluie continuera</string>
+    <string name="SnowContinue">Il continuera à neiger</string>
+    <string name="RainAlert">Alerte pluie</string>
+    <string name="SnowAlert">Alerte neige</string>
+    <string name="ListRemove">"Retirer "</string>
+    <string name="ListAdd">"Enregistrer "</string>
+    <string name="NoLocationNoAccess">Aucun emplacement ajouté pour le moment et il n\'y a pas d\'accès à votre emplacement</string>
+    <string name="NoInternet">Vous n\'êtes pas connecté à Internet</string>
+    <string name="NoResults">Aucun résultat trouvé</string>
+    <string name="ChangeSearch">Essayez de rechercher avec un autre nom</string>
+    <string name="Back">Retour</string>
+    <string name="WelcomeText">Bienvenue dans DarkWeather! Vous pouvez utiliser l\'application avec ou sans accès à votre position. Pour voir votre position actuelle, veuillez autoriser l\'accès ou ajouter des lieux en effectuant une recherche.</string>
+    <string name="Continue">Continuer</string>
+    <string name="AllowAccess">Permettre l\'accès</string>
+    <string name="LocationDenied">Aucun accès à la localisation n\'est fourni, si vous souhaitez voir votre position actuelle, appuyez sur pour autoriser l\'accès.</string>
+</resources>

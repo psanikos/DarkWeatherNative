@@ -328,7 +328,7 @@ fun getAirDataFromCoordinates(lat:Double,lon:Double,completion:(AirQuality?)->Un
             }?.toMutableList()
                 ?: mutableListOf<String>()
 
-        var savedItems = if (itemsSaved.size > 0) itemsSaved.map { saved ->
+        val savedItems = if (itemsSaved.size > 0) itemsSaved.map { saved ->
             saved.replace("[", "").replace("]", "")
             val list = saved.split("|")
             SavedLocation(
@@ -590,7 +590,7 @@ fun getAirDataFromCoordinates(lat:Double,lon:Double,completion:(AirQuality?)->Un
             val locale = context.resources.configuration.locales
 
             val language: String = if(locale.isEmpty) "en" else locale[0].language
-            val searchLanguage = if (language == "el") "el" else "en"
+            val searchLanguage = if (language == "el")  "el" else if (language == "fr") "fr" else "en"
             DataFetcher.getFromUrl(url = "https://api.darksky.net/forecast/0b2f0e7f415678b66d4918b96d6672fa/${currentLocation!!.latitude},${currentLocation!!.longitude}?lang=$searchLanguage&units=$unit") {
                 if (it != null) {
                     println("DATAAA $it")
@@ -636,7 +636,7 @@ fun getAirDataFromCoordinates(lat:Double,lon:Double,completion:(AirQuality?)->Un
           val locale = context.resources.configuration.locales
 
           val language: String = if(locale.isEmpty) "en" else locale[0].language
-          val searchLanguage = if (language == "el") "el" else "en"
+          val searchLanguage = if (language == "el")  "el" else if (language == "fr") "fr" else "en"
           DataFetcher.getFromUrl(url = "https://api.darksky.net/forecast/0b2f0e7f415678b66d4918b96d6672fa/${latitude},${longitude}?lang=$searchLanguage&units=$unit") { it ->
               if (it != null) {
                   println("DATAAA $it")

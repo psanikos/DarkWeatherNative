@@ -325,7 +325,7 @@ fun WeatherMain(model: WeatherViewModel,index:Int){
                         textAlign = TextAlign.Center
                     )
                     Text(
-                        text = stringResource(R.string.Feels) + " ${model.locations[index].data.currently.apparentTemperature!!.toInt()}°",
+                        text = stringResource(R.string.Feels) + "  ${model.locations[index].data.currently.apparentTemperature!!.toInt()}°",
                         style = MaterialTheme.typography.caption.copy(
                             shadow = Shadow(
                                 color = Color.Black,
