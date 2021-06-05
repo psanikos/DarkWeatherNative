@@ -97,7 +97,7 @@ fun FirstScreen(model: WeatherViewModel) {
                             elevation = ButtonDefaults.elevation(defaultElevation = 0.dp),
                             shape = RoundedCornerShape(30)
                         ) {
-                            Text("Continue", style = MaterialTheme.typography.button)
+                            Text(stringResource(id = R.string.Continue), style = MaterialTheme.typography.button)
                         }
 
                     } else {

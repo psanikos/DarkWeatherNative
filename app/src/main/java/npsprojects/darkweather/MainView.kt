@@ -38,7 +38,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.view.ViewCompat
 import androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener
 import androidx.navigation.NavController
-import androidx.navigation.compose.navigate
+
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.maps.model.LatLng

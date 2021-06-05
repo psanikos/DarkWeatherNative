@@ -21,10 +21,10 @@
     <string name="ModerateText">Πιθανός κίνδυνος για ευαίσθητες ομάδες</string>
     <string name="PoorText">Πιθανός κίνδυνος για όλους</string>
     <string name="VeryPoorText">Κίνδυνος για όλο τον πληθυσμό</string>
-<string name="RainEnds">Η βρόχη τελειώνει σε</string>
-    <string name="SnowEnds">Το χιόνι τελειώνει σε</string>
-    <string name="RainStarts">Η βροχή αρχίζει σε</string>
-    <string name="SnowStarts">Το χίονι αρχίζει σε</string>
+<string name="RainEnds">Η βρόχη τελειώνει σε </string>
+    <string name="SnowEnds">Το χιόνι τελειώνει σε </string>
+    <string name="RainStarts">Η βροχή αρχίζει σε </string>
+    <string name="SnowStarts">Το χίονι αρχίζει σε </string>
     <string name="RainContinue">Η βροχή θα συνεχίσει</string>
     <string name="SnowContinue">Το χιόνι θα συνεχίσει</string>
     <string name="RainAlert">Προσοχή βροχή</string>

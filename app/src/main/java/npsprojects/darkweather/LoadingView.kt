@@ -40,6 +40,7 @@ import kotlin.math.cos
 import kotlin.math.pow
 import kotlin.math.sin
 import androidx.compose.ui.platform.LocalLifecycleOwner
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import npsprojects.darkweather.ui.theme.orange_500
 import npsprojects.darkweather.ui.theme.yellow_500
@@ -97,7 +98,7 @@ fun LoadingView(model: WeatherViewModel) {
                             contentDescription = "",
                             tint = yellow_500
                         )
-                          Text("Location access is denied. You can enable it in Settings",style = MaterialTheme.typography.h4,textAlign = TextAlign.Center)
+                          Text(stringResource(id = R.string.LocationDenied),style = MaterialTheme.typography.h4,textAlign = TextAlign.Center)
 
 
                     }
@@ -122,7 +123,7 @@ fun LoadingView(model: WeatherViewModel) {
                                 contentDescription = "",
                                 tint = orange_500
                             )
-                            Text("We cannot find your location",style = MaterialTheme.typography.h4,textAlign = TextAlign.Center)
+                            Text(stringResource(id = R.string.NoLocationNoAccess),style = MaterialTheme.typography.h4,textAlign = TextAlign.Center)
 
 
                         }
@@ -142,7 +143,7 @@ fun LoadingView(model: WeatherViewModel) {
                         contentDescription = "",
                         tint = red_500
                     )
-                   Text("There is a problem with your internet connection",style = MaterialTheme.typography.h4,textAlign = TextAlign.Center)
+                   Text(stringResource(id = R.string.NoInternet),style = MaterialTheme.typography.h4,textAlign = TextAlign.Center)
 
 
                 }

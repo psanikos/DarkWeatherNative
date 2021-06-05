@@ -1,0 +1,12 @@
+<resources>
+
+    <style name="Widget.DarkWeather.AppWidget.Container" parent="android:Widget">
+        <item name="android:padding">?attr/appWidgetPadding</item>
+        <item name="android:background">@color/black</item>
+    </style>
+
+    <style name="Widget.DarkWeather.AppWidget.InnerView" parent="android:Widget">
+        <item name="android:padding">?attr/appWidgetPadding</item>
+        <item name="android:background">@color/black</item>
+    </style>
+</resources>

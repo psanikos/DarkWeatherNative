@@ -23,4 +23,12 @@
     <style name="Theme.DarkWeather.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
 
     <style name="Theme.DarkWeather.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="Theme.DarkWeather.AppWidgetContainerParent" parent="@android:style/Theme.DeviceDefault">
+        <item name="appWidgetRadius">8dp</item>
+        <item name="appWidgetPadding">4dp</item>
+        <item name="appWidgetInnerRadius">4dp</item>
+    </style>
+
+    <style name="Theme.DarkWeather.AppWidgetContainer" parent="Theme.DarkWeather.AppWidgetContainerParent" />
 </resources>

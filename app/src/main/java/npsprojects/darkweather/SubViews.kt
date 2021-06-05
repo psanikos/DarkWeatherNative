@@ -112,7 +112,7 @@ fun RainTimeAlert(rainProbability: List<DataX>) {
                             )
                         if (timeUntilRain > 0) {
                             Text(
-                                (if(precip == "rain") stringResource(id = R.string.RainStarts) else stringResource(id = R.string.SnowStarts)) +
+                                (if(precip == "rain") stringResource(id = R.string.RainStarts) else stringResource(id = R.string.SnowStarts)) + " " +
                                         String.format(
                                             "%d h, %d min",
                                             TimeUnit.MILLISECONDS.toHours(timeUntilRain),
@@ -130,7 +130,7 @@ fun RainTimeAlert(rainProbability: List<DataX>) {
                         } else {
                             if (timeUntilEnd != null) {
                                 Text(
-                                    (if(precip == "rain") stringResource(id = R.string.RainEnds) else stringResource(id = R.string.RainEnds)) +
+                                    (if(precip == "rain") stringResource(id = R.string.RainEnds) else stringResource(id = R.string.RainEnds)) + " " +
                                             String.format(
                                                 "%d h, %d min",
                                                 TimeUnit.MILLISECONDS.toHours(timeUntilEnd!!),

@@ -63,7 +63,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.scale
 import androidx.navigation.NavController
-import androidx.navigation.compose.navigate
+
 import kotlinx.coroutines.launch
 import npsprojects.darkweather.ui.theme.*
 import java.text.SimpleDateFormat
@@ -201,7 +201,7 @@ fun MapViewContainer(
 //                MarkerOptions().position(position)
 //            )
             it.animateCamera(CameraUpdateFactory.newLatLng(coordinates))
-
+            it.uiSettings.isScrollGesturesEnabled = false
             val tile = it.addTileOverlay(
                 TileOverlayOptions()
                     .tileProvider(tileProvider).fadeIn(true)

@@ -350,6 +350,36 @@ fun getAirDataFromCoordinates(lat:Double,lon:Double,completion:(AirQuality?)->Un
         getSavedLocations() {}
         isLoading = false
     }
+    fun getWidgetLocationWeather() {
+        val context = MyApp.context
+        isLoading = true
+
+        getDataFromUserDefaults()
+        println("LOADING DATA ")
+        if(isOnline()) {
+            getCurrentLocation {
+                if (it != null) {
+                    currentLocation = it
+                    getNameFromCoordinates(
+                        context = context,
+                        latitude = it.latitude,
+                        longitude = it.longitude
+                    ) {
+                        currentLocationName = it
+                        getCurrentLocationData() {
+
+
+                        }
+                    }
+                } else {
+
+                }
+            }
+        }
+        else {
+
+        }
+    }
 
     fun getCurrentLocationWeather() {
         val context = MyApp.context
