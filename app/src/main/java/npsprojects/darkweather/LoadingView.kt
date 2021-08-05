@@ -98,7 +98,8 @@ fun LoadingView(model: WeatherViewModel) {
                             contentDescription = "",
                             tint = yellow_500
                         )
-                          Text(stringResource(id = R.string.LocationDenied),style = MaterialTheme.typography.h4,textAlign = TextAlign.Center)
+                          Text(stringResource(id = R.string.LocationDenied),
+                              style = MaterialTheme.typography.h4.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black),textAlign = TextAlign.Center)
 
 
                     }
@@ -123,7 +124,7 @@ fun LoadingView(model: WeatherViewModel) {
                                 contentDescription = "",
                                 tint = orange_500
                             )
-                            Text(stringResource(id = R.string.NoLocationNoAccess),style = MaterialTheme.typography.h4,textAlign = TextAlign.Center)
+                            Text(stringResource(id = R.string.NoLocationNoAccess),style = MaterialTheme.typography.h4.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black),textAlign = TextAlign.Center)
 
 
                         }
@@ -143,7 +144,7 @@ fun LoadingView(model: WeatherViewModel) {
                         contentDescription = "",
                         tint = red_500
                     )
-                   Text(stringResource(id = R.string.NoInternet),style = MaterialTheme.typography.h4,textAlign = TextAlign.Center)
+                   Text(stringResource(id = R.string.NoInternet),style = MaterialTheme.typography.h4.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black),textAlign = TextAlign.Center)
 
 
                 }

@@ -76,7 +76,7 @@ fun RainTimeAlert(rainProbability: List<DataX>) {
         if (timeUntilRain != null) {
             Box(
                 modifier = Modifier
-                    .width(310.dp)
+                    .width(360.dp)
                     .height(80.dp)
                     .background(
                         color = indigo_500.copy(alpha = 0.8f),
