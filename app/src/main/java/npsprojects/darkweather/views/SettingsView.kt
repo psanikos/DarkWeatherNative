@@ -1,4 +1,4 @@
-package npsprojects.darkweather
+package npsprojects.darkweather.views
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
@@ -18,16 +18,17 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.core.content.res.TypedArrayUtils.getString
 import androidx.navigation.NavController
+import npsprojects.darkweather.R
+import npsprojects.darkweather.WeatherError
+import npsprojects.darkweather.WeatherUnits
+import npsprojects.darkweather.models.WeatherViewModel
 import npsprojects.darkweather.ui.theme.green_200
 import npsprojects.darkweather.ui.theme.green_600
 import npsprojects.darkweather.ui.theme.light_blue_500
 import npsprojects.darkweather.ui.theme.orange_500
 
-enum class WeatherUnits {
-    SI, US, AUTO
-}
+
 
 
 @SuppressLint("RestrictedApi")
@@ -144,7 +145,7 @@ fun SettingsView(model: WeatherViewModel, controller: NavController) {
                     .fillMaxWidth()
                     .height(200.dp)
             ) {
-                if (model.error == WeatherError.NOPERMISSION || model.error == WeatherError.NOGPS) {
+                if (model.error.value == WeatherError.NOPERMISSION || model.error.value == WeatherError.NOGPS) {
                     Box(
                         modifier = Modifier
                             .padding(horizontal = 10.dp)
@@ -184,7 +185,7 @@ fun SettingsView(model: WeatherViewModel, controller: NavController) {
                             Spacer(modifier = Modifier.height(14.dp))
                             Button(
                                 onClick = {
-                                    model.askPermission()
+                                    model.askPermission(){}
                                 }, colors = ButtonDefaults.buttonColors(
                                     contentColor = green_200, backgroundColor = green_600
                                 ),shape = RoundedCornerShape(12.dp)

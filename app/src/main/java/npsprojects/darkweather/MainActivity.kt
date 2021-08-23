@@ -21,11 +21,14 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.android.gms.ads.*
-import com.google.android.gms.ads.initialization.InitializationStatus
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import kotlinx.coroutines.*
+import npsprojects.darkweather.models.WeatherViewModel
 import npsprojects.darkweather.ui.theme.DarkWeatherTheme
+import npsprojects.darkweather.views.FirstScreen
+import npsprojects.darkweather.views.MainPageView
+import npsprojects.darkweather.views.SettingsView
 
 
 @SuppressLint("StaticFieldLeak")
@@ -131,8 +134,8 @@ class MainActivity : ComponentActivity() {
         ) {
             model.onPermissionGranted()
             model.hasRun()
-            if (model.error == WeatherError.NOPERMISSION || model.error == WeatherError.NOGPS) {
-                model.error = WeatherError.NONE
+            if (model.error.value == WeatherError.NOPERMISSION || model.error.value == WeatherError.NOGPS) {
+                model.error.value = WeatherError.NONE
             }
         }
     }

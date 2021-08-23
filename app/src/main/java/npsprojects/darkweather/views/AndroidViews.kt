@@ -1,4 +1,4 @@
-package npsprojects.darkweather
+package npsprojects.darkweather.views
 
 import android.widget.LinearLayout
 import androidx.compose.foundation.layout.fillMaxWidth

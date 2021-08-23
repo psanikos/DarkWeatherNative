@@ -1,4 +1,4 @@
-package npsprojects.darkweather
+package npsprojects.darkweather.views
 
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.background
@@ -12,8 +12,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.stringResource
@@ -24,15 +22,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.android.gms.common.util.CollectionUtils.listOf
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import npsprojects.darkweather.DeviceType
+import npsprojects.darkweather.models.WeatherViewModel
 import npsprojects.darkweather.ui.theme.*
+import npsprojects.darkweather.R
 
 
-enum class DeviceType{
-    BIGSCREEN,PHONE
-}
 
 
 @ExperimentalAnimationApi
@@ -62,8 +59,10 @@ fun FirstScreen(model: WeatherViewModel) {
         Text("")
             Text(
                 "DarkWeather",
-                style = MaterialTheme.typography.h2.copy(color = Color.White, fontSize = 50.sp,fontFamily = FontFamily(Font(resId = R.font.pacificoregular,
-                    weight = FontWeight.Normal)))
+                style = MaterialTheme.typography.h2.copy(color = Color.White, fontSize = 50.sp,fontFamily = FontFamily(
+                    Font(resId = R.font.pacificoregular,
+                    weight = FontWeight.Normal)
+                ))
             )
             Box(
                 modifier = Modifier
@@ -113,7 +112,9 @@ fun FirstScreen(model: WeatherViewModel) {
 
                               Button(
                                   onClick = {
-                                      model.askPermission()
+                                      model.askPermission(){
+
+                                      }
 
                                   },
                                   modifier = Modifier
@@ -158,7 +159,7 @@ fun FirstScreen(model: WeatherViewModel) {
 
                             Button(
                                 onClick = {
-                                    model.askPermission()
+                                    model.askPermission(){}
 
                                 },
                                 modifier = Modifier
