@@ -48,40 +48,79 @@ fun Double.round(decimals: Int): Double {
 }
 fun getWeatherColor(input: String): Color {
     return when (input) {
-        "clear-day" -> Color(0xFF1ca6f0)
-        "clear-night" -> Color(0xFF183050)
-        "rain" -> Color(0xFF305c81)
-        "snow" -> Color(0xFFbadbe3)
-        "sleet" -> Color(0xFFc5e1e8)
-        "wind" -> Color(0xFF90a699)
-        "fog" -> Color(0xFF85a588)
-        "cloudy" -> Color(0xFF5a6469)
-        "partly-cloudy-day" -> Color(0xFF1d4c70)
-        "partly-cloudy-night" -> Color(0xFF1d4c57)
-        "hail" -> Color(0xFFc5e1e8)
-        "thunderstorm" -> Color(0xFF130c36)
-        "tornado" -> Color(0xFF1e1640)
+        "01d" -> Color(235, 220, 180)
+        "01n" -> Color(0xFF183050)
+        "09d","10d","09n","10n" -> Color(0xFF305c81)
+        "13d","13n" -> Color(0xFFbadbe3)
+
+        "50d","50n" -> Color(0xFF90a699)
+
+        "04d","04n","03d","03n" -> Color(0xFF5a6469)
+        "02d" -> Color(0xFF1d4c70)
+        "02n" -> Color(0xFF1d4c57)
+
+        "11d","11n" -> Color(0xFF130c36)
+
         else -> Color(0xFF2F4276)
     }
 }
+fun getWeatherBackground(input: String): Int {
+    return when (input) {
+        "01d","01n" -> R.drawable.sunnyback
+        "09d","10d","09n","10n" -> R.drawable.rainback
+        "13d","13n" -> R.drawable.snowback
 
+        "50d","50n" -> R.drawable.mistback // fog
+
+        "04d","04n","03d","03n" -> R.drawable.cloudyback // cloudy
+        "02d", "02n" -> R.drawable.partlycloudyback
+
+        "11d","11n" -> R.drawable.stormback
+
+        else ->  R.drawable.partlycloudyback
+    }
+}
+//fun getWeatherIcon(input: String): Int {
+//
+//    return when (input) {
+//        "clear-day" -> R.drawable.sun
+//        "clear-night" -> R.drawable.clearnight
+//        "rain" -> R.drawable.rain
+//        "snow" -> R.drawable.snow
+//        "sleet" -> R.drawable.snow
+//        "wind" -> R.drawable.air
+//        "fog" -> R.drawable.clouds
+//        "cloudy" -> R.drawable.clouds
+//        "partly-cloudy-day" -> R.drawable.partlycloudy
+//        "partly-cloudy-night" -> R.drawable.partlycloudynight
+//        "hail" -> R.drawable.snow
+//        "thunderstorm" -> R.drawable.heavyrain
+//        "tornado" -> R.drawable.air
+//        else -> R.drawable.sun
+//    }
+//}
 fun getWeatherIcon(input: String): Int {
 
     return when (input) {
-        "clear-day" -> R.drawable.sun
-        "clear-night" -> R.drawable.clearnight
-        "rain" -> R.drawable.rain
-        "snow" -> R.drawable.snow
-        "sleet" -> R.drawable.snow
-        "wind" -> R.drawable.air
-        "fog" -> R.drawable.clouds
-        "cloudy" -> R.drawable.clouds
-        "partly-cloudy-day" -> R.drawable.partlycloudy
-        "partly-cloudy-night" -> R.drawable.partlycloudynight
-        "hail" -> R.drawable.snow
-        "thunderstorm" -> R.drawable.heavyrain
-        "tornado" -> R.drawable.air
-        else -> R.drawable.sun
+        "01d" -> R.drawable.sun
+        "02d" -> R.drawable.air
+        "03d" -> R.drawable.clouds
+        "04d" -> R.drawable.clouds
+        "01n" -> R.drawable.clearnight
+        "02n" -> R.drawable.partlycloudynight
+        "03n" -> R.drawable.clouds
+        "04n" -> R.drawable.clouds
+        "09n" -> R.drawable.rain
+        "10n" -> R.drawable.rain
+        "11n" -> R.drawable.heavyrain
+        "13n" -> R.drawable.snow
+        "50n" -> R.drawable.air
+        "09d" -> R.drawable.rain
+        "10d" -> R.drawable.rain
+        "11d" -> R.drawable.heavyrain
+        "13d" -> R.drawable.snow
+        "50d" -> R.drawable.air
+        else -> R.drawable.air
     }
 }
 

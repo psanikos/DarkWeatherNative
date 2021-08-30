@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.rounded.ArrowBackIosNew
 import androidx.compose.material.icons.twotone.Warning
 import androidx.compose.runtime.*
@@ -42,44 +43,30 @@ fun SettingsView(model: WeatherViewModel, controller: NavController) {
 
 
     Scaffold(
-        backgroundColor = if(isSystemInDarkTheme()) Color(0xFF303030) else Color(0xFFf0f0f7)
+      //  backgroundColor = if(isSystemInDarkTheme()) Color(0xFF303030) else Color(0xFFf0f0f7),
+         topBar = {
+            TopAppBar(title = {
+                Text("Settings",style = MaterialTheme.typography.h2)
+            },navigationIcon = {
+                IconButton(onClick = {
+                    controller.popBackStack()
+                }) {
+                    Icon(Icons.Default.ChevronLeft,contentDescription = "",
+                        modifier = Modifier.size(40.dp))
+                }
+            },
+                elevation = 0.dp,
+                backgroundColor = Color.Transparent,
+                modifier = Modifier.height(140.dp)
+            )
+        }
     ) {
         Column(
-            modifier = Modifier
-
-                .fillMaxWidth()
-                .height(500.dp),
-            verticalArrangement = Arrangement.SpaceBetween
-
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            Surface(
-                color = if(isSystemInDarkTheme()) Color.Black else Color.White, modifier = Modifier
-                    .fillMaxWidth()
-                    .height(240.dp)
-            ) {
-                Column() {
-                    Spacer(modifier = Modifier.height(40.dp))
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.Start
-                    ) {
-                        IconButton(onClick = {
-                            controller.popBackStack()
-                        }) {
-                            Icon(
-                                Icons.Rounded.ArrowBackIosNew,
-                                contentDescription = "",
-                                tint = light_blue_500
-                            )
-                        }
-                    }
-                    Text(
-                        stringResource(R.string.SettingsTitle),
-                        style = MaterialTheme.typography.h1,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 20.dp)
-                    )
-                }
-            }
+
             Row(
                 modifier = itemsModifier,
                 horizontalArrangement = Arrangement.SpaceBetween,

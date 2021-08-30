@@ -19,6 +19,7 @@ import androidx.core.view.WindowCompat
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import coil.annotation.ExperimentalCoilApi
 import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.android.gms.ads.*
 import com.google.android.gms.ads.interstitial.InterstitialAd
@@ -28,6 +29,7 @@ import npsprojects.darkweather.models.WeatherViewModel
 import npsprojects.darkweather.ui.theme.DarkWeatherTheme
 import npsprojects.darkweather.views.FirstScreen
 import npsprojects.darkweather.views.MainPageView
+import npsprojects.darkweather.views.SearchView
 import npsprojects.darkweather.views.SettingsView
 
 
@@ -49,6 +51,7 @@ class MainActivity : ComponentActivity() {
     private val model by viewModels<WeatherViewModel>()
     private var mInterstitialAd: InterstitialAd? = null
     private final var TAG = "MainActivity"
+    @ExperimentalCoilApi
     @ExperimentalFoundationApi
     @ExperimentalAnimationApi
     @ExperimentalMaterialApi
@@ -142,6 +145,7 @@ class MainActivity : ComponentActivity() {
 }
 
 
+@ExperimentalCoilApi
 @ExperimentalFoundationApi
 @ExperimentalMaterialApi
 @ExperimentalAnimationApi
@@ -155,7 +159,9 @@ fun MyApp(model: WeatherViewModel) {
         composable("Settings") {
             SettingsView(model = model, controller = controller)
         }
-
+        composable("AddPage"){
+           SearchView(model = model, controller = controller)
+        }
     }
 
 }

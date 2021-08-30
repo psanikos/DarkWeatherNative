@@ -1,6 +1,7 @@
 package npsprojects.darkweather.views
 
 import android.location.Address
+import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.animateContentSize
@@ -20,6 +21,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -27,6 +29,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusState
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
@@ -34,6 +38,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -56,82 +61,142 @@ import npsprojects.darkweather.views.NewMapViewBig
 import npsprojects.darkweather.views.rememberMapViewWithLifecycle
 import java.io.IOException
 import java.text.SimpleDateFormat
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import coil.annotation.ExperimentalCoilApi
 
+sealed class Screen(val route: String, @StringRes val resourceId: Int, val icon: ImageVector) {
+    object Main : Screen("main", R.string.home,icon = Icons.Outlined.Cloud)
+    object AddLocation : Screen("add", R.string.add_location,icon = Icons.Outlined.AddCircleOutline)
+    object ManageLocation : Screen("manage", R.string.manage_location,icon = Icons.Outlined.Summarize)
+    object Settings : Screen("settings", R.string.settings,icon = Icons.Outlined.Settings)
+}
+
+@ExperimentalCoilApi
 @ExperimentalAnimationApi
 @OptIn(ExperimentalFoundationApi::class)
 @ExperimentalMaterialApi
 @Composable
 fun MainPageView(model: WeatherViewModel, controller: NavController) {
-
+    val items = listOf(Screen.Main,Screen.ManageLocation,Screen.Settings)
     val scope = rememberCoroutineScope()
-    var index: Int by remember { mutableStateOf(0) }
+
     val state = rememberScaffoldState(
         rememberDrawerState(DrawerValue.Closed)
     )
     var currentPage by remember { mutableStateOf("Main") }
-    var offset: Float by remember { mutableStateOf(0f) }
-    val swipableModifier = Modifier.draggable(
-        orientation = Orientation.Horizontal,
-        state = rememberDraggableState { delta ->
-            offset = delta
 
-        },
-        onDragStopped = {
-            if (offset > 0) {
-                if (index > 0) {
-                    index--
-                }
-                offset = 0f
-            } else if (offset < 0) {
-                if (index < model.locations.size - 1) {
-                    index++
-                }
-                offset = 0f
-            }
-        }
-
-    )
     val configuration = LocalConfiguration.current
     val deviceType = when(configuration.smallestScreenWidthDp > 480){
         true -> DeviceType.BIGSCREEN
         false -> DeviceType.PHONE
     }
-
     Scaffold(
-        modifier = Modifier.fillMaxSize(),
 
-
-        ) {
+//        bottomBar = {
+//            BottomNavigation(
+//                modifier = Modifier
+//                    .height(80.dp),
+//                elevation = 0.dp,backgroundColor = Color.Transparent
+//            ) {
+//                val navBackStackEntry by controller.currentBackStackEntryAsState()
+//                val currentDestination = navBackStackEntry?.destination
+//                items.forEach { screen ->
+//                    BottomNavigationItem(
+//                        icon = { Box(modifier = Modifier
+//                            .background(
+//                                color = deep_purple_100
+//                                    .copy(alpha = if( currentDestination?.hierarchy?.any { it.route == screen.route } == true) 0.8f else 0.2f),
+//                                shape = CircleShape)
+//                            .padding(10.dp)){
+//
+//                            Icon(screen.icon, contentDescription = null,modifier = Modifier.size(20.dp)
+//                            )
+//                        } },
+//
+//                        selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
+//                        onClick = {
+//                            controller.navigate(screen.route) {
+//
+//                                popUpTo(controller.graph.findStartDestination().id) {
+//                                    saveState = true
+//                                }
+//
+//                                launchSingleTop = true
+//
+//                                restoreState = true
+//                            }
+//                        },
+//                        selectedContentColor = indigo_500,
+//                        unselectedContentColor = Color.Gray,
+//
+//                        )
+//                }
+//                BottomNavigationItem(
+//                    icon = {
+//                        Box(modifier = Modifier
+//                            .background(
+//                                color = indigo_100,
+//                                shape = CircleShape)
+//                            .padding(10.dp)){
+//                            Icon(Icons.Outlined.Add, contentDescription = null,modifier = Modifier.size(20.dp),tint = indigo_500) }
+//                    },
+//                    selected = true,
+//                    onClick = {
+//
+//                    },
+//                    selectedContentColor = Color.White,
+//                    unselectedContentColor = Color.Gray,
+//
+//                    )
+//            }
+//        }
+    ) {
+            innerPadding ->
         when(model.loading) {
             true -> Box(modifier = Modifier.fillMaxSize(),contentAlignment = Alignment.Center){
                 LoadingAnimation()
             }
             false ->
                 when (deviceType) {
-                    DeviceType.PHONE -> NewView(model = model, controller = controller)
+                    DeviceType.PHONE -> NewMainView(model = model, controller = controller)
                     DeviceType.BIGSCREEN -> NewMapViewBig(model = model, controller = controller)
                 }
         }
-            }
+//        NavHost(navController, startDestination = Screen.Main.route, Modifier.padding(innerPadding)) {
+//            composable(Screen.Main.route) { NewCardView() }
+//            // composable(Screen.FriendsList.route) { FriendsList(navController) }
+//        }
+    }
+
 
 }
 
+@ExperimentalCoilApi
 @ExperimentalAnimationApi
 @Composable
 fun NewView(model: WeatherViewModel, controller: NavController) {
     val map = rememberMapViewWithLifecycle()
     val scope = rememberCoroutineScope()
     val mapType by remember { mutableStateOf("clouds_new") }
-    val coordinates by remember {
+    var index: Int by remember { mutableStateOf(0) }
+    var coordinates by remember {
         mutableStateOf(
             if (model.locations.isNotEmpty()) LatLng(
-                model.locations[0].data.lat,
-                model.locations[0].data.lon
+                model.locations[index].data.lat,
+                model.locations[index].data.lon
             ) else LatLng(37.9838, 23.7275)
         )
     }
     var zoom by rememberSaveable(map) { mutableStateOf(InitialZoom) }
-    val index: Int by remember { mutableStateOf(0) }
+
     val overlays: MutableList<TileOverlay> by remember { mutableStateOf(ArrayList<TileOverlay>()) }
     var searchTerm by remember { mutableStateOf("") }
     val backColor = if (isSystemInDarkTheme()) Color(0xFF252525) else Color(0xFFf0f0f7)
@@ -142,7 +207,38 @@ fun NewView(model: WeatherViewModel, controller: NavController) {
     val insets = LocalWindowInsets.current
     var showAlert: Boolean by remember { mutableStateOf(false) }
     var searchedAddresses: MutableList<Address> by remember { mutableStateOf(mutableListOf()) }
+    val isFocused = remember { mutableStateOf(false) }
+    var offset: Float by remember { mutableStateOf(0f) }
 
+    val swipableModifier = Modifier.draggable(
+        orientation = Orientation.Horizontal,
+        state = rememberDraggableState { delta ->
+            offset = delta
+
+        },
+        onDragStopped = {
+            if (offset > 0) {
+                if (index > 0) {
+                    index--
+                    coordinates = LatLng(
+                        model.locations[index].data.lat,
+                        model.locations[index].data.lon
+                    )
+                }
+                offset = 0f
+            } else if (offset < 0) {
+                if (index < model.locations.size - 1) {
+                    index++
+                    coordinates = LatLng(
+                        model.locations[index].data.lat,
+                        model.locations[index].data.lon
+                    )
+                }
+                offset = 0f
+            }
+        }
+
+    )
     Scaffold() {
         BoxWithConstraints() {
             val height = this.maxHeight
@@ -173,11 +269,73 @@ fun NewView(model: WeatherViewModel, controller: NavController) {
                                 showAlert = true
                             }
                         } else {
-                            MainCard(weather = model.locations.first())
+                           Box(modifier = swipableModifier) {
+                               MainCard(weather = model.locations[index])
+                           }
                         }
                     }
 
                 }
+              AnimatedVisibility(visible = isFocused.value) {
+Surface(modifier = Modifier.fillMaxSize()) {
+    LazyColumn(modifier = Modifier.padding(top = 100.dp)){
+        searchedAddresses.forEach {
+
+            if (it.locality != null || it.featureName != null) {
+item {
+    Row(
+        modifier = Modifier
+            .padding(vertical = 5.dp, horizontal = 20.dp)
+            .fillMaxWidth()
+            .height(50.dp)
+            .background(
+                color = cardColor,
+                shape = RoundedCornerShape(12.dp)
+            )
+            .clickable {
+                scope.launch {
+                    isLoading = true
+                    model.getCoordinatesWeather(
+                        location = Coordinates(
+                            it.latitude,
+                            it.longitude
+                        )
+                    )
+                    searchTerm = ""
+                    searchedAddresses.clear()
+                    delay(1000)
+                    isLoading = false
+                    showSearch = false
+                }
+            },
+        horizontalArrangement = Arrangement.Start,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            it.locality ?: it.featureName,
+            style = MaterialTheme.typography.body2,
+            modifier = Modifier.padding(
+                horizontal = 16.dp,
+                vertical = 8.dp
+            )
+        )
+
+        Text(
+            it.countryName ?: "",
+            style = MaterialTheme.typography.caption,
+            modifier = Modifier.padding(
+                horizontal = 20.dp,
+                vertical = 8.dp
+            )
+        )
+
+    }
+}
+            }
+        }
+    }
+}
+              }
                 if (!isLoading) {
                     Column(
                         modifier = Modifier
@@ -266,6 +424,7 @@ fun NewView(model: WeatherViewModel, controller: NavController) {
                                         ) {
                                             BasicTextField(
                                                 value = searchTerm,
+
                                                 onValueChange = {
                                                     searchTerm = it
 
@@ -289,7 +448,15 @@ fun NewView(model: WeatherViewModel, controller: NavController) {
                                                 }),
                                                 modifier = Modifier
                                                     .padding(start = 20.dp)
-                                                    .fillMaxWidth(0.9f),
+                                                    .fillMaxWidth(0.9f)
+                                                    .onFocusChanged { focus ->
+                                                        when {
+                                                            focus.isFocused -> isFocused.value =
+                                                                true
+                                                            else -> isFocused.value = false
+                                                        }
+
+                                                    },
                                                 textStyle = MaterialTheme.typography.caption.copy(
                                                     color = if (isSystemInDarkTheme()) Color.LightGray else Color.DarkGray
                                                 ),
@@ -299,7 +466,6 @@ fun NewView(model: WeatherViewModel, controller: NavController) {
                                                         Color.Gray
                                                     )
                                                 )
-
                                             )
                                             if (searchTerm == "") {
                                                 Text(
@@ -327,58 +493,7 @@ fun NewView(model: WeatherViewModel, controller: NavController) {
                                 }
                             }
 
-                                searchedAddresses.forEach {
-                                    if (it.locality != null || it.featureName != null) {
 
-                                        Row(
-                                            modifier = Modifier
-                                                .padding(vertical = 5.dp)
-                                                .fillMaxWidth()
-                                                .height(50.dp)
-                                                .background(
-                                                    color = cardColor,
-                                                    shape = RoundedCornerShape(20.dp)
-                                                )
-                                                .clickable {
-                                                    scope.launch {
-                                                        isLoading = true
-                                                        model.getCoordinatesWeather(
-                                                            location = Coordinates(
-                                                                it.latitude,
-                                                                it.longitude
-                                                            )
-                                                        )
-                                                        searchTerm = ""
-                                                        searchedAddresses.clear()
-                                                        delay(1000)
-                                                        isLoading = false
-                                                        showSearch = false
-                                                    }
-                                                },
-                                            horizontalArrangement = Arrangement.Start,
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            Text(
-                                                it.locality ?: it.featureName,
-                                                style = MaterialTheme.typography.body2,
-                                                modifier = Modifier.padding(
-                                                    horizontal = 16.dp,
-                                                    vertical = 8.dp
-                                                )
-                                            )
-
-                                            Text(
-                                                it.countryName ?: "",
-                                                style = MaterialTheme.typography.caption,
-                                                modifier = Modifier.padding(
-                                                    horizontal = 20.dp,
-                                                    vertical = 8.dp
-                                                )
-                                            )
-
-                                        }
-                                    }
-                                }
                             }
 
 

@@ -13,7 +13,7 @@ import androidx.compose.ui.layout.LayoutModifier
 import androidx.compose.ui.unit.dp
 
 
-fun Modifier.cardModifier() = padding(12.dp).fillMaxWidth().height(300.dp)
+fun Modifier.cardModifier() = this.padding(12.dp).fillMaxWidth().height(300.dp)
 
 
 
