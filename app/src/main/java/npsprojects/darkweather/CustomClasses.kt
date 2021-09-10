@@ -2,7 +2,16 @@ package npsprojects.darkweather
 
 import android.annotation.SuppressLint
 import android.util.Log
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.TileOverlay
+import npsprojects.darkweather.views.InitialZoom
+import npsprojects.darkweather.views.rememberMapViewWithLifecycle
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
@@ -102,25 +111,25 @@ fun getWeatherBackground(input: String): Int {
 fun getWeatherIcon(input: String): Int {
 
     return when (input) {
-        "01d" -> R.drawable.sun
-        "02d" -> R.drawable.air
-        "03d" -> R.drawable.clouds
-        "04d" -> R.drawable.clouds
-        "01n" -> R.drawable.clearnight
-        "02n" -> R.drawable.partlycloudynight
-        "03n" -> R.drawable.clouds
-        "04n" -> R.drawable.clouds
-        "09n" -> R.drawable.rain
-        "10n" -> R.drawable.rain
-        "11n" -> R.drawable.heavyrain
-        "13n" -> R.drawable.snow
-        "50n" -> R.drawable.air
-        "09d" -> R.drawable.rain
-        "10d" -> R.drawable.rain
-        "11d" -> R.drawable.heavyrain
-        "13d" -> R.drawable.snow
-        "50d" -> R.drawable.air
-        else -> R.drawable.air
+        "01d" -> R.drawable.i01d
+        "02d" -> R.drawable.i02d
+        "03d" -> R.drawable.i03d
+        "04d" -> R.drawable.i04d
+        "01n" -> R.drawable.i01n
+        "02n" -> R.drawable.i02n
+        "03n" -> R.drawable.i03n
+        "04n" -> R.drawable.i04n
+        "09n" -> R.drawable.i09n
+        "10n" -> R.drawable.i10n
+        "11n" -> R.drawable.i11n
+        "13n" -> R.drawable.i13n
+        "50n" -> R.drawable.i50n
+        "09d" -> R.drawable.i09d
+        "10d" -> R.drawable.i10d
+        "11d" -> R.drawable.i11d
+        "13d" -> R.drawable.i13d
+        "50d" -> R.drawable.i50d
+        else -> R.drawable.i02d
     }
 }
 
@@ -161,3 +170,16 @@ fun Date.timeAgo():String {
     return conversionTime
 }
 
+//val map = rememberMapViewWithLifecycle()
+//val mapType by remember { mutableStateOf("clouds_new") }
+//val coordinates by remember {
+//    mutableStateOf(
+//        if (model.locations.isNotEmpty()) LatLng(
+//            model.locations[model.index].data.lat,
+//            model.locations[model.index].data.lon
+//        ) else LatLng(37.9838, 23.7275)
+//    )
+//}
+//var zoom by rememberSaveable(map) { mutableStateOf(InitialZoom) }
+//
+//val overlays: MutableList<TileOverlay> by remember { mutableStateOf(ArrayList<TileOverlay>()) }

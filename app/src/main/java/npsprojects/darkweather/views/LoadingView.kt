@@ -162,7 +162,6 @@ fun LoadingAnimation() {
     ) { animImage ->
         when (animImage) {
             0 -> LoadingImage(image = images[0])
-
             1 -> LoadingImage(image = images[1])
             2 -> LoadingImage(image = images[2])
             3 -> LoadingImage(image = images[3])

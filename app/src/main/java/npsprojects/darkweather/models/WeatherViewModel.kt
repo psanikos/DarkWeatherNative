@@ -50,9 +50,14 @@ class WeatherViewModel : ViewModel() {
     var hasInit: Boolean by mutableStateOf(false)
     private val _permissionGranted = MutableLiveData(false)
     val permissionGranted = _permissionGranted
-    var index by mutableStateOf(0)
-
+    private val _index =  MutableLiveData(0)
+    val index:LiveData<Int> = _index
     private fun airApiCallString(lat:Double, lon:Double):String = "https://api.openweathermap.org/data/2.5/air_pollution?lat=$lat&lon=$lon&appid=$openWeatherKey"
+
+    fun indexChange(value:Int){
+        _index.value = value
+
+    }
 
     fun onPermissionGranted() = _permissionGranted.postValue(true)
 

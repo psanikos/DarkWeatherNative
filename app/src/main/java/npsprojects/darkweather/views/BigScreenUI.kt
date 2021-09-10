@@ -99,8 +99,7 @@ fun NewMapViewBig(model: WeatherViewModel, controller: NavController) {
                         latitude = coordinates.latitude,
                         longitude = coordinates.longitude,
                         mapType = mapType,
-                        model = model,
-                        index = index
+                        model = model
                     )
                         Row(modifier = Modifier
                             .wrapContentWidth()

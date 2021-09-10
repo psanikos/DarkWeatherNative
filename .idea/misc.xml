@@ -42,6 +42,12 @@
         <entry key="../../../../layout/compose-model-1630101342796.xml" value="0.26055743243243246" />
         <entry key="../../../../layout/compose-model-1630237437418.xml" value="0.26055743243243246" />
         <entry key="../../../../layout/compose-model-1630265219899.xml" value="0.26055743243243246" />
+        <entry key="../../../../layout/compose-model-1630411645190.xml" value="0.335" />
+        <entry key="../../../../layout/compose-model-1630417438400.xml" value="0.25" />
+        <entry key="../../../../layout/compose-model-1630943935415.xml" value="0.17037037037037037" />
+        <entry key="../../../../layout/compose-model-1630945908139.xml" value="0.335" />
+        <entry key="../../../../layout/compose-model-1631094995989.xml" value="0.25" />
+        <entry key="../../../../layout/compose-model-1631279097047.xml" value="0.27449324324324326" />
         <entry key="app/src/main/res/drawable-v21/app_widget_background.xml" value="0.3235897435897436" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/rain.xml" value="0.2490740740740741" />
@@ -58,7 +64,7 @@
     </option>
   </component>
   <component name="ExternalStorageConfigurationManager" enabled="true" />
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_15" project-jdk-name="11" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

@@ -10,16 +10,16 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.ArrowDropUp
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material.icons.filled.Navigation
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material.swipeable
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -27,142 +27,161 @@ import androidx.compose.ui.unit.sp
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import npsprojects.darkweather.models.WeatherModel
+import npsprojects.darkweather.models.WeatherViewModel
 import npsprojects.darkweather.round
 import npsprojects.darkweather.timeAgo
 import npsprojects.darkweather.ui.theme.DarkWeatherTheme
+import npsprojects.darkweather.ui.theme.blue_500
 import java.time.Instant
 import java.util.*
 
-
 @ExperimentalCoilApi
 @Composable
-fun MainCard(weather:WeatherModel) {
+fun MainCard(model:WeatherViewModel) {
 
+        var icon by remember {
+            mutableStateOf("02d")
+        }
+    var temp by remember {
+        mutableStateOf("N/A°")
+    }
+    var tempHigh by remember {
+        mutableStateOf("N/A°")
+    }
+    var tempLow by remember {
+        mutableStateOf("N/A°")
+    }
+    var description by remember {
+        mutableStateOf("N/A")
+    }
+    var angle by remember {
+        mutableStateOf(0f)
+    }
+    var air by remember {
+        mutableStateOf(0.0)
+    }
+    var pop by remember {
+        mutableStateOf(0)
+    }
+val index:Int by  model.index.observeAsState(initial = 0)
+
+    LaunchedEffect(key1 = index, block ={
+        if(model.locations.size > 0){
+          icon = model.locations[model.index.value!!].data.current.weather[0].icon
+            temp = model.locations[model.index.value!!].data.current.temp.toUInt().toString() + "°"
+            tempHigh = model.locations[model.index.value!!].data.daily[0].temp.max.toUInt().toString() + "°"
+            tempLow = model.locations[model.index.value!!].data.daily[0].temp.min.toUInt().toString() + "°"
+            description = model.locations[model.index.value!!].data.current.weather[0].description
+            angle = model.locations[model.index.value!!].data.current.wind_deg.toFloat()
+            air = model.locations[model.index.value!!].data.current.wind_speed.round(1)
+            pop = (100*(model.locations[model.index.value!!].data.current.pop ?: 0.0)).toInt()
+        }
+    })
         Column(
-            modifier = Modifier.cardModifier(),
-            verticalArrangement = Arrangement.SpaceEvenly,
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
+            verticalArrangement = Arrangement.spacedBy(20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.fillMaxWidth()
-            ) {
-            Box(modifier = Modifier
-                .background(
-                    color = Color.Gray.copy(alpha = 0.1f),
-                    shape = RoundedCornerShape(50)
-                )
-                .padding(4.dp)){
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    if(weather.isCurrent) {
-                        Icon(
-                            Icons.Filled.LocationOn,
-                            contentDescription = "",
-                            modifier = Modifier.size(12.dp),
-                            tint = if(isSystemInDarkTheme()) Color.White else Color.Black
-                        )
-                    }
-                    Text(weather.name, style = MaterialTheme.typography.body1)
-                }
-            }
-                //yyyy-MM-dd hh:mm:ss
-                Text(Date.from(Instant.ofEpochSecond(weather.data.current.dt)).timeAgo(), style = MaterialTheme.typography.caption.copy(color = Color.Gray))
-            }
             Column(
 
-                verticalArrangement = Arrangement.spacedBy(0.dp),
+                verticalArrangement = Arrangement.spacedBy(5.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Image(
-                    painter = rememberImagePainter(data = "https://openweathermap.org/img/wn/${weather.data.current.weather[0].icon}@4x.png"),
-                    contentDescription = "weather image",
-                    modifier = Modifier.size(120.dp),
-                    contentScale = ContentScale.Fit
-                )
-                Text(text = "${weather.data.current.temp.toUInt()}°", style = MaterialTheme.typography.h1.copy(fontSize = 36.sp))
+                Column(
+
+                    verticalArrangement = Arrangement.spacedBy(0.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Box() {
+                        Image(
+                            painter = rememberImagePainter(data = "https://openweathermap.org/img/wn/${icon}@4x.png"),
+                            contentDescription = "weather image",
+                            modifier = Modifier
+                                .offset(x = 2.dp, y = 4.dp)
+                                .size(150.dp),
+                            contentScale = ContentScale.Fit,
+                            colorFilter = ColorFilter.tint(color = Color.LightGray.copy(alpha = 0.6f))
+                        )
+
+                        Image(
+                            painter = rememberImagePainter(data = "https://openweathermap.org/img/wn/${icon}@4x.png"),
+                            contentDescription = "weather image",
+                            modifier = Modifier.size(150.dp),
+                            contentScale = ContentScale.Fit
+                        )
+                    }
+                    Text(text = temp, style = MaterialTheme.typography.h1.copy(fontSize = 46.sp))
+                }
+                Text(description, style = MaterialTheme.typography.body1)
             }
-            Text(weather.data.current.weather[0].description,style = MaterialTheme.typography.body2)
             Row(
-                horizontalArrangement = Arrangement.spacedBy(20.dp),
+                modifier= Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .size(25.dp)
-                            .background(
-                                color = Color(0xFF303030).copy(alpha = 0.2f),
-                                shape = CircleShape
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
 
-                        Icon(
+
+                        ColoredIcon(
                             Icons.Filled.Navigation,
                             contentDescription = "",
                             modifier = Modifier
-                                .size(12.dp)
-                                .rotate(weather.data.current.wind_deg.toFloat()),
+                                .size(20.dp)
+                                .rotate(angle),
                             tint = if(isSystemInDarkTheme()) Color.White else Color.Black,
 
                         )
-                    }
-                    Text(text = "${weather.data.current.wind_speed.round(1)} mph", style = MaterialTheme.typography.body1)
+
+                    Text(text = "$air mph", style = MaterialTheme.typography.body1)
                 }
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .size(25.dp)
-                            .background(
-                                color = Color.Red.copy(alpha = 0.2f),
-                                shape = CircleShape
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            Icons.Filled.ArrowDropUp,
+
+                        ColoredIcon(
+                            Icons.Filled.ArrowUpward,
                             contentDescription = "",
-                            modifier = Modifier.size(30.dp),
+                            modifier = Modifier.size(20.dp),
                             tint = Color.Red
                         )
-                    }
-                    Text(text = "${weather.data.daily[0].temp.max.toUInt()}°", style = MaterialTheme.typography.body1)
+
+                    Text(text = tempHigh, style = MaterialTheme.typography.body1)
                 }
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .size(25.dp)
-                            .background(
-                                color = Color.Blue.copy(alpha = 0.2f),
-                                shape = CircleShape
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            Icons.Filled.ArrowDropDown,
-                            contentDescription = "",
-                            modifier = Modifier.size(30.dp),
-                            tint = Color.Blue
-                        )
-                    }
-                    Text(text = "${weather.data.daily[0].temp.min.toUInt()}°", style = MaterialTheme.typography.body1)
+
+                    ColoredIcon(
+                        Icons.Filled.ArrowDownward,
+                        contentDescription = "",
+                        modifier = Modifier.size(20.dp),
+                        tint = Color.Blue
+                    )
+
+                    Text(text = tempLow, style = MaterialTheme.typography.body1)
                 }
-            }
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalAlignment = Alignment.CenterVertically) {
+                            ColoredIcon(Icons.Filled.Umbrella, contentDescription = "", modifier = Modifier.size(20.dp),tint = blue_500)
+
+                            Text(
+                                text = "${pop}%",
+                                style = MaterialTheme.typography.body1
+                            )
+                        }
+                }
+
         }
     }
+
 
 
 
