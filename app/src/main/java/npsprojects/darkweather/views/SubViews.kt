@@ -19,6 +19,7 @@ import androidx.compose.material.icons.twotone.Refresh
 import androidx.compose.material.icons.twotone.Warning
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -176,7 +177,7 @@ class ChartData constructor(
 fun HourlyView(model: WeatherViewModel) {
     val cardColor = if (isSystemInDarkTheme()) Color(0xFF101010) else Color.White
     val index: Int by model.index.observeAsState(initial = 0)
-    var data: List<Current> by remember {
+    var data: List<Current> by  rememberSaveable {
         mutableStateOf(listOf())
     }
     LaunchedEffect(key1 = index + model.locations.size, block = {
@@ -185,10 +186,11 @@ fun HourlyView(model: WeatherViewModel) {
         }
     })
     Column(modifier = Modifier.fillMaxWidth().wrapContentHeight()
-        .background(color = Color.Gray.copy(alpha = 0.1f),shape = RoundedCornerShape(4))
-        .padding(10.dp),
+        .background(color = blue_grey_500.copy(alpha = 0.05f),shape = RoundedCornerShape(0))
+        .padding(20.dp),
     horizontalAlignment = Alignment.Start,
-    verticalArrangement = Arrangement.spacedBy(15.dp)) {
+    verticalArrangement = Arrangement.spacedBy(20.dp)) {
+        if(data.isNotEmpty()){
 Text("Hourly",style = MaterialTheme.typography.h4)
 
         LazyRow(
@@ -223,7 +225,7 @@ Text("Hourly",style = MaterialTheme.typography.h4)
 
                         Box(
                             modifier = Modifier
-                                .height(120.dp)
+                                .height(140.dp)
                                 .width(100.dp)
                                 .padding(end = 5.dp),
 
@@ -254,12 +256,12 @@ Text("Hourly",style = MaterialTheme.typography.h4)
                                         Icons.Rounded.Umbrella,
                                         contentDescription = "",
                                         modifier = Modifier
-                                            .size(16.dp),
+                                            .size(18.dp),
                                         tint = indigo_500
                                     )
                                     Text(
                                         "${(100 * (it.pop ?: 0.0)).roundToInt()}%",
-                                        style = MaterialTheme.typography.caption
+                                        style = MaterialTheme.typography.body2
                                     )
                                 }
                                 Box() {
@@ -268,8 +270,8 @@ Text("Hourly",style = MaterialTheme.typography.h4)
                                         contentDescription = "",
                                         modifier = Modifier
                                             .offset(x = 1.dp, y = 2.dp)
-                                            .height(50.dp)
-                                            .width(50.dp),
+                                            .height(60.dp)
+                                            .width(60.dp),
                                         colorFilter = ColorFilter.tint(color = Color.Gray.copy(alpha = 0.5f))
 
                                     )
@@ -278,8 +280,8 @@ Text("Hourly",style = MaterialTheme.typography.h4)
                                         painter = painterResource(id = getWeatherIcon(it.weather[0].icon)),
                                         contentDescription = "",
                                         modifier = Modifier
-                                            .height(50.dp)
-                                            .width(50.dp)
+                                            .height(60.dp)
+                                            .width(60.dp)
 
                                     )
                                 }
@@ -294,7 +296,7 @@ Text("Hourly",style = MaterialTheme.typography.h4)
                             }
                         }
 
-
+                    }
                     }
                 }
             }

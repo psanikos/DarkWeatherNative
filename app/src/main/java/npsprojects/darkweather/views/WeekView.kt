@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.Navigation
 import androidx.compose.material.icons.filled.Umbrella
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -26,6 +27,7 @@ import npsprojects.darkweather.models.Daily
 import npsprojects.darkweather.models.WeatherViewModel
 import npsprojects.darkweather.round
 import npsprojects.darkweather.ui.theme.blue_500
+import npsprojects.darkweather.ui.theme.blue_grey_500
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDateTime
@@ -35,23 +37,33 @@ import java.util.*
 @Composable
 fun WeekView(model: WeatherViewModel){
     val index:Int by  model.index.observeAsState(initial = 0)
-    var week:List<Daily> by remember {
+    var week:List<Daily> by rememberSaveable {
         mutableStateOf(listOf())
     }
-    LaunchedEffect(key1 = index + model.locations.size, block ={
-       if(!model.locations.isEmpty()) {
-           week = model.locations[model.index.value!!].data.daily
-       }
-    })
-    Column(modifier = Modifier.fillMaxWidth().wrapContentHeight()
-        .background(color = Color.Gray.copy(alpha = 0.1f),shape = RoundedCornerShape(4))
-        .padding(10.dp),
-    horizontalAlignment = Alignment.Start,
-    verticalArrangement = Arrangement.spacedBy(15.dp)) {
 
-        Text("Week",style = MaterialTheme.typography.h4)
-        week.forEach {
-            WeekViewItem(day = it)
+        LaunchedEffect(key1 = index + model.locations.size, block = {
+            if (!model.locations.isEmpty()) {
+                week = model.locations[model.index.value!!].data.daily
+            }
+        })
+    if(week.isNotEmpty()) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .background(
+                    color = blue_grey_500.copy(alpha = 0.05f),
+                    shape = RoundedCornerShape(0)
+                )
+                .padding(20.dp),
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.spacedBy(20.dp)
+        ) {
+
+            Text("Week", style = MaterialTheme.typography.h4)
+            week.forEach {
+                WeekViewItem(day = it)
+            }
         }
     }
 }

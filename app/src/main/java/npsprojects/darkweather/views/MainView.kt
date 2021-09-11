@@ -98,18 +98,15 @@ fun MainPageView(model: WeatherViewModel, controller: NavController) {
         true -> DeviceType.BIGSCREEN
         false -> DeviceType.PHONE
     }
+    val isLoading by model.loading.observeAsState(true)
     Scaffold(
     ) {
-        when(model.loading) {
-            true -> Box(modifier = Modifier.fillMaxSize(),contentAlignment = Alignment.Center){
-                LoadingAnimation()
-            }
-            false ->
+
                 when (deviceType) {
                     DeviceType.PHONE -> NewMainView(model = model, controller = controller)
                     DeviceType.BIGSCREEN -> NewMapViewBig(model = model, controller = controller)
                 }
-        }
+
 
     }
 }

@@ -45,17 +45,19 @@ private val weatherKey = "e1e45feaea76d66517c25291f2633d9a"
 @Composable
 fun CustomMapView(model: WeatherViewModel){
     val map = rememberMapViewWithLifecycle()
-    val mapType by remember { mutableStateOf("precipitation_new") }
+    val mapType by rememberSaveable { mutableStateOf("temp_new") }
     val index:Int by  model.index.observeAsState(initial = 0)
-    var coordinates by remember {
+    val testCoordinates = LatLng(37.98384, 23.72753)
+
+    var coordinates by rememberSaveable {
         mutableStateOf(
-           LatLng(37.9838, 23.7275)
+            testCoordinates
         )
     }
     var zoom by rememberSaveable(map) { mutableStateOf(InitialZoom) }
-    val overlays: MutableList<TileOverlay> by remember { mutableStateOf(java.util.ArrayList<TileOverlay>()) }
+    val overlays: MutableList<TileOverlay> by rememberSaveable { mutableStateOf(java.util.ArrayList<TileOverlay>()) }
 LaunchedEffect(key1 = index + model.locations.size, block = {
-    if (model.locations.isNotEmpty()) {
+    if (model.locations.isNotEmpty() ) {
         coordinates = LatLng(
             model.locations[model.index.value!!].data.lat,
             model.locations[model.index.value!!].data.lon
@@ -106,9 +108,9 @@ class CustomInfoWindowForGoogleMap(context: Context) : GoogleMap.InfoWindowAdapt
 
 
 
-const val InitialZoom = 5f
+const val InitialZoom = 8f
 const val MinZoom = 2f
-const val MaxZoom = 8f
+const val MaxZoom = 10f
 
 
 
@@ -125,13 +127,16 @@ fun MapViewContainer(
 
     val zoom by rememberSaveable(map) { mutableStateOf(InitialZoom) }
     val coroutineScope = rememberCoroutineScope()
-    var hasOverlay by remember { mutableStateOf(false)}
+    var hasOverlay by rememberSaveable { mutableStateOf(false)}
     val coordinates = LatLng(latitude,longitude)
-    val overlays:MutableList<TileOverlay>  by remember { mutableStateOf(  ArrayList<TileOverlay>())}
+    val overlays:MutableList<TileOverlay>  by rememberSaveable { mutableStateOf(  ArrayList<TileOverlay>())}
     val darkTheme = isSystemInDarkTheme()
+    val isLoading by model.loading.observeAsState(true)
     Box(contentAlignment = Alignment.CenterEnd,modifier = Modifier.fillMaxSize()) {
-        when(model.loading){
-            true -> CircularProgressIndicator()
+        when(isLoading){
+            true -> Box(modifier = Modifier.fillMaxSize(),contentAlignment = Alignment.Center){
+                CircularProgressIndicator()
+            }
                 false ->  AndroidView({ map }) { mapView ->
 
             val mapZoom = zoom
@@ -142,7 +147,7 @@ fun MapViewContainer(
                     override fun getTileUrl(x: Int, y: Int, zoom: Int): URL? {
 
                         /* Define the URL pattern for the tile images */
-
+                    println("GETTING TILE")
                         val url =
                             "https://tile.openweathermap.org/map/$mapType/$zoom/$x/$y.png?appid=$weatherKey"
                         return if (!checkTileExists(x, y, zoom)) {
@@ -190,10 +195,10 @@ fun MapViewContainer(
 //
 //                MarkerOptions().position(position)
 //            )
-                val marker =  it.addMarker(
-
-                    MarkerOptions().position(coordinates)
-                )
+//                val marker =  it.addMarker(
+//
+//                    MarkerOptions().position(coordinates)
+//                )
                 it.animateCamera(CameraUpdateFactory.newLatLng(coordinates))
                 it.uiSettings.isScrollGesturesEnabled = false
                 val tile = it.addTileOverlay(

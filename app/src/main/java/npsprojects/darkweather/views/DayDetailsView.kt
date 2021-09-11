@@ -21,6 +21,7 @@ import npsprojects.darkweather.R
 import npsprojects.darkweather.models.Daily
 import npsprojects.darkweather.models.WeatherViewModel
 import npsprojects.darkweather.ui.theme.DarkWeatherTheme
+import npsprojects.darkweather.ui.theme.blue_grey_500
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -79,10 +80,10 @@ fun DayDetailsView(model: WeatherViewModel){
     Column(modifier = Modifier
         .fillMaxWidth()
         .wrapContentHeight()
-        .background(color = Color.Gray.copy(alpha = 0.1f), shape = RoundedCornerShape(4))
-        .padding(10.dp),
+        .background(color = blue_grey_500.copy(alpha = 0.05f), shape = RoundedCornerShape(0))
+        .padding(20.dp),
         horizontalAlignment = Alignment.Start,
-        verticalArrangement = Arrangement.spacedBy(15.dp)) {
+        verticalArrangement = Arrangement.spacedBy(20.dp)) {
 
         Text("Today", style = MaterialTheme.typography.h4)
         Row(

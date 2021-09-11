@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material.swipeable
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,28 +40,28 @@ import java.util.*
 @Composable
 fun MainCard(model:WeatherViewModel) {
 
-        var icon by remember {
+        var icon by rememberSaveable {
             mutableStateOf("02d")
         }
-    var temp by remember {
+    var temp by rememberSaveable {
         mutableStateOf("N/A°")
     }
-    var tempHigh by remember {
+    var tempHigh by rememberSaveable {
         mutableStateOf("N/A°")
     }
-    var tempLow by remember {
+    var tempLow by  rememberSaveable {
         mutableStateOf("N/A°")
     }
-    var description by remember {
+    var description by  rememberSaveable{
         mutableStateOf("N/A")
     }
-    var angle by remember {
+    var angle by  rememberSaveable {
         mutableStateOf(0f)
     }
-    var air by remember {
+    var air by rememberSaveable {
         mutableStateOf(0.0)
     }
-    var pop by remember {
+    var pop by  rememberSaveable {
         mutableStateOf(0)
     }
 val index:Int by  model.index.observeAsState(initial = 0)
@@ -79,6 +80,7 @@ val index:Int by  model.index.observeAsState(initial = 0)
     })
         Column(
             modifier = Modifier
+                .padding(20.dp)
                 .fillMaxWidth()
                 .wrapContentHeight(),
             verticalArrangement = Arrangement.spacedBy(30.dp),

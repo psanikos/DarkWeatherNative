@@ -43,7 +43,7 @@ class WeatherViewModel : ViewModel() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private val locator = LocationHelper()
     var locations = mutableStateListOf<WeatherModel>()
-    var loading: Boolean by mutableStateOf(false)
+    var loading =  MutableLiveData(false)
     var units: WeatherUnits by mutableStateOf(WeatherUnits.AUTO)
     var myLocations: List<SavedLocation> by mutableStateOf(listOf())
     var error =  mutableStateOf(WeatherError.NONE)
@@ -70,14 +70,14 @@ class WeatherViewModel : ViewModel() {
 
 
     fun initActions(){
-        loading = true
+        loading.value = true
         isInit()
         getDataFromUserDefaults()
         getUserLocationData {
              getSavedLocationsData(){
                 viewModelScope.launch {
                     delay(2000)
-                    loading = false
+                    loading.value = false
                 }
              }
         }

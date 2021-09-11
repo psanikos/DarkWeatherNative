@@ -48,9 +48,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.room.RoomSQLiteQuery
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.google.accompanist.insets.LocalWindowInsets
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.TileOverlay
 import npsprojects.darkweather.*
@@ -72,56 +75,68 @@ fun NewMainView(model: WeatherViewModel, controller: NavController) {
     val index:Int by model.index.observeAsState(initial = 0)
     val insets = LocalWindowInsets.current
     val bottomPadding = with(LocalDensity.current){insets.systemGestures.bottom.toDp()}
+    val isRefreshing by model.loading.observeAsState(initial = false)
     Scaffold(
         topBar = {
              TopBarView(model = model, controller = controller)
 
         }) {
+        SwipeRefresh(
+            state = rememberSwipeRefreshState(isRefreshing),
+            onRefresh = { model.initActions() },
+        ) {
+            LazyColumn(
+                Modifier
+                    .padding(horizontal = 0.dp)
+                    .padding(bottom = bottomPadding)
+                    .fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(30.dp)
+            ) {
+                item {
+                    MainCard(model = model)
+                }
 
-    LazyColumn(
-        Modifier
-            .padding(horizontal = 12.dp)
-            .padding(bottom = bottomPadding)
-            .fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(40.dp)
-    ){
-    item {
-    MainCard(model = model)
-    }
+                item {
+                    HourlyView(model = model)
+                }
+//                item {
+//                    Column(
+//                        modifier = Modifier
+//                            .padding(20.dp)
+//                            .fillMaxWidth()
+//                            .wrapContentHeight()
+//                            ,
+//                        horizontalAlignment = Alignment.Start,
+//                        verticalArrangement = Arrangement.spacedBy(15.dp)
+//                    ) {
+//                        Text("Weather map", style = MaterialTheme.typography.h4)
+//                        Box(
+//                            modifier = Modifier
+//                                .fillMaxWidth()
+//                                .height(220.dp)
+//                                .background(color = Color.DarkGray, shape = RoundedCornerShape(8))
+//                                .padding(8.dp)
+//                                .clip(RoundedCornerShape(6))
+//                        ) {
+//                            CustomMapView(model = model)
+//                        }
+//                    }
+//                }
+              item{
+                  UVView(model = model)
+              }
+                item {
+                    WeekView(model = model)
+                }
 
-        item{
-            HourlyView(model = model)
-        }
-        item{
-            Column(modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                ,
-                horizontalAlignment = Alignment.Start,
-                verticalArrangement = Arrangement.spacedBy(15.dp)) {
-                Text("Weather map", style = MaterialTheme.typography.h4)
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(200.dp)
-                        .background(color = Color.DarkGray, shape = RoundedCornerShape(8))
-                        .padding(8.dp)
-                        .clip(RoundedCornerShape(6))
-                ) {
-                    CustomMapView(model = model)
+                item {
+                    AirQualityView(model = model)
+                }
+                item {
+                    DayDetailsView(model = model)
                 }
             }
         }
-        item{
-            WeekView(model = model)
-        }
-        item{
-            DayDetailsView(model = model)
-        }
-        item{
-            AirQualityView(model = model)
-        }
-    }
     }
 }

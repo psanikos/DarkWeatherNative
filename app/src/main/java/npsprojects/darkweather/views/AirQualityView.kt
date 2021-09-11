@@ -15,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Air
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,7 +40,7 @@ import npsprojects.darkweather.models.WeatherViewModel
 import npsprojects.darkweather.ui.theme.*
 
 
-private val TriangleShape = GenericShape { size, _ ->
+val TriangleShape = GenericShape { size, _ ->
     // 1)
 
     moveTo(0f, 0f)
@@ -54,7 +55,7 @@ private val TriangleShape = GenericShape { size, _ ->
 @Composable
 fun AirQualityView(model:WeatherViewModel) {
     val index: Int by model.index.observeAsState(initial = 0)
-    var aqi by remember {
+    var aqi by  rememberSaveable {
         mutableStateOf(1)
     }
     LaunchedEffect(key1 = index + model.locations.size, block = {
@@ -87,8 +88,8 @@ fun AirQualityView(model:WeatherViewModel) {
 
 
     val configuration = LocalConfiguration.current
-    val pointWidth = configuration.smallestScreenWidthDp/5 - configuration.smallestScreenWidthDp/12
-    var toAnimate by remember {
+    val pointWidth = with(LocalDensity.current){configuration.smallestScreenWidthDp/5 - configuration.smallestScreenWidthDp/10}
+    var toAnimate by rememberSaveable {
         mutableStateOf(false)
     }
     val value = animateDpAsState(targetValue = if(toAnimate) (aqi*pointWidth).dp else 0.dp,
@@ -100,27 +101,29 @@ fun AirQualityView(model:WeatherViewModel) {
         toAnimate = true
     } )
 
-    if (model.locations[index].airQuality != null) {
+    if (model.locations.size  > 0 && model.locations[index].airQuality != null) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
-                .padding(10.dp),
+                .padding(20.dp),
             horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.spacedBy(15.dp)
+            verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
+            Row(modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween,verticalAlignment = Alignment.CenterVertically) {
 
-            Text(stringResource(R.string.AirQ), style = MaterialTheme.typography.h4)
-
-
-
+                Text(stringResource(R.string.AirQ), style = MaterialTheme.typography.h4)
 
 
-                        Text(
-                            name,
-                            style = MaterialTheme.typography.h3,
-                            modifier = Modifier.padding(bottom = 10.dp)
-                        )
+
+
+
+                Text(
+                    name,
+                    style = MaterialTheme.typography.h3,
+                    modifier = Modifier.padding(bottom = 10.dp)
+                )
+            }
             Box() {
                 Row(
                     modifier = Modifier
@@ -165,7 +168,11 @@ fun AirQualityView(model:WeatherViewModel) {
                             .background(red_500.copy(alpha = 0.8f))
                     )
                 }
-                Box(Modifier.offset(x=value.value,y = (-2).dp).size(20.dp).background(color = blue_grey_500,shape = TriangleShape))
+                Box(
+                    Modifier
+                        .offset(x = value.value, y = (-2).dp)
+                        .size(20.dp)
+                        .background(color = blue_grey_500, shape = TriangleShape))
             }
 
                         Text(
