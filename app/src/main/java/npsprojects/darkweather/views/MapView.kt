@@ -28,6 +28,7 @@ import npsprojects.darkweather.MyApp.context
 import java.net.MalformedURLException
 import java.net.URL
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
@@ -45,16 +46,23 @@ private val weatherKey = "e1e45feaea76d66517c25291f2633d9a"
 fun CustomMapView(model: WeatherViewModel){
     val map = rememberMapViewWithLifecycle()
     val mapType by remember { mutableStateOf("precipitation_new") }
-    val coordinates by remember {
+    val index:Int by  model.index.observeAsState(initial = 0)
+    var coordinates by remember {
         mutableStateOf(
-            if (model.locations.isNotEmpty()) LatLng(
-                model.locations[model.index.value!!].data.lat,
-                model.locations[model.index.value!!].data.lon
-            ) else LatLng(37.9838, 23.7275)
+           LatLng(37.9838, 23.7275)
         )
     }
     var zoom by rememberSaveable(map) { mutableStateOf(InitialZoom) }
     val overlays: MutableList<TileOverlay> by remember { mutableStateOf(java.util.ArrayList<TileOverlay>()) }
+LaunchedEffect(key1 = index + model.locations.size, block = {
+    if (model.locations.isNotEmpty()) {
+        coordinates = LatLng(
+            model.locations[model.index.value!!].data.lat,
+            model.locations[model.index.value!!].data.lon
+        )
+    }
+
+})
 
     MapViewContainer(
         map = map,

@@ -65,7 +65,7 @@ fun MainCard(model:WeatherViewModel) {
     }
 val index:Int by  model.index.observeAsState(initial = 0)
 
-    LaunchedEffect(key1 = index, block ={
+    LaunchedEffect(key1 = index + model.locations.size, block ={
         if(model.locations.size > 0){
           icon = model.locations[model.index.value!!].data.current.weather[0].icon
             temp = model.locations[model.index.value!!].data.current.temp.toUInt().toString() + "°"
@@ -81,7 +81,7 @@ val index:Int by  model.index.observeAsState(initial = 0)
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight(),
-            verticalArrangement = Arrangement.spacedBy(20.dp),
+            verticalArrangement = Arrangement.spacedBy(30.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Column(

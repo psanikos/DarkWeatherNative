@@ -19,6 +19,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import npsprojects.darkweather.Coordinates
@@ -64,15 +65,18 @@ fun SearchView(model: WeatherViewModel, controller: NavController) {
             BasicTextField(value = searchTerm, onValueChange = {
                 searchTerm = it
             }, keyboardActions = KeyboardActions(onSearch = {
-                scope.launch {
+
+                scope.launch(Dispatchers.IO) {
                     val addresses =
                         model.getCoordinatesFromLocation(
                             searchTerm
                         )
-                    if (addresses.isNullOrEmpty()) {
-                        showAlert = true
-                    } else {
-                        searchedAddresses = addresses
+                    launch(Dispatchers.Main) {
+                        if (addresses.isNullOrEmpty()) {
+                            showAlert = true
+                        } else {
+                            searchedAddresses = addresses
+                        }
                     }
                 }
             }), keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),

@@ -18,6 +18,7 @@ import androidx.compose.material.icons.rounded.Umbrella
 import androidx.compose.material.icons.twotone.Refresh
 import androidx.compose.material.icons.twotone.Warning
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -172,117 +173,129 @@ class ChartData constructor(
 //
 
 @Composable
-fun HourlyView(model: WeatherViewModel){
-    val cardColor =  if (isSystemInDarkTheme()) Color(0xFF101010) else Color.White
-
-    var data:List<Current> by remember {
+fun HourlyView(model: WeatherViewModel) {
+    val cardColor = if (isSystemInDarkTheme()) Color(0xFF101010) else Color.White
+    val index: Int by model.index.observeAsState(initial = 0)
+    var data: List<Current> by remember {
         mutableStateOf(listOf())
     }
-    LaunchedEffect(key1 = "Hourly", block = {
-        if(!model.locations.isEmpty()){
+    LaunchedEffect(key1 = index + model.locations.size, block = {
+        if (!model.locations.isEmpty()) {
             data = model.locations[model.index.value!!].data.hourly
         }
     })
-    LazyRow(
-        modifier = Modifier.fillMaxWidth()
+    Column(modifier = Modifier.fillMaxWidth().wrapContentHeight()
+        .background(color = Color.Gray.copy(alpha = 0.1f),shape = RoundedCornerShape(4))
+        .padding(10.dp),
+    horizontalAlignment = Alignment.Start,
+    verticalArrangement = Arrangement.spacedBy(15.dp)) {
+Text("Hourly",style = MaterialTheme.typography.h4)
+
+        LazyRow(
+            modifier = Modifier.fillMaxWidth()
 
 
-    ) {
+        ) {
 
-        data.forEach {
-            item {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    if(DateTimeFormatter.ofPattern("HH:mm").format(
-                            LocalDateTime.ofInstant(
-                                Instant.ofEpochMilli(1000 * it.dt),
-                                ZoneId.systemDefault()
-                            )
-                        ) == "00:00"){
-                        Text(DateTimeFormatter.ofPattern("EEEE").format(
-                            LocalDateTime.ofInstant(
-                                Instant.ofEpochMilli(1000 * it.dt),
-                                ZoneId.systemDefault()
-                            )
-                        ),style = MaterialTheme.typography.body1.copy(fontWeight = FontWeight.Bold))
-                    }
-
-                    Box(
-                        modifier = Modifier
-                            .height(120.dp)
-                            .width(100.dp)
-                            .padding(end = 5.dp),
-
-                        contentAlignment = Alignment.Center
-
+            data.forEach {
+                item {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
-                        Column(
-                            modifier = Modifier.fillMaxSize(),
-                            verticalArrangement = Arrangement.SpaceEvenly,
-                            horizontalAlignment = Alignment.CenterHorizontally,
-
-                            ) {
-
+                        if (DateTimeFormatter.ofPattern("HH:mm").format(
+                                LocalDateTime.ofInstant(
+                                    Instant.ofEpochMilli(1000 * it.dt),
+                                    ZoneId.systemDefault()
+                                )
+                            ) == "00:00"
+                        ) {
                             Text(
-                                DateTimeFormatter.ofPattern("HH:mm").format(
+                                DateTimeFormatter.ofPattern("EEEE").format(
                                     LocalDateTime.ofInstant(
                                         Instant.ofEpochMilli(1000 * it.dt),
                                         ZoneId.systemDefault()
                                     )
                                 ),
-                                style = MaterialTheme.typography.body2
-                            )
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(5.dp)
-                            ) {
-                                Icon(
-                                   Icons.Rounded.Umbrella,
-                                    contentDescription = "",
-                                    modifier = Modifier
-                                        .size(16.dp),
-                                    tint = indigo_500
-                                )
-                                Text(
-                                    "${(100 * (it.pop ?: 0.0)).roundToInt()}%",
-                                    style = MaterialTheme.typography.caption
-                                )
-                            }
-                            Box() {
-                                Image(
-                                    painter = painterResource(id = getWeatherIcon(it.weather[0].icon)),
-                                    contentDescription = "",
-                                    modifier = Modifier
-                                        .offset(x = 1.dp,y = 2.dp)
-                                        .height(50.dp)
-                                        .width(50.dp),
-                                    colorFilter = ColorFilter.tint(color = Color.Gray.copy(alpha = 0.5f))
-
-                                )
-
-                                Image(
-                                    painter = painterResource(id = getWeatherIcon(it.weather[0].icon)),
-                                    contentDescription = "",
-                                    modifier = Modifier
-                                        .height(50.dp)
-                                        .width(50.dp)
-
-                                )
-                            }
-                            Text(
-                                "${it.temp.toInt()}°",
-                                style = MaterialTheme.typography.body1.copy(
-                                    shadow = Shadow(
-                                        color = Color.Black
-                                    )
-                                )
+                                style = MaterialTheme.typography.body1.copy(fontWeight = FontWeight.Bold)
                             )
                         }
+
+                        Box(
+                            modifier = Modifier
+                                .height(120.dp)
+                                .width(100.dp)
+                                .padding(end = 5.dp),
+
+                            contentAlignment = Alignment.Center
+
+                        ) {
+                            Column(
+                                modifier = Modifier.fillMaxSize(),
+                                verticalArrangement = Arrangement.SpaceEvenly,
+                                horizontalAlignment = Alignment.CenterHorizontally,
+
+                                ) {
+
+                                Text(
+                                    DateTimeFormatter.ofPattern("HH:mm").format(
+                                        LocalDateTime.ofInstant(
+                                            Instant.ofEpochMilli(1000 * it.dt),
+                                            ZoneId.systemDefault()
+                                        )
+                                    ),
+                                    style = MaterialTheme.typography.body2
+                                )
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(5.dp)
+                                ) {
+                                    Icon(
+                                        Icons.Rounded.Umbrella,
+                                        contentDescription = "",
+                                        modifier = Modifier
+                                            .size(16.dp),
+                                        tint = indigo_500
+                                    )
+                                    Text(
+                                        "${(100 * (it.pop ?: 0.0)).roundToInt()}%",
+                                        style = MaterialTheme.typography.caption
+                                    )
+                                }
+                                Box() {
+                                    Image(
+                                        painter = painterResource(id = getWeatherIcon(it.weather[0].icon)),
+                                        contentDescription = "",
+                                        modifier = Modifier
+                                            .offset(x = 1.dp, y = 2.dp)
+                                            .height(50.dp)
+                                            .width(50.dp),
+                                        colorFilter = ColorFilter.tint(color = Color.Gray.copy(alpha = 0.5f))
+
+                                    )
+
+                                    Image(
+                                        painter = painterResource(id = getWeatherIcon(it.weather[0].icon)),
+                                        contentDescription = "",
+                                        modifier = Modifier
+                                            .height(50.dp)
+                                            .width(50.dp)
+
+                                    )
+                                }
+                                Text(
+                                    "${it.temp.toInt()}°",
+                                    style = MaterialTheme.typography.body1.copy(
+                                        shadow = Shadow(
+                                            color = Color.Black
+                                        )
+                                    )
+                                )
+                            }
+                        }
+
+
                     }
-
-
                 }
             }
         }

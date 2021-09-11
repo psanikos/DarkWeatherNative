@@ -393,39 +393,42 @@ class WeatherViewModel : ViewModel() {
    //-------------------------------------------------
 
 
-    //Geolocate--------------------------------------
+    //Geolocation--------------------------------------
     fun getCoordinatesFromLocation(input: String):MutableList<Address> {
     if (input != "" && isOnline()) {
 
         val context = MyApp.context
         val geocoder = Geocoder(context, Locale.getDefault())
+        println("Geocoding")
         try {
-            val addressList = geocoder.getFromLocationName(input,3)
+            val addressList = geocoder.getFromLocationName(input, 3)
             if (addressList != null && addressList.size > 0) {
-
-               return addressList
+                println(addressList.first().countryName)
+                return addressList
 
             }
         } catch (e: IOException) {
+            println("error" + e.localizedMessage)
             return mutableListOf()
         }
     }
+        println("Not online or empty")
         return mutableListOf()
 }
     private fun getNameFromCoordinates(context: Context, latitude: Double, longitude: Double, completion: (String) -> Unit) {
-        var addresses: List<Address>
+        val addresses: List<Address>
         val myContext = MyApp.context
         val geocoder = Geocoder(myContext, Locale.getDefault())
         if (isOnline()) {
-            try {
-                addresses = geocoder.getFromLocation(
+            addresses = try {
+                geocoder.getFromLocation(
                     latitude,
                     longitude,
                     1
                 )
             } catch (error:IOException ) {
-                println(error.message)
-                addresses = listOf()
+                println("Error" + error.message)
+                listOf()
             }
 //        val address: String =
 //            addresses[0].getAddressLine(0) // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()

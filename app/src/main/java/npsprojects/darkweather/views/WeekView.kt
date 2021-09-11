@@ -1,7 +1,9 @@
 package npsprojects.darkweather.views
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -10,6 +12,7 @@ import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Navigation
 import androidx.compose.material.icons.filled.Umbrella
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
@@ -31,19 +34,22 @@ import java.util.*
 
 @Composable
 fun WeekView(model: WeatherViewModel){
+    val index:Int by  model.index.observeAsState(initial = 0)
     var week:List<Daily> by remember {
         mutableStateOf(listOf())
     }
-    LaunchedEffect(key1 = "WeekData", block ={
+    LaunchedEffect(key1 = index + model.locations.size, block ={
        if(!model.locations.isEmpty()) {
            week = model.locations[model.index.value!!].data.daily
        }
     })
-    Column(modifier = Modifier.fillMaxWidth().wrapContentHeight(),
+    Column(modifier = Modifier.fillMaxWidth().wrapContentHeight()
+        .background(color = Color.Gray.copy(alpha = 0.1f),shape = RoundedCornerShape(4))
+        .padding(10.dp),
     horizontalAlignment = Alignment.Start,
     verticalArrangement = Arrangement.spacedBy(15.dp)) {
 
-
+        Text("Week",style = MaterialTheme.typography.h4)
         week.forEach {
             WeekViewItem(day = it)
         }
@@ -74,7 +80,7 @@ fun WeekViewItem(day:Daily) {
                 verticalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
                     .fillMaxHeight()
-                    .padding(end = 10.dp)
+
             ) {
 
                 Box() {

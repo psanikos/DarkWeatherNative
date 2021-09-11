@@ -34,6 +34,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -49,6 +50,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.room.RoomSQLiteQuery
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
+import com.google.accompanist.insets.LocalWindowInsets
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.TileOverlay
 import npsprojects.darkweather.*
@@ -68,6 +70,8 @@ import java.util.*
 @Composable
 fun NewMainView(model: WeatherViewModel, controller: NavController) {
     val index:Int by model.index.observeAsState(initial = 0)
+    val insets = LocalWindowInsets.current
+    val bottomPadding = with(LocalDensity.current){insets.systemGestures.bottom.toDp()}
     Scaffold(
         topBar = {
              TopBarView(model = model, controller = controller)
@@ -76,7 +80,8 @@ fun NewMainView(model: WeatherViewModel, controller: NavController) {
 
     LazyColumn(
         Modifier
-            .padding(horizontal = 20.dp, vertical = 10.dp)
+            .padding(horizontal = 12.dp)
+            .padding(bottom = bottomPadding)
             .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.spacedBy(40.dp)
@@ -89,19 +94,33 @@ fun NewMainView(model: WeatherViewModel, controller: NavController) {
             HourlyView(model = model)
         }
         item{
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-                    .background(color = Color.DarkGray, shape = RoundedCornerShape(12))
-                    .padding(8.dp)
-                    .clip(RoundedCornerShape(10))
-            ) {
-                CustomMapView(model = model)
+            Column(modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                ,
+                horizontalAlignment = Alignment.Start,
+                verticalArrangement = Arrangement.spacedBy(15.dp)) {
+                Text("Weather map", style = MaterialTheme.typography.h4)
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .background(color = Color.DarkGray, shape = RoundedCornerShape(8))
+                        .padding(8.dp)
+                        .clip(RoundedCornerShape(6))
+                ) {
+                    CustomMapView(model = model)
+                }
             }
         }
         item{
             WeekView(model = model)
+        }
+        item{
+            DayDetailsView(model = model)
+        }
+        item{
+            AirQualityView(model = model)
         }
     }
     }
