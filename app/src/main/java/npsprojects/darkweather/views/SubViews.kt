@@ -191,7 +191,7 @@ fun HourlyView(model: WeatherViewModel) {
     horizontalAlignment = Alignment.Start,
     verticalArrangement = Arrangement.spacedBy(20.dp)) {
         if(data.isNotEmpty()){
-Text("Hourly",style = MaterialTheme.typography.h4)
+//Text("Hourly",style = MaterialTheme.typography.h2.copy(fontSize = 12.sp,color = Color.DarkGray))
 
         LazyRow(
             modifier = Modifier.fillMaxWidth()
@@ -203,7 +203,7 @@ Text("Hourly",style = MaterialTheme.typography.h4)
                 item {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                        horizontalArrangement = Arrangement.spacedBy(5.dp)
                     ) {
                         if (DateTimeFormatter.ofPattern("HH:mm").format(
                                 LocalDateTime.ofInstant(
@@ -225,7 +225,7 @@ Text("Hourly",style = MaterialTheme.typography.h4)
 
                         Box(
                             modifier = Modifier
-                                .height(140.dp)
+                                .height(130.dp)
                                 .width(100.dp)
                                 .padding(end = 5.dp),
 
@@ -248,22 +248,7 @@ Text("Hourly",style = MaterialTheme.typography.h4)
                                     ),
                                     style = MaterialTheme.typography.body2
                                 )
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(5.dp)
-                                ) {
-                                    Icon(
-                                        Icons.Rounded.Umbrella,
-                                        contentDescription = "",
-                                        modifier = Modifier
-                                            .size(18.dp),
-                                        tint = indigo_500
-                                    )
-                                    Text(
-                                        "${(100 * (it.pop ?: 0.0)).roundToInt()}%",
-                                        style = MaterialTheme.typography.body2
-                                    )
-                                }
+
                                 Box() {
                                     Image(
                                         painter = painterResource(id = getWeatherIcon(it.weather[0].icon)),
@@ -293,6 +278,22 @@ Text("Hourly",style = MaterialTheme.typography.h4)
                                         )
                                     )
                                 )
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(1.dp)
+                                ) {
+                                    Icon(
+                                        Icons.Rounded.Umbrella,
+                                        contentDescription = "",
+                                        modifier = Modifier
+                                            .size(18.dp),
+                                        tint = indigo_500
+                                    )
+                                    Text(
+                                        "${(100 * (it.pop ?: 0.0)).roundToInt()}%",
+                                        style = MaterialTheme.typography.body2
+                                    )
+                                }
                             }
                         }
 

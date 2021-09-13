@@ -60,7 +60,7 @@ fun WeekView(model: WeatherViewModel){
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
 
-            Text("Week", style = MaterialTheme.typography.h4)
+   //         Text("Week", style = MaterialTheme.typography.h2.copy(fontSize = 12.sp,color = Color.DarkGray))
             week.forEach {
                 WeekViewItem(day = it)
             }

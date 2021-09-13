@@ -77,7 +77,7 @@ data class Daily (
     val sunset: Long,
     val moonrise: Long,
     val moonset: Long,
-    val moonPhase: Double,
+    val moon_phase: Double,
     val temp: Temp,
     val feels_like: FeelsLike,
     val pressure: Long,

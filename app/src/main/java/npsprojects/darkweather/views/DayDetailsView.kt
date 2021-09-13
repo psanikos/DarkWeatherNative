@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import npsprojects.darkweather.R
 import npsprojects.darkweather.models.Daily
 import npsprojects.darkweather.models.WeatherViewModel
@@ -85,11 +86,11 @@ fun DayDetailsView(model: WeatherViewModel){
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.spacedBy(20.dp)) {
 
-        Text("Today", style = MaterialTheme.typography.h4)
+        //Text("Today", style= MaterialTheme.typography.h2.copy(fontSize = 12.sp,color = Color.DarkGray))
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(80.dp),
+                .height(70.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -103,11 +104,11 @@ fun DayDetailsView(model: WeatherViewModel){
                 Image(
                     painter = painterResource(id = R.drawable.sunrise),
                     contentDescription = "Sun rise",
-                    modifier = Modifier.size(40.dp)
+                    modifier = Modifier.size(30.dp)
                 )
                 Text( SimpleDateFormat("HH:mm", Locale.getDefault()).format(
                     Date(1000 * day!!.sunrise)
-                ), style = MaterialTheme.typography.h4)
+                ), style = MaterialTheme.typography.body1)
             }
             Column(
                 modifier = Modifier
@@ -119,11 +120,11 @@ fun DayDetailsView(model: WeatherViewModel){
                 Image(
                     painter = painterResource(id = R.drawable.sunset),
                     contentDescription = "Sun set",
-                    modifier = Modifier.size(40.dp)
+                    modifier = Modifier.size(30.dp)
                 )
                 Text( SimpleDateFormat("HH:mm", Locale.getDefault()).format(
                     Date(1000 * day!!.sunset)
-                ), style = MaterialTheme.typography.h4)
+                ), style = MaterialTheme.typography.body1)
             }
             Column(
                 modifier = Modifier
@@ -133,10 +134,10 @@ fun DayDetailsView(model: WeatherViewModel){
                 verticalArrangement = Arrangement.SpaceEvenly
             ) {
                 Image(
-                    painter = painterResource(id = moonIcon(day!!.moonPhase)), contentDescription = "moon",
-                    modifier = Modifier.size(40.dp)
+                    painter = painterResource(id = moonIcon(day?.moon_phase ?: 0.0)), contentDescription = "moon",
+                    modifier = Modifier.size(30.dp)
                 )
-                Text(moonDecription(day!!.moonPhase), style = MaterialTheme.typography.h4)
+                Text(moonDecription(day?.moon_phase ?: 0.0), style = MaterialTheme.typography.body1)
             }
         }
     }

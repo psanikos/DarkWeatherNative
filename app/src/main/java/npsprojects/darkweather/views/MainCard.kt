@@ -22,6 +22,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -83,7 +84,7 @@ val index:Int by  model.index.observeAsState(initial = 0)
                 .padding(20.dp)
                 .fillMaxWidth()
                 .wrapContentHeight(),
-            verticalArrangement = Arrangement.spacedBy(30.dp),
+            verticalArrangement = Arrangement.spacedBy(40.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Column(
@@ -114,7 +115,7 @@ val index:Int by  model.index.observeAsState(initial = 0)
                             contentScale = ContentScale.Fit
                         )
                     }
-                    Text(text = temp, style = MaterialTheme.typography.h1.copy(fontSize = 46.sp))
+                    Text(text = temp, style = MaterialTheme.typography.h1.copy(fontSize = 54.sp,fontWeight = FontWeight.Black))
                 }
                 Text(description, style = MaterialTheme.typography.body1)
             }

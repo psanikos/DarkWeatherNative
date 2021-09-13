@@ -100,32 +100,52 @@ fun NewMainView(model: WeatherViewModel, controller: NavController) {
                 item {
                     HourlyView(model = model)
                 }
-//                item {
-//                    Column(
-//                        modifier = Modifier
-//                            .padding(20.dp)
-//                            .fillMaxWidth()
-//                            .wrapContentHeight()
-//                            ,
-//                        horizontalAlignment = Alignment.Start,
-//                        verticalArrangement = Arrangement.spacedBy(15.dp)
-//                    ) {
-//                        Text("Weather map", style = MaterialTheme.typography.h4)
-//                        Box(
-//                            modifier = Modifier
-//                                .fillMaxWidth()
-//                                .height(220.dp)
-//                                .background(color = Color.DarkGray, shape = RoundedCornerShape(8))
-//                                .padding(8.dp)
-//                                .clip(RoundedCornerShape(6))
-//                        ) {
-//                            CustomMapView(model = model)
-//                        }
-//                    }
-//                }
+
               item{
                   UVView(model = model)
               }
+                item {
+                    Column(
+                        modifier = Modifier
+                            .padding(20.dp)
+                            .fillMaxWidth()
+                            .wrapContentHeight()
+                        ,
+                        horizontalAlignment = Alignment.Start,
+                        verticalArrangement = Arrangement.spacedBy(15.dp)
+                    ) {
+                      Row(modifier = Modifier.fillMaxWidth(),
+                      verticalAlignment = Alignment.CenterVertically,
+                      horizontalArrangement = Arrangement.SpaceBetween) {
+                          Text("Weather map", style = MaterialTheme.typography.h4.copy(color = Color.DarkGray))
+                          Button(onClick = {
+                                           controller.navigate("Map")
+                          },
+                          elevation = ButtonDefaults.elevation(
+                              defaultElevation = 0.dp,
+                              disabledElevation = 0.dp,
+                              pressedElevation = 0.dp
+                          ),colors = ButtonDefaults.buttonColors(
+                                  backgroundColor = Color.Transparent,
+                                  disabledBackgroundColor = Color.Transparent,
+                                  disabledContentColor = Color.Transparent
+                          )) {
+                              Icon(Icons.Default.AspectRatio,contentDescription = "",
+                              modifier = Modifier.size(20.dp))
+                          }
+                      }
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(220.dp)
+                                .background(color = Color.DarkGray, shape = RoundedCornerShape(8))
+                                .padding(8.dp)
+                                .clip(RoundedCornerShape(6))
+                        ) {
+                            CustomMapView(model = model)
+                        }
+                    }
+                }
                 item {
                     WeekView(model = model)
                 }

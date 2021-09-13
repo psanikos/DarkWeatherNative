@@ -25,6 +25,7 @@ import kotlinx.coroutines.launch
 import npsprojects.darkweather.Coordinates
 import npsprojects.darkweather.models.WeatherViewModel
 import npsprojects.darkweather.ui.theme.DarkWeatherTheme
+import npsprojects.darkweather.ui.theme.blue_grey_500
 
 
 @Composable
@@ -61,43 +62,58 @@ fun SearchView(model: WeatherViewModel, controller: NavController) {
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
 
+Box(contentAlignment = Alignment.CenterStart) {
+    BasicTextField(
+        value = searchTerm,
+        onValueChange = {
+            searchTerm = it
+        },
+        keyboardActions = KeyboardActions(onSearch = {
 
-            BasicTextField(value = searchTerm, onValueChange = {
-                searchTerm = it
-            }, keyboardActions = KeyboardActions(onSearch = {
-
-                scope.launch(Dispatchers.IO) {
-                    val addresses =
-                        model.getCoordinatesFromLocation(
-                            searchTerm
-                        )
-                    launch(Dispatchers.Main) {
-                        if (addresses.isNullOrEmpty()) {
-                            showAlert = true
-                        } else {
-                            searchedAddresses = addresses
-                        }
+            scope.launch(Dispatchers.IO) {
+                val addresses =
+                    model.getCoordinatesFromLocation(
+                        searchTerm
+                    )
+                launch(Dispatchers.Main) {
+                    if (addresses.isNullOrEmpty()) {
+                        showAlert = true
+                    } else {
+                        searchedAddresses = addresses
                     }
                 }
-            }), keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                modifier = Modifier
-                    .padding(20.dp)
-                    .background(
-                        color = Color.Gray.copy(alpha = 0.1f),
-                        shape = RoundedCornerShape(40)
-                    )
-                    .height(40.dp)
-                    .fillMaxWidth()
-                    .padding(10.dp),
+            }
+        }),
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+        modifier = Modifier
+            .padding(20.dp)
+            .background(
+                color = Color.Gray.copy(alpha = 0.1f),
+                shape = RoundedCornerShape(20)
+            )
+            .height(40.dp)
+            .fillMaxWidth()
+            .padding(10.dp),
 //                decorationBox = {
 //                    if (searchTerm == "") Text(
 //                        text = "Search",
 //                        style = MaterialTheme.typography.body2
 //                    ) else null
 //                },
-                textStyle = MaterialTheme.typography.body1,
+        textStyle = MaterialTheme.typography.body1,
 
-            )
+        )
+
+    if (searchTerm == "") {
+        Text(
+            text = "Search",
+            style = MaterialTheme.typography.body2,
+            modifier = Modifier.padding(start = 30.dp)
+        )
+    }
+
+    }
+
             searchedAddresses.forEach {
 
                 if (it.locality != null || it.featureName != null) {
@@ -106,7 +122,8 @@ fun SearchView(model: WeatherViewModel, controller: NavController) {
                         modifier = Modifier
                             .padding(vertical = 5.dp, horizontal = 20.dp)
                             .fillMaxWidth()
-                            .height(50.dp)
+                            .height(40.dp)
+                            .background(blue_grey_500.copy(alpha = 0.05f),shape = RoundedCornerShape(20))
                             .clickable {
                                 scope.launch {
 
@@ -127,18 +144,18 @@ fun SearchView(model: WeatherViewModel, controller: NavController) {
                     ) {
                         Text(
                             it.locality ?: it.featureName,
-                            style = MaterialTheme.typography.body2,
+                            style = MaterialTheme.typography.body1,
                             modifier = Modifier.padding(
-                                horizontal = 16.dp,
+                                horizontal = 8.dp,
                                 vertical = 8.dp
                             )
                         )
 
                         Text(
                             it.countryName ?: "",
-                            style = MaterialTheme.typography.caption,
+                            style = MaterialTheme.typography.body2,
                             modifier = Modifier.padding(
-                                horizontal = 20.dp,
+                                horizontal = 10.dp,
                                 vertical = 8.dp
                             )
                         )

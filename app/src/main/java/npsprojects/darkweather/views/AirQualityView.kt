@@ -112,7 +112,7 @@ fun AirQualityView(model:WeatherViewModel) {
         ) {
             Row(modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween,verticalAlignment = Alignment.CenterVertically) {
 
-                Text(stringResource(R.string.AirQ), style = MaterialTheme.typography.h4)
+                Text(stringResource(R.string.AirQ), style = MaterialTheme.typography.h4.copy(color = Color.DarkGray))
 
 
 
@@ -120,14 +120,14 @@ fun AirQualityView(model:WeatherViewModel) {
 
                 Text(
                     name,
-                    style = MaterialTheme.typography.h3,
-                    modifier = Modifier.padding(bottom = 10.dp)
+                    style = MaterialTheme.typography.h4,
+
                 )
             }
             Box() {
                 Row(
                     modifier = Modifier
-                        .height(18.dp)
+                        .height(16.dp)
                         .fillMaxWidth()
                         .clip(shape = RoundedCornerShape(50))
                 ) {
@@ -139,31 +139,31 @@ fun AirQualityView(model:WeatherViewModel) {
 //                        )
                     Box(
                         modifier = Modifier
-                            .height(18.dp)
+                            .height(16.dp)
                             .fillMaxWidth(0.2f)
                             .background(Color.Green.copy(alpha = 0.8f))
                     )
                     Box(
                         modifier = Modifier
-                            .height(18.dp)
+                            .height(16.dp)
                             .fillMaxWidth(0.25f)
                             .background(Color.Yellow.copy(alpha = 0.8f))
                     )
                     Box(
                         modifier = Modifier
-                            .height(18.dp)
+                            .height(16.dp)
                             .fillMaxWidth(0.33f)
                             .background(orange_500.copy(alpha = 0.8f))
                     )
                     Box(
                         modifier = Modifier
-                            .height(18.dp)
+                            .height(16.dp)
                             .fillMaxWidth(0.5f)
                             .background(pink_500.copy(alpha = 0.8f))
                     )
                     Box(
                         modifier = Modifier
-                            .height(18.dp)
+                            .height(16.dp)
                             .fillMaxWidth()
                             .background(red_500.copy(alpha = 0.8f))
                     )
@@ -171,7 +171,7 @@ fun AirQualityView(model:WeatherViewModel) {
                 Box(
                     Modifier
                         .offset(x = value.value, y = (-2).dp)
-                        .size(20.dp)
+                        .size(18.dp)
                         .background(color = blue_grey_500, shape = TriangleShape))
             }
 

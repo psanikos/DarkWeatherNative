@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -25,11 +26,21 @@ import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import npsprojects.darkweather.DeviceType
+import npsprojects.darkweather.MyApp
 import npsprojects.darkweather.models.WeatherViewModel
 import npsprojects.darkweather.ui.theme.*
 import npsprojects.darkweather.R
 
 
+@ExperimentalAnimationApi
+@Preview
+@Composable
+fun FirstPreview(){
+
+    DarkWeatherTheme() {
+        FirstScreen(model = WeatherViewModel())
+    }
+}
 
 
 @ExperimentalAnimationApi
@@ -38,14 +49,13 @@ fun FirstScreen(model: WeatherViewModel) {
 
     val permissionGranted = model.permissionGranted.observeAsState()
     val configuration = LocalConfiguration.current
-    var deviceType = when(configuration.smallestScreenWidthDp > 480){
+    val deviceType = when(configuration.smallestScreenWidthDp > 480){
         true -> DeviceType.BIGSCREEN
             false -> DeviceType.PHONE
     }
     Box(
         modifier = Modifier
-            .fillMaxSize()
-            .background(color = Color(0xFF2F4276)),
+            .fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
 
@@ -71,9 +81,9 @@ fun FirstScreen(model: WeatherViewModel) {
                     .fillMaxWidth()
                     .fillMaxHeight(0.6f)
                     .background(
-                        color = Color.White,
-                        shape = RoundedCornerShape(topEnd = 20.dp, topStart = 20.dp)
-                    )
+                        color = blue_grey_500.copy(alpha = 0.1f),
+
+                        )
 
             ) {
                 Column(modifier = Modifier
@@ -82,7 +92,8 @@ fun FirstScreen(model: WeatherViewModel) {
 
 
                     Text(
-                          stringResource(id = R.string.WelcomeText)  ,  style = MaterialTheme.typography.body2.copy(color = Color.DarkGray),
+                          stringResource(id = R.string.WelcomeText)  ,
+                        style = MaterialTheme.typography.body2,
                         modifier = Modifier.padding(12.dp),
                         lineHeight = 26.sp,
                         textAlign = TextAlign.Start,
@@ -208,13 +219,3 @@ fun FirstScreen(model: WeatherViewModel) {
 
 }
 
-@ExperimentalAnimationApi
-@Preview
-@Composable
-fun Preview() {
-    val model = WeatherViewModel()
-
-    DarkWeatherTheme() {
-        FirstScreen(model = model)
-    }
-}

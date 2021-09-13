@@ -9,8 +9,14 @@ import android.widget.TextView
 import androidx.annotation.FloatRange
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Air
+import androidx.compose.material.icons.filled.Cloud
+import androidx.compose.material.icons.filled.Opacity
+import androidx.compose.material.icons.filled.Thermostat
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -32,21 +38,24 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.scale
 import npsprojects.darkweather.R
 import npsprojects.darkweather.getWeatherIcon
 import npsprojects.darkweather.models.WeatherViewModel
+import npsprojects.darkweather.ui.theme.indigo_500
+import npsprojects.darkweather.ui.theme.pink_500
 
 
 private val weatherKey = "e1e45feaea76d66517c25291f2633d9a"
 
-
+//temp_new
 @Composable
-fun CustomMapView(model: WeatherViewModel){
+fun CustomMapView(model: WeatherViewModel) {
     val map = rememberMapViewWithLifecycle()
-    val mapType by rememberSaveable { mutableStateOf("temp_new") }
-    val index:Int by  model.index.observeAsState(initial = 0)
+    var mapType by rememberSaveable { mutableStateOf("none") }
+    val index: Int by model.index.observeAsState(initial = 0)
     val testCoordinates = LatLng(37.98384, 23.72753)
 
     var coordinates by rememberSaveable {
@@ -56,25 +65,161 @@ fun CustomMapView(model: WeatherViewModel){
     }
     var zoom by rememberSaveable(map) { mutableStateOf(InitialZoom) }
     val overlays: MutableList<TileOverlay> by rememberSaveable { mutableStateOf(java.util.ArrayList<TileOverlay>()) }
-LaunchedEffect(key1 = index + model.locations.size, block = {
-    if (model.locations.isNotEmpty() ) {
-        coordinates = LatLng(
-            model.locations[model.index.value!!].data.lat,
-            model.locations[model.index.value!!].data.lon
+    LaunchedEffect(key1 = index + model.locations.size, block = {
+        if (model.locations.isNotEmpty()) {
+            coordinates = LatLng(
+                model.locations[model.index.value!!].data.lat,
+                model.locations[model.index.value!!].data.lon
+            )
+        }
+
+    })
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
+
+
+        MapViewContainer(
+            map = map,
+            latitude = coordinates.latitude,
+            longitude = coordinates.longitude,
+            mapType = mapType,
+            model = model
         )
+        Column(
+
+            verticalArrangement = Arrangement.spacedBy(6.dp),
+            modifier = Modifier.padding(4.dp)
+        ) {
+            Button(
+                onClick = {
+
+                    mapType = "clouds_new"
+
+                },
+                colors = ButtonDefaults.buttonColors(
+                    contentColor = Color.DarkGray,
+                    backgroundColor = if (mapType == "clouds_new") Color(0xFFFFFDD0) else Color.White
+                ),
+                contentPadding = PaddingValues(10.dp),
+                shape = CircleShape,
+                modifier = Modifier
+                    .width(40.dp)
+                    .height(40.dp),
+
+                elevation = ButtonDefaults.elevation(
+                    defaultElevation = 2.dp,
+                    pressedElevation = 4.dp,
+                    disabledElevation = 2.dp
+                )
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Start
+                ) {
+                    Icon(
+                        Icons.Filled.Cloud,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp)
+                    )
+
+                }
+            }
+
+            Button(
+                onClick = {
+                    mapType = "precipitation_new"
+                },
+                colors = ButtonDefaults.buttonColors(
+                    contentColor = Color.DarkGray,
+                    backgroundColor = if (mapType == "precipitation_new") Color(0xFFFFFDD0) else Color.White
+                ),
+                contentPadding = PaddingValues(10.dp),
+                shape = CircleShape,
+                modifier = Modifier
+                    .width(40.dp)
+                    .height(40.dp)
+
+                ,
+                elevation = ButtonDefaults.elevation(
+                    defaultElevation = 2.dp,
+                    pressedElevation = 4.dp,
+                    disabledElevation = 2.dp
+                ),
+
+                ) {
+                Row(modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Start) {
+
+                    Icon(
+                        Icons.Filled.Opacity,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp)
+                    )
+
+                }
+            }
+            Button(
+                onClick = {
+                    mapType = "temp_new"
+
+
+                },
+                colors = ButtonDefaults.buttonColors(
+                    contentColor = Color.DarkGray,
+                    backgroundColor = if (mapType == "temp_new") Color(0xFFFFFDD0) else Color.White
+                ),
+                contentPadding = PaddingValues(10.dp),
+                shape = CircleShape,
+                modifier = Modifier
+                    .width(40.dp)
+                    .height(40.dp),
+                elevation = ButtonDefaults.elevation(
+                    defaultElevation = 2.dp,
+                    pressedElevation = 4.dp,
+                    disabledElevation = 2.dp
+                )
+            ) {
+                Row(modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Start) {
+                    Icon(
+                        Icons.Filled.Thermostat,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp)
+                    )
+
+                }
+            }
+            Button(
+                onClick = {
+                    mapType = "wind_new"
+                },
+                colors = ButtonDefaults.buttonColors(
+                    contentColor = Color.DarkGray,
+                    backgroundColor = if (mapType == "wind_new") Color(0xFFFFFDD0) else Color.White
+                ),
+                contentPadding = PaddingValues(10.dp),
+                shape = CircleShape,
+                modifier = Modifier
+                    .width(40.dp)
+                    .height(40.dp),
+                elevation = ButtonDefaults.elevation(
+                    defaultElevation = 2.dp,
+                    pressedElevation = 4.dp,
+                    disabledElevation = 2.dp
+                )
+            ) {
+                Row(modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Start) {
+                    Icon(
+                        Icons.Filled.Air,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp)
+                    )
+
+                }
+            }
+        }
     }
-
-})
-
-    MapViewContainer(
-        map = map,
-        latitude = coordinates.latitude,
-        longitude = coordinates.longitude,
-        mapType = mapType,
-        model = model
-    )
 }
-
 
 class CustomInfoWindowForGoogleMap(context: Context) : GoogleMap.InfoWindowAdapter {
 
@@ -106,11 +251,9 @@ class CustomInfoWindowForGoogleMap(context: Context) : GoogleMap.InfoWindowAdapt
 }
 
 
-
-
-const val InitialZoom = 8f
+const val InitialZoom = 5f
 const val MinZoom = 2f
-const val MaxZoom = 10f
+const val MaxZoom = 8f
 
 
 
@@ -123,21 +266,18 @@ fun MapViewContainer(
     mapType:String,
     model: WeatherViewModel,
 
-    ) {
 
-    val zoom by rememberSaveable(map) { mutableStateOf(InitialZoom) }
+
+    ) {
+    val index by model.index.observeAsState(initial = 0)
+    var zoom by rememberSaveable(map) { mutableStateOf(InitialZoom) }
     val coroutineScope = rememberCoroutineScope()
-    var hasOverlay by rememberSaveable { mutableStateOf(false)}
+    var hasOverlay by remember { mutableStateOf(false)}
     val coordinates = LatLng(latitude,longitude)
-    val overlays:MutableList<TileOverlay>  by rememberSaveable { mutableStateOf(  ArrayList<TileOverlay>())}
+    var overlays:MutableList<TileOverlay>  by remember { mutableStateOf(  ArrayList<TileOverlay>())}
     val darkTheme = isSystemInDarkTheme()
-    val isLoading by model.loading.observeAsState(true)
     Box(contentAlignment = Alignment.CenterEnd,modifier = Modifier.fillMaxSize()) {
-        when(isLoading){
-            true -> Box(modifier = Modifier.fillMaxSize(),contentAlignment = Alignment.Center){
-                CircularProgressIndicator()
-            }
-                false ->  AndroidView({ map }) { mapView ->
+        AndroidView({ map }) { mapView ->
 
             val mapZoom = zoom
 
@@ -147,7 +287,7 @@ fun MapViewContainer(
                     override fun getTileUrl(x: Int, y: Int, zoom: Int): URL? {
 
                         /* Define the URL pattern for the tile images */
-                    println("GETTING TILE")
+
                         val url =
                             "https://tile.openweathermap.org/map/$mapType/$zoom/$x/$y.png?appid=$weatherKey"
                         return if (!checkTileExists(x, y, zoom)) {
@@ -160,6 +300,9 @@ fun MapViewContainer(
                         }
                     }
 
+
+
+
                     private fun checkTileExists(x: Int, y: Int, zoom: Int): Boolean {
                         val minZoom = MinZoom.toInt()
                         val maxZoom = MaxZoom.toInt()
@@ -168,37 +311,30 @@ fun MapViewContainer(
                 }
                 it.setZoom(mapZoom)
                 it.setInfoWindowAdapter(CustomInfoWindowForGoogleMap(context = context))
-                //Marker-----------------------
-//                val icon = BitmapFactory.decodeResource(context.resources,
-//                    getWeatherIcon(input = if(model.locations.isNotEmpty()) (model.locations[model.index].data.current.weather[0].icon ?: "") else "")
-//                )
-//                val width: Int = icon.width
-//                val height: Int = icon.height
-//                val ratio:Double = height.toDouble()/width.toDouble()
-//
-//                val smallMarker = icon.scale(width = 90,height = (90*ratio).toInt(),filter = false)
-//
-//                val markerOptions = MarkerOptions()
-//                    .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
-//                    .title(if(model.locations.isNotEmpty()) "${model.locations[model.index].name},${model.locations[model.index].data.current.temp.toInt()}°" else ",")
-//                    .snippet(if(model.locations.isNotEmpty()) model.locations[model.index].data.current.weather[0].description else "")
-//
-//
-//
-//                val marker =  it.addMarker(
-//
-//                    markerOptions.position(coordinates)
-//                )
-//                marker?.showInfoWindow()
-                //-------------------------------
+
+                val icon = BitmapFactory.decodeResource(context.resources,getWeatherIcon(input = if(model.locations.isNotEmpty()) (model.locations[index].data.current.weather[0].icon ?: "") else ""))
+                val width: Int = icon.width
+                val height: Int = icon.height
+                val ratio:Double = height.toDouble()/width.toDouble()
+
+                val smallMarker = icon.scale(width = 90,height = (90*ratio).toInt(),filter = false)
+
+                val markerOptions = MarkerOptions()
+                    .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
+                    .title(if(model.locations.isNotEmpty()) "${model.locations[index].name},${model.locations[index].data.current.temp.toUInt()}°" else ",")
+                    .snippet(if(model.locations.isNotEmpty()) model.locations[index].data.current.weather[0].description else "")
+
+
+
+                val marker =  it.addMarker(
+
+                    markerOptions.position(coordinates)
+                )
+                marker?.showInfoWindow()
 //            it.addMarker(
 //
 //                MarkerOptions().position(position)
 //            )
-//                val marker =  it.addMarker(
-//
-//                    MarkerOptions().position(coordinates)
-//                )
                 it.animateCamera(CameraUpdateFactory.newLatLng(coordinates))
                 it.uiSettings.isScrollGesturesEnabled = false
                 val tile = it.addTileOverlay(
@@ -208,12 +344,14 @@ fun MapViewContainer(
 
 
                 tile?.let { overlay ->
-                    overlay.transparency = 0.6f
+                    overlay.transparency = 0.2f
 
                     overlays.add(overlay)
                 }
                 overlays.forEachIndexed { index, item ->
-                    if (index != overlays.size - 1) {
+                    if (index == overlays.size - 1) {
+
+                    } else {
                         item.remove()
                     }
                 }
@@ -222,10 +360,8 @@ fun MapViewContainer(
             }
 
         }
-        }
 
-
-}
+    }
 }
 
 

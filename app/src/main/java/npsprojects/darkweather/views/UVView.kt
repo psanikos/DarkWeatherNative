@@ -79,18 +79,18 @@ fun UVView(model: WeatherViewModel) {
 Row(modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween,verticalAlignment = Alignment.CenterVertically) {
 
 
-    Text("UV Radiation", style = MaterialTheme.typography.h4)
+    Text("UV Radiation", style = MaterialTheme.typography.h4.copy(color = Color.DarkGray))
 
     Text(
         name,
-        style = MaterialTheme.typography.h3,
-        modifier = Modifier.padding(bottom = 10.dp)
+        style = MaterialTheme.typography.h4,
+
     )
 }
             Box() {
                 Row(
                     modifier = Modifier
-                        .height(18.dp)
+                        .height(16.dp)
                         .fillMaxWidth()
                         .clip(shape = RoundedCornerShape(50))
                 ) {
@@ -102,25 +102,25 @@ Row(modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.Space
 //                        )
                     Box(
                         modifier = Modifier
-                            .height(18.dp)
+                            .height(16.dp)
                             .fillMaxWidth(0.25f)
                             .background(teal_500.copy(alpha = 0.8f))
                     )
                     Box(
                         modifier = Modifier
-                            .height(18.dp)
+                            .height(16.dp)
                             .fillMaxWidth(0.33f)
                             .background(yellow_600.copy(alpha = 0.8f))
                     )
                     Box(
                         modifier = Modifier
-                            .height(18.dp)
+                            .height(16.dp)
                             .fillMaxWidth(0.5f)
                             .background(orange_600.copy(alpha = 0.8f))
                     )
                     Box(
                         modifier = Modifier
-                            .height(18.dp)
+                            .height(16.dp)
                             .fillMaxWidth()
                             .background(red_600.copy(alpha = 0.8f))
                     )
@@ -129,7 +129,7 @@ Row(modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.Space
                 Box(
                     Modifier
                         .offset(x = value.value, y = (-2).dp)
-                        .size(20.dp)
+                        .size(18.dp)
                         .background(color = blue_grey_500, shape = TriangleShape))
             }
 

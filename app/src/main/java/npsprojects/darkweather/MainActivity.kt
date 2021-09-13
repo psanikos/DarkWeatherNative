@@ -27,10 +27,7 @@ import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import kotlinx.coroutines.*
 import npsprojects.darkweather.models.WeatherViewModel
 import npsprojects.darkweather.ui.theme.DarkWeatherTheme
-import npsprojects.darkweather.views.FirstScreen
-import npsprojects.darkweather.views.MainPageView
-import npsprojects.darkweather.views.SearchView
-import npsprojects.darkweather.views.SettingsView
+import npsprojects.darkweather.views.*
 
 
 @SuppressLint("StaticFieldLeak")
@@ -161,6 +158,9 @@ fun MyApp(model: WeatherViewModel) {
         }
         composable("AddPage"){
            SearchView(model = model, controller = controller)
+        }
+        composable("Map"){
+            FullMapView(model = model, controller = controller)
         }
     }
 
