@@ -42,16 +42,16 @@ object MyApp {
         activity = act
     }
 }
-
+@ExperimentalCoilApi
+@ExperimentalFoundationApi
+@ExperimentalAnimationApi
+@ExperimentalMaterialApi
 class MainActivity : ComponentActivity() {
 
     private val model by viewModels<WeatherViewModel>()
     private var mInterstitialAd: InterstitialAd? = null
     private final var TAG = "MainActivity"
-    @ExperimentalCoilApi
-    @ExperimentalFoundationApi
-    @ExperimentalAnimationApi
-    @ExperimentalMaterialApi
+
     override fun onCreate(savedInstanceState: Bundle?) {
 
         super.onCreate(savedInstanceState)
@@ -99,7 +99,7 @@ class MainActivity : ComponentActivity() {
 
                     override fun onAdShowedFullScreenContent() {
                         Log.d(TAG, "Ad showed fullscreen content.")
-                        mInterstitialAd = null;
+                        mInterstitialAd = null
                     }
                 }
             }
@@ -156,8 +156,8 @@ fun MyApp(model: WeatherViewModel) {
         composable("Settings") {
             SettingsView(model = model, controller = controller)
         }
-        composable("AddPage"){
-           SearchView(model = model, controller = controller)
+        composable("Search") {
+            FullSearchView(model = model, controller = controller)
         }
         composable("Map"){
             FullMapView(model = model, controller = controller)

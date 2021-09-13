@@ -13,10 +13,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Air
-import androidx.compose.material.icons.filled.Cloud
-import androidx.compose.material.icons.filled.Opacity
-import androidx.compose.material.icons.filled.Thermostat
+import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -37,10 +34,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.scale
+import androidx.navigation.NavController
 import npsprojects.darkweather.R
 import npsprojects.darkweather.getWeatherIcon
 import npsprojects.darkweather.models.WeatherViewModel
@@ -52,7 +51,7 @@ private val weatherKey = "e1e45feaea76d66517c25291f2633d9a"
 
 //temp_new
 @Composable
-fun CustomMapView(model: WeatherViewModel) {
+fun CustomMapView(model: WeatherViewModel,controller:NavController) {
     val map = rememberMapViewWithLifecycle()
     var mapType by rememberSaveable { mutableStateOf("none") }
     val index: Int by model.index.observeAsState(initial = 0)
@@ -74,148 +73,193 @@ fun CustomMapView(model: WeatherViewModel) {
         }
 
     })
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
-
-
-        MapViewContainer(
-            map = map,
-            latitude = coordinates.latitude,
-            longitude = coordinates.longitude,
-            mapType = mapType,
-            model = model
-        )
-        Column(
-
-            verticalArrangement = Arrangement.spacedBy(6.dp),
-            modifier = Modifier.padding(4.dp)
+    Column(
+        modifier = Modifier
+            .padding(20.dp)
+            .fillMaxWidth()
+            .wrapContentHeight()
+        ,
+        horizontalAlignment = Alignment.Start,
+        verticalArrangement = Arrangement.spacedBy(15.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
+            Text("Weather map", style = MaterialTheme.typography.h4.copy(color = Color.Gray))
             Button(
                 onClick = {
-
-                    mapType = "clouds_new"
-
+                    controller.navigate("Map")
                 },
-                colors = ButtonDefaults.buttonColors(
-                    contentColor = Color.DarkGray,
-                    backgroundColor = if (mapType == "clouds_new") Color(0xFFFFFDD0) else Color.White
-                ),
-                contentPadding = PaddingValues(10.dp),
-                shape = CircleShape,
-                modifier = Modifier
-                    .width(40.dp)
-                    .height(40.dp),
-
                 elevation = ButtonDefaults.elevation(
-                    defaultElevation = 2.dp,
-                    pressedElevation = 4.dp,
-                    disabledElevation = 2.dp
+                    defaultElevation = 0.dp,
+                    disabledElevation = 0.dp,
+                    pressedElevation = 0.dp
+                ), colors = ButtonDefaults.buttonColors(
+                    backgroundColor = Color.Transparent,
+                    disabledBackgroundColor = Color.Transparent,
+                    disabledContentColor = Color.Transparent
                 )
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Start
-                ) {
-                    Icon(
-                        Icons.Filled.Cloud,
-                        contentDescription = null,
-                        modifier = Modifier.size(16.dp)
-                    )
-
-                }
-            }
-
-            Button(
-                onClick = {
-                    mapType = "precipitation_new"
-                },
-                colors = ButtonDefaults.buttonColors(
-                    contentColor = Color.DarkGray,
-                    backgroundColor = if (mapType == "precipitation_new") Color(0xFFFFFDD0) else Color.White
-                ),
-                contentPadding = PaddingValues(10.dp),
-                shape = CircleShape,
-                modifier = Modifier
-                    .width(40.dp)
-                    .height(40.dp)
-
-                ,
-                elevation = ButtonDefaults.elevation(
-                    defaultElevation = 2.dp,
-                    pressedElevation = 4.dp,
-                    disabledElevation = 2.dp
-                ),
-
-                ) {
-                Row(modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Start) {
-
-                    Icon(
-                        Icons.Filled.Opacity,
-                        contentDescription = null,
-                        modifier = Modifier.size(16.dp)
-                    )
-
-                }
-            }
-            Button(
-                onClick = {
-                    mapType = "temp_new"
-
-
-                },
-                colors = ButtonDefaults.buttonColors(
-                    contentColor = Color.DarkGray,
-                    backgroundColor = if (mapType == "temp_new") Color(0xFFFFFDD0) else Color.White
-                ),
-                contentPadding = PaddingValues(10.dp),
-                shape = CircleShape,
-                modifier = Modifier
-                    .width(40.dp)
-                    .height(40.dp),
-                elevation = ButtonDefaults.elevation(
-                    defaultElevation = 2.dp,
-                    pressedElevation = 4.dp,
-                    disabledElevation = 2.dp
+                Icon(
+                    Icons.Default.AspectRatio, contentDescription = "",
+                    modifier = Modifier.size(20.dp)
                 )
-            ) {
-                Row(modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Start) {
-                    Icon(
-                        Icons.Filled.Thermostat,
-                        contentDescription = null,
-                        modifier = Modifier.size(16.dp)
-                    )
-
-                }
             }
-            Button(
-                onClick = {
-                    mapType = "wind_new"
-                },
-                colors = ButtonDefaults.buttonColors(
-                    contentColor = Color.DarkGray,
-                    backgroundColor = if (mapType == "wind_new") Color(0xFFFFFDD0) else Color.White
-                ),
-                contentPadding = PaddingValues(10.dp),
-                shape = CircleShape,
-                modifier = Modifier
-                    .width(40.dp)
-                    .height(40.dp),
-                elevation = ButtonDefaults.elevation(
-                    defaultElevation = 2.dp,
-                    pressedElevation = 4.dp,
-                    disabledElevation = 2.dp
-                )
-            ) {
-                Row(modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Start) {
-                    Icon(
-                        Icons.Filled.Air,
-                        contentDescription = null,
-                        modifier = Modifier.size(16.dp)
-                    )
+        }
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(220.dp)
+                .background(color = Color.DarkGray, shape = RoundedCornerShape(8))
+                .padding(8.dp)
+                .clip(RoundedCornerShape(6))
+        ) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
 
-                }
+
+                MapViewContainer(
+                    map = map,
+                    latitude = coordinates.latitude,
+                    longitude = coordinates.longitude,
+                    mapType = mapType,
+                    model = model
+                )
+//        Column(
+//
+//            verticalArrangement = Arrangement.spacedBy(6.dp),
+//            modifier = Modifier.padding(4.dp)
+//        ) {
+//            Button(
+//                onClick = {
+//
+//                    mapType = "clouds_new"
+//
+//                },
+//                colors = ButtonDefaults.buttonColors(
+//                    contentColor = Color.DarkGray,
+//                    backgroundColor = if (mapType == "clouds_new") Color(0xFFFFFDD0) else Color.White
+//                ),
+//                contentPadding = PaddingValues(10.dp),
+//                shape = CircleShape,
+//                modifier = Modifier
+//                    .width(40.dp)
+//                    .height(40.dp),
+//
+//                elevation = ButtonDefaults.elevation(
+//                    defaultElevation = 2.dp,
+//                    pressedElevation = 4.dp,
+//                    disabledElevation = 2.dp
+//                )
+//            ) {
+//                Row(
+//                    modifier = Modifier.fillMaxWidth(),
+//                    horizontalArrangement = Arrangement.Start
+//                ) {
+//                    Icon(
+//                        Icons.Filled.Cloud,
+//                        contentDescription = null,
+//                        modifier = Modifier.size(16.dp)
+//                    )
+//
+//                }
+//            }
+//
+//            Button(
+//                onClick = {
+//                    mapType = "precipitation_new"
+//                },
+//                colors = ButtonDefaults.buttonColors(
+//                    contentColor = Color.DarkGray,
+//                    backgroundColor = if (mapType == "precipitation_new") Color(0xFFFFFDD0) else Color.White
+//                ),
+//                contentPadding = PaddingValues(10.dp),
+//                shape = CircleShape,
+//                modifier = Modifier
+//                    .width(40.dp)
+//                    .height(40.dp)
+//
+//                ,
+//                elevation = ButtonDefaults.elevation(
+//                    defaultElevation = 2.dp,
+//                    pressedElevation = 4.dp,
+//                    disabledElevation = 2.dp
+//                ),
+//
+//                ) {
+//                Row(modifier = Modifier.fillMaxWidth(),
+//                    horizontalArrangement = Arrangement.Start) {
+//
+//                    Icon(
+//                        Icons.Filled.Opacity,
+//                        contentDescription = null,
+//                        modifier = Modifier.size(16.dp)
+//                    )
+//
+//                }
+//            }
+//            Button(
+//                onClick = {
+//                    mapType = "temp_new"
+//
+//
+//                },
+//                colors = ButtonDefaults.buttonColors(
+//                    contentColor = Color.DarkGray,
+//                    backgroundColor = if (mapType == "temp_new") Color(0xFFFFFDD0) else Color.White
+//                ),
+//                contentPadding = PaddingValues(10.dp),
+//                shape = CircleShape,
+//                modifier = Modifier
+//                    .width(40.dp)
+//                    .height(40.dp),
+//                elevation = ButtonDefaults.elevation(
+//                    defaultElevation = 2.dp,
+//                    pressedElevation = 4.dp,
+//                    disabledElevation = 2.dp
+//                )
+//            ) {
+//                Row(modifier = Modifier.fillMaxWidth(),
+//                    horizontalArrangement = Arrangement.Start) {
+//                    Icon(
+//                        Icons.Filled.Thermostat,
+//                        contentDescription = null,
+//                        modifier = Modifier.size(16.dp)
+//                    )
+//
+//                }
+//            }
+//            Button(
+//                onClick = {
+//                    mapType = "wind_new"
+//                },
+//                colors = ButtonDefaults.buttonColors(
+//                    contentColor = Color.DarkGray,
+//                    backgroundColor = if (mapType == "wind_new") Color(0xFFFFFDD0) else Color.White
+//                ),
+//                contentPadding = PaddingValues(10.dp),
+//                shape = CircleShape,
+//                modifier = Modifier
+//                    .width(40.dp)
+//                    .height(40.dp),
+//                elevation = ButtonDefaults.elevation(
+//                    defaultElevation = 2.dp,
+//                    pressedElevation = 4.dp,
+//                    disabledElevation = 2.dp
+//                )
+//            ) {
+//                Row(modifier = Modifier.fillMaxWidth(),
+//                    horizontalArrangement = Arrangement.Start) {
+//                    Icon(
+//                        Icons.Filled.Air,
+//                        contentDescription = null,
+//                        modifier = Modifier.size(16.dp)
+//                    )
+//
+//                }
+//            }
+//        }
             }
         }
     }

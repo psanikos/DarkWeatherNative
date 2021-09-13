@@ -73,6 +73,8 @@ class WeatherViewModel : ViewModel() {
         loading.value = true
         isInit()
         getDataFromUserDefaults()
+        indexChange(0)
+        locations.clear()
         getUserLocationData {
              getSavedLocationsData(){
                 viewModelScope.launch {
@@ -384,7 +386,9 @@ class WeatherViewModel : ViewModel() {
 
             getLocationData(location = Coordinates(location.latitude,location.longitude),name = it,isCurrent = true){ weather->
                 weather?.let {
+                    if(!locations.contains(weather)) {
                         locations.add(0, weather)
+                    }
                 }
             }
         }
@@ -434,7 +438,7 @@ class WeatherViewModel : ViewModel() {
 //            addresses[0].getAddressLine(0) // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
 
             if (addresses.isNotEmpty()) {
-                val city: String? = addresses[0].locality ?: addresses[0].featureName ?: addresses[0].subLocality
+                val city: String? = addresses[0].subLocality ?: addresses[0].locality  ?: addresses[0].countryName
 //        val state: String = addresses[0].getAdminArea()
 //        val country: String = addresses[0].getCountryName()
 //        val postalCode: String = addresses[0].getPostalCode()
@@ -450,6 +454,7 @@ class WeatherViewModel : ViewModel() {
 
     //Saved locations data---------------------------
     private fun getSavedLocationsData(completion:()->Unit){
+
       val locations = getSavedLocations()
         locations.forEach{
               getCoordinatesWeather(Coordinates(it.latitude,it.longitude))

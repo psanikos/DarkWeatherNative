@@ -88,7 +88,8 @@ fun AirQualityView(model:WeatherViewModel) {
 
 
     val configuration = LocalConfiguration.current
-    val pointWidth = with(LocalDensity.current){configuration.smallestScreenWidthDp/5 - configuration.smallestScreenWidthDp/10}
+    val isLarge = configuration.smallestScreenWidthDp > 400
+    val pointWidth = with(LocalDensity.current){configuration.smallestScreenWidthDp/(if(isLarge) 10 else 5) - configuration.smallestScreenWidthDp/(if(isLarge) 20 else 10)}
     var toAnimate by rememberSaveable {
         mutableStateOf(false)
     }
@@ -112,7 +113,7 @@ fun AirQualityView(model:WeatherViewModel) {
         ) {
             Row(modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween,verticalAlignment = Alignment.CenterVertically) {
 
-                Text(stringResource(R.string.AirQ), style = MaterialTheme.typography.h4.copy(color = Color.DarkGray))
+                Text(stringResource(R.string.AirQ), style = MaterialTheme.typography.h4.copy(color = Color.Gray))
 
 
 

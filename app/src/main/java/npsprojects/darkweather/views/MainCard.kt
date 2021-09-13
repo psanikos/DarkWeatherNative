@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
+import npsprojects.darkweather.WeatherUnits
 import npsprojects.darkweather.models.WeatherModel
 import npsprojects.darkweather.models.WeatherViewModel
 import npsprojects.darkweather.round
@@ -140,7 +141,7 @@ val index:Int by  model.index.observeAsState(initial = 0)
 
                         )
 
-                    Text(text = "$air mph", style = MaterialTheme.typography.body1)
+                    Text(text = "$air " + if(model.units == WeatherUnits.SI) "km/h" else "mph", style = MaterialTheme.typography.body1)
                 }
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(6.dp),

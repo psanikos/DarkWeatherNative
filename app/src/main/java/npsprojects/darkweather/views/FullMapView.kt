@@ -88,7 +88,7 @@ fun FullMapView(model: WeatherViewModel,controller:NavController) {
           )
           Column(
 
-              verticalArrangement = Arrangement.spacedBy(6.dp),
+              verticalArrangement = Arrangement.spacedBy(10.dp),
               modifier = Modifier.padding(horizontal = 10.dp,vertical = bottomPadding.dp)
           ) {
               Button(
@@ -104,8 +104,8 @@ fun FullMapView(model: WeatherViewModel,controller:NavController) {
                   contentPadding = PaddingValues(10.dp),
                   shape = CircleShape,
                   modifier = Modifier
-                      .width(40.dp)
-                      .height(40.dp),
+                      .width(50.dp)
+                      .height(50.dp),
 
                   elevation = ButtonDefaults.elevation(
                       defaultElevation = 2.dp,
@@ -113,17 +113,14 @@ fun FullMapView(model: WeatherViewModel,controller:NavController) {
                       disabledElevation = 2.dp
                   )
               ) {
-                  Row(
-                      modifier = Modifier.fillMaxWidth(),
-                      horizontalArrangement = Arrangement.Start
-                  ) {
-                      Icon(
-                          Icons.Filled.Cloud,
-                          contentDescription = null,
-                          modifier = Modifier.size(16.dp)
-                      )
+          Box(modifier = Modifier.fillMaxSize(),contentAlignment = Alignment.Center) {
+              Icon(
+                  Icons.Filled.Cloud,
+                  contentDescription = null,
+                  modifier = Modifier.size(20.dp)
+              )
 
-                  }
+          }
               }
 
               Button(
@@ -137,8 +134,8 @@ fun FullMapView(model: WeatherViewModel,controller:NavController) {
                   contentPadding = PaddingValues(10.dp),
                   shape = CircleShape,
                   modifier = Modifier
-                      .width(40.dp)
-                      .height(40.dp)
+                      .width(50.dp)
+                      .height(50.dp)
 
                   ,
                   elevation = ButtonDefaults.elevation(
@@ -148,16 +145,14 @@ fun FullMapView(model: WeatherViewModel,controller:NavController) {
                   ),
 
                   ) {
-                  Row(modifier = Modifier.fillMaxWidth(),
-                      horizontalArrangement = Arrangement.Start) {
-
+                  Box(modifier = Modifier.fillMaxSize(),contentAlignment = Alignment.Center) {
                       Icon(
                           Icons.Filled.Opacity,
                           contentDescription = null,
-                          modifier = Modifier.size(16.dp)
+                          modifier = Modifier.size(20.dp)
                       )
-
                   }
+
               }
               Button(
                   onClick = {
@@ -172,20 +167,19 @@ fun FullMapView(model: WeatherViewModel,controller:NavController) {
                   contentPadding = PaddingValues(10.dp),
                   shape = CircleShape,
                   modifier = Modifier
-                      .width(40.dp)
-                      .height(40.dp),
+                      .width(50.dp)
+                      .height(50.dp),
                   elevation = ButtonDefaults.elevation(
                       defaultElevation = 2.dp,
                       pressedElevation = 4.dp,
                       disabledElevation = 2.dp
                   )
               ) {
-                  Row(modifier = Modifier.fillMaxWidth(),
-                      horizontalArrangement = Arrangement.Start) {
+                  Box(modifier = Modifier.fillMaxSize(),contentAlignment = Alignment.Center) {
                       Icon(
                           Icons.Filled.Thermostat,
                           contentDescription = null,
-                          modifier = Modifier.size(16.dp)
+                          modifier = Modifier.size(20.dp)
                       )
 
                   }
@@ -201,22 +195,20 @@ fun FullMapView(model: WeatherViewModel,controller:NavController) {
                   contentPadding = PaddingValues(10.dp),
                   shape = CircleShape,
                   modifier = Modifier
-                      .width(40.dp)
-                      .height(40.dp),
+                      .width(50.dp)
+                      .height(50.dp),
                   elevation = ButtonDefaults.elevation(
                       defaultElevation = 2.dp,
                       pressedElevation = 4.dp,
                       disabledElevation = 2.dp
                   )
               ) {
-                  Row(modifier = Modifier.fillMaxWidth(),
-                      horizontalArrangement = Arrangement.Start) {
+                  Box(modifier = Modifier.fillMaxSize(),contentAlignment = Alignment.Center) {
                       Icon(
                           Icons.Filled.Air,
                           contentDescription = null,
-                          modifier = Modifier.size(16.dp)
+                          modifier = Modifier.size(20.dp)
                       )
-
                   }
               }
           }

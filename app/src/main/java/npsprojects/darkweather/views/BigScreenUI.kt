@@ -48,512 +48,323 @@ import npsprojects.darkweather.models.WeatherViewModel
 import npsprojects.darkweather.ui.theme.*
 import java.text.SimpleDateFormat
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalDensity
+import coil.annotation.ExperimentalCoilApi
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlinx.coroutines.delay
 import npsprojects.darkweather.*
 import npsprojects.darkweather.R
+import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
+import java.util.ArrayList
 
+@ExperimentalCoilApi
 @ExperimentalAnimationApi
 @ExperimentalMaterialApi
 @Composable
 fun NewMapViewBig(model: WeatherViewModel, controller: NavController) {
     val map = rememberMapViewWithLifecycle()
-    val scope = rememberCoroutineScope()
-    var mapType by remember { mutableStateOf("clouds_new") }
-    var coordinates by remember {
+    var mapType by rememberSaveable { mutableStateOf("none") }
+    val index: Int by model.index.observeAsState(initial = 0)
+    val testCoordinates = LatLng(37.98384, 23.72753)
+    var dropExtended by remember {
+        mutableStateOf(false)
+    }
+    var coordinates by rememberSaveable {
         mutableStateOf(
-            if (model.locations.isNotEmpty()) LatLng(
-                model.locations[0].data.lat,
-                model.locations[0].data.lon
-            ) else LatLng(37.9838, 23.7275)
+            testCoordinates
         )
     }
     var zoom by rememberSaveable(map) { mutableStateOf(InitialZoom) }
-    var index: Int by remember { mutableStateOf(0) }
-    val overlays: MutableList<TileOverlay> by remember { mutableStateOf(ArrayList<TileOverlay>()) }
-    var searchTerm by remember { mutableStateOf("") }
-    val backColor = if (isSystemInDarkTheme())  Color(0xFF303030) else Color(0xFFf0f0f7)
-    val cardColor = if (isSystemInDarkTheme()) Color(0xFF151515) else Color.White
-    var isLoading by remember { mutableStateOf(false) }
-    var isAlertExpanded by remember { mutableStateOf(false) }
-    val insets = LocalWindowInsets.current
-    val state = rememberBottomSheetScaffoldState(drawerState = DrawerState(initialValue = DrawerValue.Closed))
-    var showAlert:Boolean by remember { mutableStateOf(false) }
-   var showBar by remember {
-       mutableStateOf(false)
-   }
-    var searchedAddresses:MutableList<Address> by remember { mutableStateOf(mutableListOf())}
+    val overlays: MutableList<TileOverlay> by rememberSaveable { mutableStateOf(ArrayList<TileOverlay>()) }
+    LaunchedEffect(key1 = index + model.locations.size, block = {
+        if (model.locations.isNotEmpty()) {
+            coordinates = LatLng(
+                model.locations[model.index.value!!].data.lat,
+                model.locations[model.index.value!!].data.lon
+            )
+        }
 
-    var offset = animateOffsetAsState(targetValue = if(showBar) Offset(x = 0f, y = 0f) else Offset(x = 400f, y= 0f))
+    })
 
-        if (!isLoading) {
-            Box(contentAlignment = Alignment.TopCenter, modifier = Modifier.fillMaxSize()) {
+    val bottomPadding = with(LocalDensity.current) {
+        LocalWindowInsets.current.systemGestures.layoutInsets.bottom
+    }
+    val isRefreshing by model.loading.observeAsState(initial = false)
+    val state = rememberBottomSheetScaffoldState()
+    val scope = rememberCoroutineScope()
 
+    Scaffold(
 
-                Box(
-                    contentAlignment = Alignment.CenterEnd, modifier = Modifier
-                        .fillMaxSize()
+        topBar = {
+            CompactTopBarView(model = model, controller = controller,onAdd = {
+
+            })
+        },
+
+    ) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Box(
+            modifier = Modifier.fillMaxHeight()
+                .fillMaxWidth(0.5f)
+        ) {
+            SwipeRefresh(
+                state = rememberSwipeRefreshState(isRefreshing),
+                onRefresh = { model.initActions() },
+            ) {
+                LazyColumn(
+                    Modifier
+                        .fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(30.dp)
                 ) {
-                    MapViewContainer(
-                        map = map,
-                        latitude = coordinates.latitude,
-                        longitude = coordinates.longitude,
-                        mapType = mapType,
-                        model = model
-                    )
-                        Row(modifier = Modifier
-                            .wrapContentWidth()
-                            .offset(x = offset.value.x.dp),
-                        verticalAlignment = Alignment.CenterVertically) {
-                        Button(onClick = {
-                                         showBar = !showBar
-                        },
-                            shape = CircleShape,
-                        modifier = Modifier
-                            .padding(top = 150.dp),contentPadding = PaddingValues(10.dp)
-                           ) {
-                            Icon(if(showBar) Icons.Default.Cancel else Icons.Default.ArrowBackIos,
-                            contentDescription = "",tint = Color.White)
-                        }
-
-                            Surface(
-                                modifier = Modifier
-                                    .padding(top = 100.dp)
-                                    .width(400.dp)
-                                    .fillMaxHeight(),
-                                shape = RoundedCornerShape(6),
-                                color = MaterialTheme.colors.surface.copy(alpha = 0.3f),
-                                contentColor = if (isSystemInDarkTheme()) Color.White else Color.Black
-                            ) {
-
-                            }
-                        }
-                }
-                    //Top bar
-                Row(
-                    modifier = Modifier
-                        .padding(10.dp)
-                        .padding(top = 30.dp)
-                        .fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.Top
-                ) {
-
-                    Row{
-                    Column(verticalArrangement = Arrangement.spacedBy(20.dp)) {
-                        Box(
-                            modifier = Modifier
-                                .width(360.dp)
-                                .height(45.dp)
-                                .background(
-                                    color = cardColor,
-                                    shape = RoundedCornerShape(20.dp)
-                                ),
-                            contentAlignment = Alignment.CenterStart
-                        ) {
-                            BasicTextField(
-                                value = searchTerm,
-                                onValueChange = {
-                                    searchTerm = it
-
-                                },
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Text,
-                                    imeAction = ImeAction.Search
-                                ),
-                                keyboardActions = KeyboardActions(onSearch = {
-                                    scope.launch {
-                                       val addresses =  model.getCoordinatesFromLocation(searchTerm)
-                                        if (addresses.isNullOrEmpty()){
-                                            showAlert = true
-                                        }
-                                        else {
-                                            searchedAddresses = addresses
-                                        }
-                                    }
-                                }),
-                                modifier = Modifier
-                                    .padding(start = 20.dp)
-                                    .fillMaxWidth(0.9f),
-                                textStyle = MaterialTheme.typography.caption.copy(color = if (isSystemInDarkTheme()) Color.LightGray else Color.DarkGray),
-                                cursorBrush = Brush.horizontalGradient(
-                                    colors = listOf(
-                                        Color.Blue,
-                                        Color.Gray
-                                    )
-                                )
-
-                            )
-                            if (searchTerm == "") {
-                                Text(
-                                    stringResource(R.string.searchText),
-                                    style = MaterialTheme.typography.caption.copy(color = if (isSystemInDarkTheme()) Color.White else Color.Black),
-                                    modifier = Modifier
-                                        .padding(start = 20.dp)
-                                )
-                            }
-                        }
-                        LazyRow(
-
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(10.dp),
-                            modifier = Modifier.width(400.dp)
-
-                            ) {
-
-                            itemsIndexed(model.locations) { i, item ->
-                                Box(
-                                    modifier = Modifier
-                                        .background(
-                                            color = if (index == i) cardColor else Color.Transparent,
-                                            shape = RoundedCornerShape(50)
-                                        )
-                                        .clickable {
-                                            coordinates =
-                                                LatLng(
-                                                    item.data.lat,
-                                                    item.data.lon
-                                                )
-                                            index = i
-
-                                        },
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Row(modifier = Modifier.padding(4.dp)) {
-                                        if (item.isCurrent) {
+                    item {
+                        MainCard(model = model)
+                    }
+                    if (!model.locations.isEmpty() && !model.locations[index].data.alerts.isNullOrEmpty()) {
+                        model.locations[index].data.alerts?.let {
+                            if (it.isNotEmpty()) {
+                                item {
+                                    Box(
+                                        modifier = Modifier
+                                            .padding(10.dp)
+                                            .fillMaxWidth()
+                                            .wrapContentHeight()
+                                            .background(
+                                                color = Color.Yellow.copy(alpha = 0.15f),
+                                                shape = RoundedCornerShape(6)
+                                            )
+                                            .padding(10.dp)
+                                    ) {
+                                        Column(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            horizontalAlignment = Alignment.CenterHorizontally,
+                                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                                        ) {
                                             Icon(
-                                                Icons.Rounded.LocationOn,
-                                                tint = if (index == i) (if (isSystemInDarkTheme()) Color.White else Color.Black) else Color.Gray,
+                                                Icons.Filled.Warning,
                                                 contentDescription = "",
-                                                modifier = Modifier.size(25.dp)
+                                                tint = Color.Red,
+                                                modifier = Modifier.size(40.dp)
                                             )
+                                            Text(
+                                                it[0].event ?: "Alert",
+                                                style = MaterialTheme.typography.h3.copy(fontSize = 14.sp)
+                                            )
+                                            Text(
+                                                it[0].description ?: "",
+                                                style = MaterialTheme.typography.body2,
+                                                maxLines = 3
+                                            )
+                                            Row(
+                                                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Icon(Icons.Default.Timer, contentDescription = "")
+                                                Text(
+                                                    "From ${
+                                                        DateTimeFormatter.ofPattern("EEEE dd")
+                                                            .format(
+                                                                LocalDateTime.ofInstant(
+                                                                    Instant.ofEpochMilli((1000 * it[0].start).toLong()),
+                                                                    ZoneId.systemDefault()
+                                                                )
+                                                            )
+                                                    }" + if (it[0].end != null) " until ${
+                                                        DateTimeFormatter.ofPattern("EEEE dd")
+                                                            .format(
+                                                                LocalDateTime.ofInstant(
+                                                                    Instant.ofEpochMilli((1000 * it[0].end!!).toLong()),
+                                                                    ZoneId.systemDefault()
+                                                                )
+                                                            )
+                                                    }" else "",
+                                                    style = MaterialTheme.typography.body2
+                                                )
+                                            }
                                         }
-                                        Text(
-                                            item.name,
-                                            style = MaterialTheme.typography.button.copy(
-                                                color = if (index == i) (if (isSystemInDarkTheme()) Color.White else Color.Black) else Color.Gray
-                                            ),
-                                            modifier = Modifier.padding(
-                                                horizontal = 10.dp,
-                                                vertical = 5.dp
-                                            )
-                                        )
                                     }
                                 }
                             }
                         }
-                        //Searches
-                        searchedAddresses.forEach {
-                            if (it.locality != null || it.featureName != null) {
-
-                                Row(
-                                    modifier = Modifier
-                                        .padding(vertical = 5.dp)
-                                        .width(340.dp)
-                                        .height(40.dp)
-                                        .background(
-                                            color = cardColor,
-                                            shape = RoundedCornerShape(16.dp)
-                                        )
-                                        .clickable {
-                                            scope.launch {
-                                                isLoading = true
-                                                model.getCoordinatesWeather(
-                                                  location = Coordinates(it.latitude,it.longitude))
-                                                    searchTerm = ""
-                                                delay(1000)
-                                                isLoading = false
-                                                }
-                                        },
-                                    horizontalArrangement = Arrangement.Start,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(
-                                        it.locality ?: it.featureName,
-                                        style = MaterialTheme.typography.body2.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black),
-                                        modifier = Modifier.padding(
-                                            horizontal = 16.dp,
-                                            vertical = 8.dp
-                                        )
-                                    )
-
-                                    Text(
-                                        it.countryName ?: "",
-                                        style = MaterialTheme.typography.caption,
-                                        modifier = Modifier.padding(
-                                            horizontal = 20.dp,
-                                            vertical = 8.dp
-                                        )
-                                    )
-
-                                }
-                            }
-                        }
-
-                        //Alerts
-                      AnimatedVisibility(visible = searchedAddresses.size == 0 ) {
-                          if (model.locations.isNotEmpty()) {
-                              Box(modifier = Modifier.width(360.dp)) {
-                                  LazyRow(
-                                      modifier = Modifier.fillMaxWidth(),
-                                      horizontalArrangement = Arrangement.spacedBy(10.dp)
-                                  ) {
-
-                                  }
-                              }
-                          }
-                      }
                     }
-                    IconButton(onClick = {
-                        model.error.value = WeatherError.NONE
-                        model.initActions()
-                    }) {
-                        Box(
-                            modifier = Modifier
-                                .height(30.dp)
-                                .width(30.dp)
-                                .background(
-                                    color = Color(0xFF101010),
-                                    shape = CircleShape
-                                ),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                Icons.Rounded.Autorenew,
-                                tint = Color.White,
-                                modifier = Modifier.size(20.dp),
-                                contentDescription = ""
-                            )
-                        }
+                    item {
+                        HourlyView(model = model)
                     }
-                }
 
-                    IconButton(onClick = {
-                        controller.navigate("Settings")
-                    }) {
-                        Icon(
-                            Icons.Rounded.Settings,
-                            tint = if (isSystemInDarkTheme()) Color.White else Color.Black,
-                            modifier = Modifier.size(25.dp),
-                            contentDescription = ""
-                        )
-
-
+                    item {
+                        UVView(model = model)
                     }
-                }
-                if (showAlert) {
-                    // below line is use to
-                    // display a alert dialog.
-                    AlertDialog(
-                        // on dialog dismiss we are setting
-                        // our dialog value to false.
-                        onDismissRequest = { showAlert = false },
-
-                        // below line is use to display title of our dialog
-                        // box and we are setting text color to white.
-                        title = { Text(text = stringResource(id = R.string.NoResults), style = MaterialTheme.typography.h4) },
-
-                        // below line is use to display
-                        // description to our alert dialog.
-                        text = { Text(stringResource(id = R.string.ChangeSearch), style = MaterialTheme.typography.body2) },
-
-                        // in below line we are displaying
-                        // our confirm button.
-                        confirmButton = {
-                            // below line we are adding on click
-                            // listener for our confirm button.
-                            TextButton(
-                                onClick = {
-                                    showAlert = false
-                                    searchTerm = ""
-
-                                }
-                            ) {
-                                // in this line we are adding
-                                // text for our confirm button.
-                                Text("OK", style = MaterialTheme.typography.button.copy(color = teal_500))
-                            }
-                        },
-                        // in below line we are displaying
-                        // our dismiss button.
-                        dismissButton = {
-                            // in below line we are displaying
-                            // our text button
-                            TextButton(
-                                // adding on click listener for this button
-                                onClick = {
-                                    showAlert = false
-
-                                }
-                            ) {
-                                // adding text to our button.
-                                Text(stringResource(id = R.string.Back), style = MaterialTheme.typography.button.copy(color = red_500))
-                            }
-                        },
-                        // below line is use to add background color to our alert dialog
-                        backgroundColor = if(isSystemInDarkTheme()) Color.DarkGray else Color.White,
-
-                        // below line is use to add content color for our alert dialog.
-                        contentColor = if(isSystemInDarkTheme()) Color.White else Color.Black
-                    )
-                }
-
-                Box(modifier = Modifier
-                    .padding(horizontal = 10.dp, vertical = 60.dp)
-                    .fillMaxSize(),
-                contentAlignment = Alignment.BottomStart){
-                    Column(
-
-                        verticalArrangement = Arrangement.spacedBy(10.dp)
-                    ) {
-                        Button(
-                            onClick = {
-
-                                mapType = "clouds_new"
-
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                contentColor = Color.White,
-                                backgroundColor = indigo_500.copy(alpha = if (mapType == "clouds_new") 0.6f else 0.3f)
-                            ),
-                            contentPadding = PaddingValues(10.dp),
-                            shape = RoundedCornerShape(50),
-                            modifier = Modifier
-                                .width(120.dp)
-                                .height(40.dp),
-
-                            elevation = ButtonDefaults.elevation(
-                                defaultElevation = 0.dp,
-                                pressedElevation = 0.dp,
-                                disabledElevation = 0.dp
-                            )
-                        ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.Start
-                            ) {
-                                Icon(
-                                    Icons.Filled.Cloud,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(16.dp)
-                                )
-                                Spacer(modifier = Modifier.width(5.dp))
-                                Text(
-                                    stringResource(R.string.clouds),
-                                    style = MaterialTheme.typography.caption
-                                )
-                            }
-                        }
-
-                        Button(
-                            onClick = {
-                                mapType = "precipitation_new"
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                contentColor = Color.White,
-                                backgroundColor = indigo_500.copy(alpha = if (mapType == "precipitation_new") 0.6f else 0.3f)
-                            ),
-                            contentPadding = PaddingValues(10.dp),
-                            shape = RoundedCornerShape(50),
-                            modifier = Modifier
-                                .width(120.dp)
-                                .height(40.dp)
-
-                                ,
-                            elevation = ButtonDefaults.elevation(
-                                defaultElevation = 0.dp,
-                                pressedElevation = 0.dp,
-                                disabledElevation = 0.dp
-                            ),
-
-                        ) {
-                            Row(modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.Start) {
-
-                                Icon(
-                                    Icons.Filled.Opacity,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(16.dp)
-                                )
-                                Spacer(modifier = Modifier.width(5.dp))
-                                Text(
-                                    stringResource(R.string.rain),
-                                    style = MaterialTheme.typography.caption
-                                )
-                            }
-                        }
-                        Button(
-                            onClick = {
-                                mapType = "temp_new"
 
 
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                contentColor = Color.White,
-                                backgroundColor = indigo_500.copy(alpha = if (mapType == "temp_new") 0.6f else 0.3f)
-                            ),
-                            contentPadding = PaddingValues(10.dp),
-                            shape = RoundedCornerShape(50),
-                            modifier = Modifier
-                                .width(120.dp)
-                                .height(40.dp),
-                            elevation = ButtonDefaults.elevation(
-                                defaultElevation = 0.dp,
-                                pressedElevation = 0.dp,
-                                disabledElevation = 0.dp
-                            )
-                        ) {
-                            Row(modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.Start) {
-                                Icon(
-                                    Icons.Filled.Thermostat,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(16.dp)
-                                )
-                                Spacer(modifier = Modifier.width(5.dp))
-                                Text(
-                                    stringResource(R.string.Temperature),
-                                    style = MaterialTheme.typography.caption
-                                )
-                            }
-                        }
-                        Button(
-                            onClick = {
-                                mapType = "wind_new"
-                            },
-                            colors = ButtonDefaults.buttonColors(
-                                contentColor = Color.White,
-                                backgroundColor = indigo_500.copy(alpha = if (mapType == "wind_new") 0.6f else 0.3f)
-                            ),
-                            contentPadding = PaddingValues(10.dp),
-                            shape = RoundedCornerShape(50),
-                            modifier = Modifier
-                                .width(120.dp)
-                                .height(40.dp),
-                            elevation = ButtonDefaults.elevation(
-                                defaultElevation = 0.dp,
-                                pressedElevation = 0.dp,
-                                disabledElevation = 0.dp
-                            )
-                        ) {
-                            Row(modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.Start) {
-                                Icon(
-                                    Icons.Filled.Air,
-                                    contentDescription = null,
-                                    modifier = Modifier.size(16.dp)
-                                )
-                                Spacer(modifier = Modifier.width(5.dp))
-                                Text(
-                                    stringResource(R.string.Wind),
-                                    style = MaterialTheme.typography.caption
-                                )
-                            }
-                        }
+                    item {
+                        WeekView(model = model)
+                    }
+
+                    item {
+                        AirQualityView(model = model)
+                    }
+                    item {
+                        DayDetailsView(model = model)
+                    }
+                    item {
+                        Spacer(modifier = Modifier.height(60.dp))
                     }
                 }
             }
         }
 
+        Box(
+            modifier = Modifier.padding(bottom = (0.5*bottomPadding).dp).fillMaxHeight()
+                .fillMaxWidth().clip(RoundedCornerShape(6)), contentAlignment = Alignment.BottomEnd
+        ) {
+
+
+            MapViewContainer(
+                map = map,
+                latitude = coordinates.latitude,
+                longitude = coordinates.longitude,
+                mapType = mapType,
+                model = model
+            )
+            Column(
+
+                verticalArrangement = Arrangement.spacedBy(10.dp),
+                modifier = Modifier.padding(horizontal = 10.dp, vertical = bottomPadding.dp)
+            ) {
+                Button(
+                    onClick = {
+
+                        mapType = "clouds_new"
+
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        contentColor = Color.DarkGray,
+                        backgroundColor = if (mapType == "clouds_new") Color(0xFFFFFDD0) else Color.White
+                    ),
+                    contentPadding = PaddingValues(10.dp),
+                    shape = CircleShape,
+                    modifier = Modifier
+                        .width(50.dp)
+                        .height(50.dp),
+
+                    elevation = ButtonDefaults.elevation(
+                        defaultElevation = 2.dp,
+                        pressedElevation = 4.dp,
+                        disabledElevation = 2.dp
+                    )
+                ) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Icon(
+                            Icons.Filled.Cloud,
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp)
+                        )
+
+                    }
+                }
+
+                Button(
+                    onClick = {
+                        mapType = "precipitation_new"
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        contentColor = Color.DarkGray,
+                        backgroundColor = if (mapType == "precipitation_new") Color(0xFFFFFDD0) else Color.White
+                    ),
+                    contentPadding = PaddingValues(10.dp),
+                    shape = CircleShape,
+                    modifier = Modifier
+                        .width(50.dp)
+                        .height(50.dp),
+                    elevation = ButtonDefaults.elevation(
+                        defaultElevation = 2.dp,
+                        pressedElevation = 4.dp,
+                        disabledElevation = 2.dp
+                    ),
+
+                    ) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Icon(
+                            Icons.Filled.Opacity,
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+
+                }
+                Button(
+                    onClick = {
+                        mapType = "temp_new"
+
+
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        contentColor = Color.DarkGray,
+                        backgroundColor = if (mapType == "temp_new") Color(0xFFFFFDD0) else Color.White
+                    ),
+                    contentPadding = PaddingValues(10.dp),
+                    shape = CircleShape,
+                    modifier = Modifier
+                        .width(50.dp)
+                        .height(50.dp),
+                    elevation = ButtonDefaults.elevation(
+                        defaultElevation = 2.dp,
+                        pressedElevation = 4.dp,
+                        disabledElevation = 2.dp
+                    )
+                ) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Icon(
+                            Icons.Filled.Thermostat,
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp)
+                        )
+
+                    }
+                }
+                Button(
+                    onClick = {
+                        mapType = "wind_new"
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        contentColor = Color.DarkGray,
+                        backgroundColor = if (mapType == "wind_new") Color(0xFFFFFDD0) else Color.White
+                    ),
+                    contentPadding = PaddingValues(10.dp),
+                    shape = CircleShape,
+                    modifier = Modifier
+                        .width(50.dp)
+                        .height(50.dp),
+                    elevation = ButtonDefaults.elevation(
+                        defaultElevation = 2.dp,
+                        pressedElevation = 4.dp,
+                        disabledElevation = 2.dp
+                    )
+                ) {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Icon(
+                            Icons.Filled.Air,
+                            contentDescription = null,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
+            }
+        }
+
+    }
+
+}
 
 }
 

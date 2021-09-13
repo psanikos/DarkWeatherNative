@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import npsprojects.darkweather.WeatherUnits
 import npsprojects.darkweather.getWeatherIcon
 import npsprojects.darkweather.models.Daily
 import npsprojects.darkweather.models.WeatherViewModel
@@ -62,14 +63,14 @@ fun WeekView(model: WeatherViewModel){
 
    //         Text("Week", style = MaterialTheme.typography.h2.copy(fontSize = 12.sp,color = Color.DarkGray))
             week.forEach {
-                WeekViewItem(day = it)
+                WeekViewItem(model = model,day = it)
             }
         }
     }
 }
 
 @Composable
-fun WeekViewItem(day:Daily) {
+fun WeekViewItem(model:WeatherViewModel,day:Daily) {
     Column( modifier = Modifier
         .height(70.dp)
         .fillMaxWidth(),
@@ -151,7 +152,7 @@ fun WeekViewItem(day:Daily) {
                             )
 
                         Text(
-                            text = "${day.wind_speed.round(1)} mph",
+                            text = "${day.wind_speed.round(1)} " +  if(model.units == WeatherUnits.SI) "km/h" else "mph",
                             style = MaterialTheme.typography.body2
                         )
                     }

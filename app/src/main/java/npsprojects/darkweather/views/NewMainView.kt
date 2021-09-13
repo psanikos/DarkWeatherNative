@@ -56,6 +56,7 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.TileOverlay
+import kotlinx.coroutines.launch
 import npsprojects.darkweather.*
 import npsprojects.darkweather.R
 import npsprojects.darkweather.models.Current
@@ -66,9 +67,13 @@ import npsprojects.darkweather.ui.theme.*
 import java.lang.reflect.Array.get
 import java.lang.reflect.Array.set
 import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 
+@ExperimentalMaterialApi
 @ExperimentalCoilApi
 @Composable
 fun NewMainView(model: WeatherViewModel, controller: NavController) {
@@ -76,11 +81,44 @@ fun NewMainView(model: WeatherViewModel, controller: NavController) {
     val insets = LocalWindowInsets.current
     val bottomPadding = with(LocalDensity.current){insets.systemGestures.bottom.toDp()}
     val isRefreshing by model.loading.observeAsState(initial = false)
-    Scaffold(
+    val state = rememberBottomSheetScaffoldState()
+    val scope = rememberCoroutineScope()
+
+    BottomSheetScaffold(
+        sheetContent = {
+            Box(modifier = Modifier.fillMaxHeight(0.88f)) {
+                SearchView(model = model,onSelected = {
+                    scope.launch {
+                        state.bottomSheetState.collapse()
+                    }
+                })
+            }
+        },
+        scaffoldState = state,
+        sheetElevation = 0.dp,
         topBar = {
              TopBarView(model = model, controller = controller)
-
-        }) {
+        },
+        floatingActionButton = {
+            if(!state.bottomSheetState.isExpanded) {
+                FloatingActionButton(
+                    onClick = {
+                        scope.launch {
+                            state.bottomSheetState.expand()
+                        }
+                    },
+                    backgroundColor = blue_grey_600,
+                    contentColor = Color.White,
+                    modifier = Modifier.padding(bottom = 50.dp),
+                ) {
+                    Icon(
+                        Icons.Default.Add, contentDescription = "",
+                        modifier = Modifier.size(30.dp)
+                    )
+                }
+            }
+    }
+        ) {
         SwipeRefresh(
             state = rememberSwipeRefreshState(isRefreshing),
             onRefresh = { model.initActions() },
@@ -96,7 +134,70 @@ fun NewMainView(model: WeatherViewModel, controller: NavController) {
                 item {
                     MainCard(model = model)
                 }
-
+                if(!model.locations.isEmpty() && !model.locations[index].data.alerts.isNullOrEmpty()){
+                    model.locations[index].data.alerts?.let {
+                        if (it.isNotEmpty()) {
+                            item {
+                                Box(
+                                    modifier = Modifier
+                                        .padding(10.dp)
+                                        .fillMaxWidth()
+                                        .wrapContentHeight()
+                                        .background(
+                                            color = Color.Yellow.copy(alpha = 0.15f),
+                                            shape = RoundedCornerShape(6)
+                                        )
+                                        .padding(10.dp)
+                                ) {
+                                    Column(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        Icon(
+                                            Icons.Filled.Warning,
+                                            contentDescription = "",
+                                            tint = Color.Red,
+                                            modifier = Modifier.size(40.dp)
+                                        )
+                                        Text(
+                                            it[0].event ?: "Alert",
+                                            style = MaterialTheme.typography.h3.copy(fontSize = 14.sp)
+                                        )
+                                        Text(
+                                            it[0].description ?: "",
+                                            style = MaterialTheme.typography.body2,
+                                            maxLines = 3
+                                        )
+                                        Row(
+                                            horizontalArrangement = Arrangement.spacedBy(10.dp),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Icon(Icons.Default.Timer, contentDescription = "")
+                                            Text(
+                                                "From ${
+                                                    DateTimeFormatter.ofPattern("EEEE dd").format(
+                                                        LocalDateTime.ofInstant(
+                                                            Instant.ofEpochMilli((1000 * it[0].start).toLong()),
+                                                            ZoneId.systemDefault()
+                                                        )
+                                                    )
+                                                }" + if (it[0].end != null) " until ${
+                                                    DateTimeFormatter.ofPattern("EEEE dd").format(
+                                                        LocalDateTime.ofInstant(
+                                                            Instant.ofEpochMilli((1000 * it[0].end!!).toLong()),
+                                                            ZoneId.systemDefault()
+                                                        )
+                                                    )
+                                                }" else "", style = MaterialTheme.typography.body2
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
                 item {
                     HourlyView(model = model)
                 }
@@ -105,47 +206,9 @@ fun NewMainView(model: WeatherViewModel, controller: NavController) {
                   UVView(model = model)
               }
                 item {
-                    Column(
-                        modifier = Modifier
-                            .padding(20.dp)
-                            .fillMaxWidth()
-                            .wrapContentHeight()
-                        ,
-                        horizontalAlignment = Alignment.Start,
-                        verticalArrangement = Arrangement.spacedBy(15.dp)
-                    ) {
-                      Row(modifier = Modifier.fillMaxWidth(),
-                      verticalAlignment = Alignment.CenterVertically,
-                      horizontalArrangement = Arrangement.SpaceBetween) {
-                          Text("Weather map", style = MaterialTheme.typography.h4.copy(color = Color.DarkGray))
-                          Button(onClick = {
-                                           controller.navigate("Map")
-                          },
-                          elevation = ButtonDefaults.elevation(
-                              defaultElevation = 0.dp,
-                              disabledElevation = 0.dp,
-                              pressedElevation = 0.dp
-                          ),colors = ButtonDefaults.buttonColors(
-                                  backgroundColor = Color.Transparent,
-                                  disabledBackgroundColor = Color.Transparent,
-                                  disabledContentColor = Color.Transparent
-                          )) {
-                              Icon(Icons.Default.AspectRatio,contentDescription = "",
-                              modifier = Modifier.size(20.dp))
-                          }
-                      }
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(220.dp)
-                                .background(color = Color.DarkGray, shape = RoundedCornerShape(8))
-                                .padding(8.dp)
-                                .clip(RoundedCornerShape(6))
-                        ) {
-                            CustomMapView(model = model)
-                        }
+                    CustomMapView(model = model,controller = controller)
                     }
-                }
+
                 item {
                     WeekView(model = model)
                 }
@@ -156,7 +219,11 @@ fun NewMainView(model: WeatherViewModel, controller: NavController) {
                 item {
                     DayDetailsView(model = model)
                 }
+                item{
+                    Spacer(modifier = Modifier.height(60.dp))
+                }
             }
         }
     }
 }
+

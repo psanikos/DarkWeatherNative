@@ -53,7 +53,8 @@ fun UVView(model: WeatherViewModel) {
 
 
     val configuration = LocalConfiguration.current
-    val pointWidth = with(LocalDensity.current){configuration.smallestScreenWidthDp/16}
+    val isLarge = configuration.smallestScreenWidthDp > 400
+    val pointWidth = with(LocalDensity.current){configuration.smallestScreenWidthDp/(if(isLarge) 32 else 16)}
     var toAnimate by rememberSaveable {
         mutableStateOf(false)
     }
@@ -79,7 +80,7 @@ fun UVView(model: WeatherViewModel) {
 Row(modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween,verticalAlignment = Alignment.CenterVertically) {
 
 
-    Text("UV Radiation", style = MaterialTheme.typography.h4.copy(color = Color.DarkGray))
+    Text("UV Radiation", style = MaterialTheme.typography.h4.copy(color = Color.Gray))
 
     Text(
         name,
