@@ -38,7 +38,7 @@ private val appFont = FontFamily(
 val Typography = Typography(
     body1 = TextStyle(
         fontFamily = appFont,
-        fontWeight = FontWeight.Bold,
+        fontWeight = FontWeight.Normal,
         fontSize = 16.sp,
         letterSpacing = 0.5.sp
     ),
@@ -68,7 +68,7 @@ val Typography = Typography(
     ),
     h4 = TextStyle(
         fontFamily = appFont,
-        fontWeight = FontWeight.Black,
+        fontWeight = FontWeight.Medium,
         fontSize = 18.sp,
         letterSpacing = 0.5.sp
     ),

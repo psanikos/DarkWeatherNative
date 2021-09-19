@@ -185,13 +185,11 @@ fun HourlyView(model: WeatherViewModel) {
             data = model.locations[model.index.value!!].data.hourly
         }
     })
-    Column(modifier = Modifier.fillMaxWidth().wrapContentHeight()
-        .background(color = blue_grey_500.copy(alpha = 0.05f),shape = RoundedCornerShape(0))
-        .padding(20.dp),
+    Column(modifier = Modifier.fillMaxWidth().wrapContentHeight(),
     horizontalAlignment = Alignment.Start,
     verticalArrangement = Arrangement.spacedBy(20.dp)) {
         if(data.isNotEmpty()){
-//Text("Hourly",style = MaterialTheme.typography.h2.copy(fontSize = 12.sp,color = Color.DarkGray))
+//Text("Hourly",style = MaterialTheme.typography.h2.copy(fontSize = 14.sp,color = Color.Gray))
 
         LazyRow(
             modifier = Modifier.fillMaxWidth()
@@ -225,8 +223,8 @@ fun HourlyView(model: WeatherViewModel) {
 
                         Box(
                             modifier = Modifier
-                                .height(130.dp)
-                                .width(100.dp)
+                                .height(100.dp)
+                                .width(75.dp)
                                 .padding(end = 5.dp),
 
                             contentAlignment = Alignment.Center
@@ -254,9 +252,9 @@ fun HourlyView(model: WeatherViewModel) {
                                         painter = painterResource(id = getWeatherIcon(it.weather[0].icon)),
                                         contentDescription = "",
                                         modifier = Modifier
-                                            .offset(x = 1.dp, y = 2.dp)
-                                            .height(60.dp)
-                                            .width(60.dp),
+                                            .offset(x = 1.dp, y = 1.dp)
+                                            .height(40.dp)
+                                            .width(40.dp),
                                         colorFilter = ColorFilter.tint(color = Color.Gray.copy(alpha = 0.5f))
 
                                     )
@@ -265,8 +263,8 @@ fun HourlyView(model: WeatherViewModel) {
                                         painter = painterResource(id = getWeatherIcon(it.weather[0].icon)),
                                         contentDescription = "",
                                         modifier = Modifier
-                                            .height(60.dp)
-                                            .width(60.dp)
+                                            .height(40.dp)
+                                            .width(40.dp)
 
                                     )
                                 }
@@ -287,11 +285,11 @@ fun HourlyView(model: WeatherViewModel) {
                                         contentDescription = "",
                                         modifier = Modifier
                                             .size(18.dp),
-                                        tint = indigo_500
+                                        tint = Color.Gray
                                     )
                                     Text(
                                         "${(100 * (it.pop ?: 0.0)).roundToInt()}%",
-                                        style = MaterialTheme.typography.body2
+                                        style = MaterialTheme.typography.body2.copy(color = Color.Gray)
                                     )
                                 }
                             }

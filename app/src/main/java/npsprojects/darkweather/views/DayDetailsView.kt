@@ -78,68 +78,55 @@ fun DayDetailsView(model: WeatherViewModel){
 
 
 
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .wrapContentHeight()
-        .background(color = blue_grey_500.copy(alpha = 0.05f), shape = RoundedCornerShape(0))
-        .padding(20.dp),
-        horizontalAlignment = Alignment.Start,
-        verticalArrangement = Arrangement.spacedBy(20.dp)) {
+
 
         //Text("Today", style= MaterialTheme.typography.h2.copy(fontSize = 12.sp,color = Color.DarkGray))
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(70.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
+                .height(20.dp),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(100.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceEvenly
+            Row(
+
+                horizontalArrangement = Arrangement.spacedBy(5.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.sunrise),
                     contentDescription = "Sun rise",
-                    modifier = Modifier.size(30.dp)
+                    modifier = Modifier.size(20.dp)
                 )
                 Text( SimpleDateFormat("HH:mm", Locale.getDefault()).format(
                     Date(1000 * day!!.sunrise)
-                ), style = MaterialTheme.typography.body1)
+                ), style = MaterialTheme.typography.body2)
             }
-            Column(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(100.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceEvenly
+            Row(
+
+                horizontalArrangement = Arrangement.spacedBy(5.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.sunset),
                     contentDescription = "Sun set",
-                    modifier = Modifier.size(30.dp)
+                    modifier = Modifier.size(20.dp)
                 )
                 Text( SimpleDateFormat("HH:mm", Locale.getDefault()).format(
                     Date(1000 * day!!.sunset)
-                ), style = MaterialTheme.typography.body1)
+                ), style = MaterialTheme.typography.body2)
             }
-            Column(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(100.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.SpaceEvenly
+            Row(
+
+                horizontalArrangement = Arrangement.spacedBy(5.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Image(
                     painter = painterResource(id = moonIcon(day?.moon_phase ?: 0.0)), contentDescription = "moon",
-                    modifier = Modifier.size(30.dp)
+                    modifier = Modifier.size(20.dp)
                 )
-                Text(moonDecription(day?.moon_phase ?: 0.0), style = MaterialTheme.typography.body1)
+                Text(moonDecription(day?.moon_phase ?: 0.0), style = MaterialTheme.typography.body2)
             }
         }
-    }
+
     }
 }

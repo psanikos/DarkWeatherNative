@@ -17,6 +17,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
@@ -29,6 +30,8 @@ import npsprojects.darkweather.models.WeatherViewModel
 import npsprojects.darkweather.round
 import npsprojects.darkweather.ui.theme.blue_500
 import npsprojects.darkweather.ui.theme.blue_grey_500
+import npsprojects.darkweather.ui.theme.light_blue_500
+import npsprojects.darkweather.ui.theme.pink_500
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDateTime
@@ -52,16 +55,12 @@ fun WeekView(model: WeatherViewModel){
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
-                .background(
-                    color = blue_grey_500.copy(alpha = 0.05f),
-                    shape = RoundedCornerShape(0)
-                )
-                .padding(20.dp),
+            ,
             horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
 
-   //         Text("Week", style = MaterialTheme.typography.h2.copy(fontSize = 12.sp,color = Color.DarkGray))
+      //      Text("Week", style = MaterialTheme.typography.h2.copy(fontSize = 14.sp,color = Color.Gray))
             week.forEach {
                 WeekViewItem(model = model,day = it)
             }
@@ -71,145 +70,109 @@ fun WeekView(model: WeatherViewModel){
 
 @Composable
 fun WeekViewItem(model:WeatherViewModel,day:Daily) {
-    Column( modifier = Modifier
-        .height(70.dp)
-        .fillMaxWidth(),
-    horizontalAlignment = Alignment.Start,
-    verticalArrangement = Arrangement.SpaceBetween) {
 
-        Text(
-            SimpleDateFormat("EEEE", Locale.getDefault()).format(
-                Date(1000 * day.dt)
-            ), style = MaterialTheme.typography.h4.copy(fontSize = 16.sp)
-        )
+
+    Row(
+        modifier = Modifier
+            .height(40.dp)
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
         Row(
-            modifier = Modifier
-                .height(60.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.Bottom,
-            horizontalArrangement = Arrangement.SpaceBetween
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth(0.2f)
         ) {
-            Column(
-                verticalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxHeight()
+            Text(
+                SimpleDateFormat("EEE", Locale.getDefault()).format(
+                    Date(1000 * day.dt)
+                ), style = MaterialTheme.typography.h3.copy(fontSize = 16.sp)
+            )
 
-            ) {
 
-                Box() {
-                    Image(
-                        painter = painterResource(id = getWeatherIcon(day.weather[0].icon)),
-                        contentDescription = "",
-                        modifier = Modifier
-                            .offset(x = 1.dp, y = 2.dp)
-                            .height(60.dp)
-                            .width(60.dp),
-                        colorFilter = ColorFilter.tint(color = Color.Gray.copy(alpha = 0.5f))
+            Box() {
+                Image(
+                    painter = painterResource(id = getWeatherIcon(day.weather[0].icon)),
+                    contentDescription = "",
+                    modifier = Modifier
+                        .offset(x = 1.dp, y = 2.dp)
+                        .height(40.dp)
+                        .width(40.dp),
+                    colorFilter = ColorFilter.tint(color = Color.Gray.copy(alpha = 0.5f))
 
-                    )
-
-                    Image(
-                        painter = painterResource(id = getWeatherIcon(day.weather[0].icon)),
-                        contentDescription = "",
-                        modifier = Modifier
-                            .height(60.dp)
-                            .width(60.dp)
-
-                    )
-                }
-            }
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight(),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                horizontalAlignment = Alignment.Start
-            ) {
-                Text(
-                    day.weather[0].description,
-                    style = MaterialTheme.typography.body2,
-                    maxLines = 1
                 )
-                Row(
-                    horizontalArrangement = Arrangement.SpaceEvenly,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(6.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
 
+                Image(
+                    painter = painterResource(id = getWeatherIcon(day.weather[0].icon)),
+                    contentDescription = "",
+                    modifier = Modifier
+                        .height(40.dp)
+                        .width(40.dp)
 
-                        ColoredIcon(
-                            Icons.Filled.Navigation,
-                            contentDescription = "",
-                            modifier = Modifier
-                                .size(16.dp)
-                                .rotate(day.wind_deg.toFloat()),
-                            tint = if (isSystemInDarkTheme()) Color.White else Color.Black,
-
-                            )
-
-                        Text(
-                            text = "${day.wind_speed.round(1)} " +  if(model.units == WeatherUnits.SI) "km/h" else "mph",
-                            style = MaterialTheme.typography.body2
-                        )
-                    }
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(5.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-
-                        ColoredIcon(
-                            Icons.Filled.ArrowUpward,
-                            contentDescription = "",
-                            modifier = Modifier.size(16.dp),
-                            tint = Color.Red
-                        )
-
-                        Text(
-                            text = "${day.temp.max.toUInt()}°",
-                            style = MaterialTheme.typography.body2
-                        )
-                    }
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(5.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-
-                        ColoredIcon(
-                            Icons.Filled.ArrowDownward,
-                            contentDescription = "",
-                            modifier = Modifier.size(16.dp),
-                            tint = Color.Blue
-                        )
-
-                        Text(
-                            text = "${day.temp.min.toUInt()}°",
-                            style = MaterialTheme.typography.body2
-                        )
-                    }
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(5.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        ColoredIcon(
-                            Icons.Filled.Umbrella,
-                            contentDescription = "",
-                            modifier = Modifier.size(20.dp),
-                            tint = blue_500
-                        )
-
-                        Text(
-                            text = "${(100 * (day.pop ?: 0.0)).toUInt()}%",
-                            style = MaterialTheme.typography.body2
-                        )
-                    }
-                }
-
+                )
             }
         }
+
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth(0.9f)
+        ) {
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(5.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+
+                ColoredIcon(
+                    Icons.Filled.Navigation,
+                    contentDescription = "",
+                    modifier = Modifier
+                        .size(16.dp)
+                        .rotate(day.wind_deg.toFloat()),
+                    tint = if (isSystemInDarkTheme()) Color.White else Color.Black,
+
+                    )
+
+                Text(
+                    text = "${day.wind_speed.round(1)} " + if (model.units == WeatherUnits.SI) "km/h" else "mph",
+                    style = MaterialTheme.typography.body2
+                )
+            }
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(5.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                Text(
+                    text = "${day.temp.min.toUInt()}°",
+                    style = MaterialTheme.typography.body2
+                )
+                val width = 5 * (day.temp.max.toUInt() - day.temp.min.toUInt()).toDouble()
+                val boxWidth = if (width > 40.0) (if (width > 120.0) 120.0 else width) else 40.0
+                Box(
+                    modifier = Modifier.height(16.dp).width(width = boxWidth.dp)
+                        .background(
+                            brush = Brush.linearGradient(
+                                colors = listOf(
+                                    light_blue_500,
+                                    pink_500
+                                )
+                            ), shape = RoundedCornerShape(50)
+                        )
+                )
+                Text(
+                    text = "${day.temp.max.toUInt()}°",
+                    style = MaterialTheme.typography.body2
+                )
+
+            }
+
+
+        }
+
+
     }
 }
 //LocalDateTime.ofInstant(

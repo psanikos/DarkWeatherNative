@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.graphics.Path
@@ -107,13 +108,13 @@ fun AirQualityView(model:WeatherViewModel) {
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
-                .padding(20.dp),
+                ,
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
             Row(modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween,verticalAlignment = Alignment.CenterVertically) {
 
-                Text(stringResource(R.string.AirQ), style = MaterialTheme.typography.h4.copy(color = Color.Gray))
+                Text(stringResource(R.string.AirQ), style = MaterialTheme.typography.h4)
 
 
 
@@ -130,7 +131,11 @@ fun AirQualityView(model:WeatherViewModel) {
                     modifier = Modifier
                         .height(16.dp)
                         .fillMaxWidth()
-                        .clip(shape = RoundedCornerShape(50))
+                        .background(brush = Brush.linearGradient(colors = listOf(
+                            green_500, yellow_500, orange_500, pink_500, red_500
+                        )),
+                           shape= RoundedCornerShape(50))
+
                 ) {
 //                        LinearProgressIndicator(
 //                            modifier = Modifier.fillMaxWidth().height(18.dp)
@@ -138,36 +143,8 @@ fun AirQualityView(model:WeatherViewModel) {
 //                            progress = value.value,
 //                            color = color
 //                        )
-                    Box(
-                        modifier = Modifier
-                            .height(16.dp)
-                            .fillMaxWidth(0.2f)
-                            .background(Color.Green.copy(alpha = 0.8f))
-                    )
-                    Box(
-                        modifier = Modifier
-                            .height(16.dp)
-                            .fillMaxWidth(0.25f)
-                            .background(Color.Yellow.copy(alpha = 0.8f))
-                    )
-                    Box(
-                        modifier = Modifier
-                            .height(16.dp)
-                            .fillMaxWidth(0.33f)
-                            .background(orange_500.copy(alpha = 0.8f))
-                    )
-                    Box(
-                        modifier = Modifier
-                            .height(16.dp)
-                            .fillMaxWidth(0.5f)
-                            .background(pink_500.copy(alpha = 0.8f))
-                    )
-                    Box(
-                        modifier = Modifier
-                            .height(16.dp)
-                            .fillMaxWidth()
-                            .background(red_500.copy(alpha = 0.8f))
-                    )
+
+
                 }
                 Box(
                     Modifier

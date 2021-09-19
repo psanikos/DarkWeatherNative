@@ -49,4 +49,9 @@
     <string name="add_widget">Add widget</string>
     <string name="app_widget_description">DarkWeather widget</string>
     <string name="icon">icon</string>
+    <string name="hourly">Hourly</string>
+    <string name="weekly">Weekly</string>
+    <string name="uv">UV Radiation</string>
+    <string name="map">Weather map</string>
+
 </resources>

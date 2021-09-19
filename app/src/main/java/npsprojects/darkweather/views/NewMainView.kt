@@ -3,6 +3,8 @@ package npsprojects.darkweather.views
 import android.graphics.drawable.Icon
 import android.graphics.drawable.ShapeDrawable
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -10,8 +12,10 @@ import androidx.compose.animation.core.spring
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
@@ -26,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
@@ -52,6 +57,8 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import com.google.accompanist.insets.LocalWindowInsets
+import com.google.accompanist.insets.navigationBarsHeight
+import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.android.gms.maps.model.LatLng
@@ -73,6 +80,7 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 
 
+@ExperimentalAnimationApi
 @ExperimentalMaterialApi
 @ExperimentalCoilApi
 @Composable
@@ -84,146 +92,167 @@ fun NewMainView(model: WeatherViewModel, controller: NavController) {
     val state = rememberBottomSheetScaffoldState()
     val scope = rememberCoroutineScope()
 
-    BottomSheetScaffold(
-        sheetContent = {
-            Box(modifier = Modifier.fillMaxHeight(0.88f)) {
-                SearchView(model = model,onSelected = {
-                    scope.launch {
-                        state.bottomSheetState.collapse()
-                    }
-                })
-            }
-        },
-        scaffoldState = state,
-        sheetElevation = 0.dp,
-        topBar = {
-             TopBarView(model = model, controller = controller)
-        },
-        floatingActionButton = {
-            if(!state.bottomSheetState.isExpanded) {
-                FloatingActionButton(
-                    onClick = {
-                        scope.launch {
-                            state.bottomSheetState.expand()
-                        }
-                    },
-                    backgroundColor = blue_grey_600,
-                    contentColor = Color.White,
-                    modifier = Modifier.padding(bottom = 50.dp),
-                ) {
-                    Icon(
-                        Icons.Default.Add, contentDescription = "",
-                        modifier = Modifier.size(30.dp)
-                    )
-                }
-            }
-    }
+    Scaffold(
+
+
         ) {
-        SwipeRefresh(
-            state = rememberSwipeRefreshState(isRefreshing),
-            onRefresh = { model.initActions() },
-        ) {
-            LazyColumn(
-                Modifier
-                    .padding(horizontal = 0.dp)
-                    .padding(bottom = bottomPadding)
-                    .fillMaxSize(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(30.dp)
+
+
+
+            SwipeRefresh(
+                state = rememberSwipeRefreshState(isRefreshing),
+                onRefresh = { model.initActions() },
             ) {
-                item {
-                    MainCard(model = model)
-                }
-                if(!model.locations.isEmpty() && !model.locations[index].data.alerts.isNullOrEmpty()){
-                    model.locations[index].data.alerts?.let {
-                        if (it.isNotEmpty()) {
-                            item {
-                                Box(
-                                    modifier = Modifier
-                                        .padding(10.dp)
-                                        .fillMaxWidth()
-                                        .wrapContentHeight()
-                                        .background(
-                                            color = Color.Yellow.copy(alpha = 0.15f),
-                                            shape = RoundedCornerShape(6)
-                                        )
-                                        .padding(10.dp)
-                                ) {
-                                    Column(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                                    ) {
-                                        Icon(
-                                            Icons.Filled.Warning,
-                                            contentDescription = "",
-                                            tint = Color.Red,
-                                            modifier = Modifier.size(40.dp)
-                                        )
-                                        Text(
-                                            it[0].event ?: "Alert",
-                                            style = MaterialTheme.typography.h3.copy(fontSize = 14.sp)
-                                        )
-                                        Text(
-                                            it[0].description ?: "",
-                                            style = MaterialTheme.typography.body2,
-                                            maxLines = 3
-                                        )
-                                        Row(
-                                            horizontalArrangement = Arrangement.spacedBy(10.dp),
-                                            verticalAlignment = Alignment.CenterVertically
+                Box(
+                    modifier = Modifier
+                        .navigationBarsPadding(bottom = true)
+                        .fillMaxSize()
+                        .background(
+                            brush = Brush.linearGradient(
+                                colors = listOf(
+                                    getWeatherColor(if (model.locations.size > 0) model.locations[index].data.current.weather[0].icon else "01d"),
+                                    MaterialTheme.colors.background,
+                                    MaterialTheme.colors.background,
+                                    MaterialTheme.colors.background
+                                )
+                            )
+                        ),
+                    contentAlignment = Alignment.TopCenter
+                ) {
+                    LazyColumn(
+                        modifier = Modifier
+                            .padding(horizontal = 25.dp)
+                            .padding(top = 90.dp)
+                            .fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(50.dp)
+                    ) {
+               
+                        item {
+                          MainCard(model = model)
+                        }
+                        if (!model.locations.isEmpty() && !model.locations[index].data.alerts.isNullOrEmpty()) {
+                            model.locations[index].data.alerts?.let {
+                                if (it.isNotEmpty()) {
+                                    item {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .wrapContentHeight()
+                                                .background(
+                                                    color = Color.Yellow.copy(alpha = 0.15f),
+                                                    shape = RoundedCornerShape(6)
+                                                )
+                                                .padding(10.dp)
                                         ) {
-                                            Icon(Icons.Default.Timer, contentDescription = "")
-                                            Text(
-                                                "From ${
-                                                    DateTimeFormatter.ofPattern("EEEE dd").format(
-                                                        LocalDateTime.ofInstant(
-                                                            Instant.ofEpochMilli((1000 * it[0].start).toLong()),
-                                                            ZoneId.systemDefault()
-                                                        )
+                                            Column(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                horizontalAlignment = Alignment.CenterHorizontally,
+                                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                                            ) {
+                                                Icon(
+                                                    Icons.Filled.Warning,
+                                                    contentDescription = "",
+                                                    tint = Color.Red,
+                                                    modifier = Modifier.size(40.dp)
+                                                )
+                                                Text(
+                                                    it[0].event ?: "Alert",
+                                                    style = MaterialTheme.typography.h3.copy(fontSize = 14.sp)
+                                                )
+                                                Text(
+                                                    it[0].description ?: "",
+                                                    style = MaterialTheme.typography.body2,
+                                                    maxLines = 3
+                                                )
+                                                Row(
+                                                    horizontalArrangement = Arrangement.spacedBy(10.dp),
+                                                    verticalAlignment = Alignment.CenterVertically
+                                                ) {
+                                                    Icon(Icons.Default.Timer, contentDescription = "")
+                                                    Text(
+                                                        "From ${
+                                                            DateTimeFormatter.ofPattern("EEEE dd")
+                                                                .format(
+                                                                    LocalDateTime.ofInstant(
+                                                                        Instant.ofEpochMilli((1000 * it[0].start).toLong()),
+                                                                        ZoneId.systemDefault()
+                                                                    )
+                                                                )
+                                                        }" + if (it[0].end != null) " until ${
+                                                            DateTimeFormatter.ofPattern("EEEE dd")
+                                                                .format(
+                                                                    LocalDateTime.ofInstant(
+                                                                        Instant.ofEpochMilli((1000 * it[0].end!!).toLong()),
+                                                                        ZoneId.systemDefault()
+                                                                    )
+                                                                )
+                                                        }" else "",
+                                                        style = MaterialTheme.typography.body2
                                                     )
-                                                }" + if (it[0].end != null) " until ${
-                                                    DateTimeFormatter.ofPattern("EEEE dd").format(
-                                                        LocalDateTime.ofInstant(
-                                                            Instant.ofEpochMilli((1000 * it[0].end!!).toLong()),
-                                                            ZoneId.systemDefault()
-                                                        )
-                                                    )
-                                                }" else "", style = MaterialTheme.typography.body2
-                                            )
+                                                }
+                                            }
                                         }
                                     }
                                 }
                             }
                         }
+                        item {
+                            AirQualityView(model = model)
+                        }
+                        item {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize(),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(20.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text("Today", style = MaterialTheme.typography.h4)
+                                    DayDetailsView(model = model)
+                                }
+                                Divider(modifier = Modifier.fillMaxWidth())
+                              HourlyView(model = model)
+                            }
+                        }
+                        item{
+                            CustomMapView(model = model, controller = controller)
+                        }
+                        item {
+                            UVView(model = model)
+                        }
+                        item {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize(),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(20.dp)
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Text("This Week", style = MaterialTheme.typography.h4)
+                                }
+                                Divider(modifier = Modifier.fillMaxWidth())
+                                WeekView(model = model)
+                            }
+                        }
+
+
+                        
+
                     }
+                    TopBarView(model = model, controller = controller)
                 }
-                item {
-                    HourlyView(model = model)
-                }
-
-              item{
-                  UVView(model = model)
-              }
-                item {
-                    CustomMapView(model = model,controller = controller)
-                    }
-
-                item {
-                    WeekView(model = model)
-                }
-
-                item {
-                    AirQualityView(model = model)
-                }
-                item {
-                    DayDetailsView(model = model)
-                }
-                item{
-                    Spacer(modifier = Modifier.height(60.dp))
-                }
+       
             }
         }
-    }
+    
 }
 

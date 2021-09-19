@@ -11,10 +11,14 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import compose.icons.FeatherIcons
+import compose.icons.feathericons.Heart
+import compose.icons.feathericons.Menu
 import kotlinx.coroutines.launch
 import npsprojects.darkweather.R
 import npsprojects.darkweather.models.SavedLocation
@@ -45,11 +49,11 @@ fun TopBarView(model: WeatherViewModel, controller: NavController){
             verticalArrangement = Arrangement.SpaceEvenly,
             modifier = Modifier
                 .height(50.dp)
-                .fillMaxWidth(0.75f)) {
+                .fillMaxWidth(0.55f)) {
 
             Box() {
                 if (model.locations.isEmpty()) {
-                    Text("N/A", style = MaterialTheme.typography.h3)
+                    Text("N/A", style = MaterialTheme.typography.h4)
                 } else {
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(5.dp),
@@ -61,7 +65,8 @@ fun TopBarView(model: WeatherViewModel, controller: NavController){
                         }
                         Text(
                             model.locations[model.index.value!!].name,
-                            style = MaterialTheme.typography.h3
+                            style = MaterialTheme.typography.h4
+
                         )
                     }
                 }
@@ -74,7 +79,7 @@ fun TopBarView(model: WeatherViewModel, controller: NavController){
 
                             dropExtended = false
                         },
-                            modifier = Modifier.width(200.dp)) {
+                            modifier = Modifier.width(160.dp)) {
                             Row(
                                 horizontalArrangement = Arrangement.spacedBy(5.dp),
                                 verticalAlignment = Alignment.CenterVertically
@@ -84,7 +89,7 @@ fun TopBarView(model: WeatherViewModel, controller: NavController){
                                 }
                                 Text(
                                     item.name,
-                                    style = MaterialTheme.typography.body1
+                                    style = MaterialTheme.typography.body2
                                 )
                             }
                         }
@@ -95,7 +100,7 @@ fun TopBarView(model: WeatherViewModel, controller: NavController){
 
             Text(if(model.locations.isEmpty()) "No data" else
                 Date.from(Instant.ofEpochSecond(model.locations[model.index.value!!].data.current.dt)).timeAgo(),
-                style =  MaterialTheme.typography.body2.copy(color = Color.Gray),modifier = Modifier.padding(start = 5.dp))
+                style =  MaterialTheme.typography.body2.copy(color = MaterialTheme.colors.primary.copy(alpha = 0.7f)),modifier = Modifier.padding(start = 5.dp))
         }
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp),verticalAlignment = Alignment.CenterVertically) {
             if(!model.locations.isEmpty()) {
@@ -103,12 +108,6 @@ fun TopBarView(model: WeatherViewModel, controller: NavController){
                     if (!model.locations[model.index.value!!].isCurrent) {
                         Box(
                             modifier = Modifier
-                                .width(30.dp)
-                                .height(30.dp)
-                                .background(
-                                    color = red_700,
-                                    shape = CircleShape
-                                )
                                 .clickable {
                                     val oldIndex = model.index.value!!
                                     model.indexChange(0)
@@ -127,19 +126,16 @@ fun TopBarView(model: WeatherViewModel, controller: NavController){
                                     }
                                 }, contentAlignment = Alignment.Center
                         ) {
-                            Icon(Icons.Default.Clear, contentDescription = "",tint = Color.White)
+
+                            Icon(Icons.Default.Favorite, contentDescription = "",tint = Color.Red,
+                            modifier = Modifier.size(30.dp))
                         }
                     }
                 } else {
                     if (!model.locations[model.index.value!!].isCurrent) {
                         Box(
                             modifier = Modifier
-                                .width(30.dp)
-                                .height(30.dp)
-                                .background(
-                                    color = teal_500,
-                                    shape = CircleShape
-                                )
+
                                 .clickable {
                                     if (!model.myLocations.any { it.name == model.locations[model.index.value!!].name }) {
                                         scope.launch {
@@ -158,17 +154,38 @@ fun TopBarView(model: WeatherViewModel, controller: NavController){
                                     }
                                 }, contentAlignment = Alignment.Center
                         ) {
-                            Icon(Icons.Default.PushPin, contentDescription = "",tint = Color.White)
-                        }
+                                Icon(
+                                    Icons.Default.FavoriteBorder,
+                                    contentDescription = "",
+                                    tint = Color.Gray,
+                                    modifier = Modifier.size(30.dp)
+                                )
+                            }
+
                     }
+                }
+            }
+            IconButton(onClick = {
+                controller.navigate("Search")
+            }) {
+                Box() {
+
+                    Icon(
+                        Icons.Default.Search, contentDescription = "",
+                        modifier = Modifier.size(30.dp)
+                    )
                 }
             }
             IconButton(onClick = {
                 controller.navigate("Settings")
             }) {
-                Icon(
-                    Icons.Default.Menu, contentDescription = "",
-                    modifier = Modifier.size(30.dp))
+                Box() {
+
+                    Icon(
+                        FeatherIcons.Menu, contentDescription = "",
+                        modifier = Modifier.size(30.dp)
+                    )
+                }
             }
         }
     }

@@ -243,7 +243,8 @@ fun FullSearchView(model: WeatherViewModel,controller: NavController) {
                 backgroundColor = Color.Transparent,
                 modifier = Modifier.height(140.dp)
             )
-        }
+        },
+        backgroundColor = if(isSystemInDarkTheme()) Color(0xFF202020) else Color(0xFFEFEFEF)
     ) {
         Column(
             modifier = Modifier
@@ -304,7 +305,6 @@ fun FullSearchView(model: WeatherViewModel,controller: NavController) {
                 }
 
             }
-
             searchedAddresses.forEach {
 
                 if (it.locality != null || it.featureName != null) {
@@ -358,6 +358,7 @@ fun FullSearchView(model: WeatherViewModel,controller: NavController) {
 
                 }
             }
+
         }
         if (showAlert) {
             // below line is use to

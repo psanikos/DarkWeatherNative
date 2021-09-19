@@ -40,4 +40,8 @@
     <string name="Continue">Continuer</string>
     <string name="AllowAccess">Permettre l\'accès</string>
     <string name="LocationDenied">Aucun accès à la localisation n\'est fourni, si vous souhaitez voir votre position actuelle, appuyez sur pour autoriser l\'accès.</string>
+    <string name="hourly">à l\'heure</string>
+    <string name="weekly">Par semaine</string>
+    <string name="uv">Le rayonnement UV</string>
+    <string name="map">Carte météorologique</string>
 </resources>

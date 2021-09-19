@@ -38,6 +38,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.graphics.scale
 import androidx.navigation.NavController
 import npsprojects.darkweather.R
@@ -75,7 +76,7 @@ fun CustomMapView(model: WeatherViewModel,controller:NavController) {
     })
     Column(
         modifier = Modifier
-            .padding(20.dp)
+
             .fillMaxWidth()
             .wrapContentHeight()
         ,
@@ -87,7 +88,7 @@ fun CustomMapView(model: WeatherViewModel,controller:NavController) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text("Weather map", style = MaterialTheme.typography.h4.copy(color = Color.Gray))
+            Text("Weather map", style =  MaterialTheme.typography.h4)
             Button(
                 onClick = {
                     controller.navigate("Map")

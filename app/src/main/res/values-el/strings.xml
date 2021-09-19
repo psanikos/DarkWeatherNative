@@ -40,4 +40,9 @@
 <string name="Continue">Συνέχεια</string>
     <string name="AllowAccess">Αποδοχή πρόσβασης</string>
     <string name="LocationDenied">Δεν υπάρχει πρόσβαση στην τοποθεσία σας. Πατήστε για να επιτρέψετε</string>
+    <string name="hourly">Ανα ώρα</string>
+    <string name="weekly">Ανα εβδομάδα</string>
+    <string name="uv">Ηλιακή ακτινοβολιά</string>
+    <string name="map">Χάρτες καιρού</string>
+
 </resources>

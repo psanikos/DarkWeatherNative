@@ -22,6 +22,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -29,12 +30,12 @@ import androidx.compose.ui.unit.sp
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import npsprojects.darkweather.WeatherUnits
+import npsprojects.darkweather.getWeatherIcon
 import npsprojects.darkweather.models.WeatherModel
 import npsprojects.darkweather.models.WeatherViewModel
 import npsprojects.darkweather.round
 import npsprojects.darkweather.timeAgo
-import npsprojects.darkweather.ui.theme.DarkWeatherTheme
-import npsprojects.darkweather.ui.theme.blue_500
+import npsprojects.darkweather.ui.theme.*
 import java.time.Instant
 import java.util.*
 
@@ -82,47 +83,55 @@ val index:Int by  model.index.observeAsState(initial = 0)
     })
         Column(
             modifier = Modifier
-                .padding(20.dp)
+
                 .fillMaxWidth()
                 .wrapContentHeight(),
             verticalArrangement = Arrangement.spacedBy(40.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Column(
+         Box(modifier = Modifier
+             .height(350.dp)
+             .width(220.dp)
+           //  .background(color = if (isSystemInDarkTheme()) Color(0xFF373737) else Color(0xFFF7FBFE), shape = RoundedCornerShape(20))
+             ,
+         contentAlignment = Alignment.TopCenter){
+             Column(
 
-                verticalArrangement = Arrangement.spacedBy(5.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Column(
+                 verticalArrangement = Arrangement.spacedBy(30.dp),
+                 horizontalAlignment = Alignment.CenterHorizontally
+             ) {
 
-                    verticalArrangement = Arrangement.spacedBy(0.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Box() {
-                        Image(
-                            painter = rememberImagePainter(data = "https://openweathermap.org/img/wn/${icon}@4x.png"),
-                            contentDescription = "weather image",
-                            modifier = Modifier
-                                .offset(x = 2.dp, y = 4.dp)
-                                .size(150.dp),
-                            contentScale = ContentScale.Fit,
-                            colorFilter = ColorFilter.tint(color = Color.LightGray.copy(alpha = 0.6f))
-                        )
+                 Box() {
 
-                        Image(
-                            painter = rememberImagePainter(data = "https://openweathermap.org/img/wn/${icon}@4x.png"),
-                            contentDescription = "weather image",
-                            modifier = Modifier.size(150.dp),
-                            contentScale = ContentScale.Fit
-                        )
-                    }
-                    Text(text = temp, style = MaterialTheme.typography.h1.copy(fontSize = 54.sp,fontWeight = FontWeight.Black))
-                }
-                Text(description, style = MaterialTheme.typography.body1)
-            }
+                     Image(
+                         painter = rememberImagePainter(data = "https://openweathermap.org/img/wn/${icon}@4x.png"),
+                         contentDescription = "",
+                         modifier = Modifier
+                             .offset(x = 1.dp, y = 41.dp)
+                             .size(180.dp),
+                         colorFilter = ColorFilter.tint(color = Color.Gray.copy(alpha = 0.5f))
+
+                     )
+                     Image(
+                         painter = rememberImagePainter(data = "https://openweathermap.org/img/wn/${icon}@4x.png"),
+                         contentDescription = "weather image",
+                         modifier = Modifier
+                             .offset(y = 40.dp)
+                             .size(180.dp),
+                         contentScale = ContentScale.Fit
+                     )
+                 }
+                 Text(text = temp, style =  MaterialTheme.typography.h1.copy(fontSize = 60.sp)
+                    )
+
+
+                 Text(description, style = MaterialTheme.typography.body1)
+
+             }
+         }
             Row(
                 modifier= Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Row(
@@ -135,7 +144,7 @@ val index:Int by  model.index.observeAsState(initial = 0)
                             Icons.Filled.Navigation,
                             contentDescription = "",
                             modifier = Modifier
-                                .size(20.dp)
+                                .size(25.dp)
                                 .rotate(angle),
                             tint = if(isSystemInDarkTheme()) Color.White else Color.Black,
 
@@ -151,7 +160,7 @@ val index:Int by  model.index.observeAsState(initial = 0)
                         ColoredIcon(
                             Icons.Filled.ArrowUpward,
                             contentDescription = "",
-                            modifier = Modifier.size(20.dp),
+                            modifier = Modifier.size(25.dp),
                             tint = Color.Red
                         )
 
@@ -165,8 +174,8 @@ val index:Int by  model.index.observeAsState(initial = 0)
                     ColoredIcon(
                         Icons.Filled.ArrowDownward,
                         contentDescription = "",
-                        modifier = Modifier.size(20.dp),
-                        tint = Color.Blue
+                        modifier = Modifier.size(25.dp),
+                        tint = purple_500
                     )
 
                     Text(text = tempLow, style = MaterialTheme.typography.body1)
@@ -174,7 +183,9 @@ val index:Int by  model.index.observeAsState(initial = 0)
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
                     verticalAlignment = Alignment.CenterVertically) {
-                            ColoredIcon(Icons.Filled.Umbrella, contentDescription = "", modifier = Modifier.size(20.dp),tint = blue_500)
+                            ColoredIcon(Icons.Filled.Umbrella, contentDescription = "",
+                                modifier = Modifier.size(25.dp),
+                                tint = light_blue_500)
 
                             Text(
                                 text = "${pop}%",

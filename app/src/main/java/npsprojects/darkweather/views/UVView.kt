@@ -14,11 +14,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
 import npsprojects.darkweather.R
 import npsprojects.darkweather.models.WeatherViewModel
@@ -73,14 +75,14 @@ fun UVView(model: WeatherViewModel) {
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
-                .padding(20.dp),
+                ,
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
 Row(modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween,verticalAlignment = Alignment.CenterVertically) {
 
 
-    Text("UV Radiation", style = MaterialTheme.typography.h4.copy(color = Color.Gray))
+    Text("UV Radiation", style =  MaterialTheme.typography.h4)
 
     Text(
         name,
@@ -93,38 +95,11 @@ Row(modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.Space
                     modifier = Modifier
                         .height(16.dp)
                         .fillMaxWidth()
-                        .clip(shape = RoundedCornerShape(50))
+                        .background(brush = Brush.linearGradient(colors = listOf(
+                            green_500, yellow_500, orange_500, pink_500, red_500
+                        )),
+                            shape= RoundedCornerShape(50))
                 ) {
-//                        LinearProgressIndicator(
-//                            modifier = Modifier.fillMaxWidth().height(18.dp)
-//                                .clip(RoundedCornerShape(50)),backgroundColor = Color.Gray,
-//                            progress = value.value,
-//                            color = color
-//                        )
-                    Box(
-                        modifier = Modifier
-                            .height(16.dp)
-                            .fillMaxWidth(0.25f)
-                            .background(teal_500.copy(alpha = 0.8f))
-                    )
-                    Box(
-                        modifier = Modifier
-                            .height(16.dp)
-                            .fillMaxWidth(0.33f)
-                            .background(yellow_600.copy(alpha = 0.8f))
-                    )
-                    Box(
-                        modifier = Modifier
-                            .height(16.dp)
-                            .fillMaxWidth(0.5f)
-                            .background(orange_600.copy(alpha = 0.8f))
-                    )
-                    Box(
-                        modifier = Modifier
-                            .height(16.dp)
-                            .fillMaxWidth()
-                            .background(red_600.copy(alpha = 0.8f))
-                    )
 
                 }
                 Box(
