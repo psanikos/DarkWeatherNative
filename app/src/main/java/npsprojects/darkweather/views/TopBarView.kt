@@ -105,7 +105,7 @@ fun TopBarView(model: WeatherViewModel, controller: NavController){
         }
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp),verticalAlignment = Alignment.CenterVertically) {
             if(!model.locations.isEmpty()) {
-                if (model.myLocations.any { it.name == model.locations[model.index.value!!].name }) {
+                if (model.myLocations.any { it.latitude.round(3) == model.locations[model.index.value!!].data.lat.round(3) && it.longitude.round(3) == model.locations[model.index.value!!].data.lon.round(3) }) {
                     if (!model.locations[model.index.value!!].isCurrent) {
                         Box(
                             modifier = Modifier
@@ -138,7 +138,7 @@ fun TopBarView(model: WeatherViewModel, controller: NavController){
                             modifier = Modifier
 
                                 .clickable {
-                                    if (!model.myLocations.any { it.name == model.locations[model.index.value!!].name }) {
+                                    if (!model.myLocations.any { it.latitude.round(3) == model.locations[model.index.value!!].data.lat.round(3) && it.longitude.round(3) == model.locations[model.index.value!!].data.lon.round(3) }) {
                                         scope.launch {
                                             model.saveLocation(
                                                 SavedLocation(

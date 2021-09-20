@@ -401,7 +401,7 @@ fun getLang(){
 
             getLocationData(location = Coordinates(location.latitude,location.longitude),name = it,isCurrent = true){ weather->
                 weather?.let {
-                    if(!locations.contains(weather)) {
+                    if(locations.firstOrNull { it.data.lat.round(3) == weather.data.lat.round(3) && it.data.lon.round(3) == weather.data.lon.round(3)} == null) {
                         locations.add(0, weather)
                     }
                 }
@@ -488,7 +488,15 @@ fun getLang(){
             val currentLocationName = it
             getLocationData(location = location,isCurrent = false,name = currentLocationName){ weather->
                 weather?.let {
-                    locations.add(weather)
+                    if (
+                        locations.firstOrNull {
+                            it.data.lat.round(3) == weather.data.lat.round(3) && it.data.lon.round(
+                                3
+                            ) == weather.data.lon.round(3)
+                        } == null
+                    ) {
+                        locations.add(weather)
+                    }
                 }
             }
         }
