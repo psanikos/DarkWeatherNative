@@ -82,7 +82,7 @@ fun UVView(model: WeatherViewModel) {
 Row(modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween,verticalAlignment = Alignment.CenterVertically) {
 
 
-    Text("UV Radiation", style =  MaterialTheme.typography.h4)
+    Text(stringResource(R.string.uv), style =  MaterialTheme.typography.h4)
 
     Text(
         name,

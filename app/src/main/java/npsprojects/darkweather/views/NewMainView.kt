@@ -103,6 +103,7 @@ fun NewMainView(model: WeatherViewModel, controller: NavController) {
                 state = rememberSwipeRefreshState(isRefreshing),
                 onRefresh = { model.initActions() },
             ) {
+                val color =   getWeatherColor(if (model.locations.size > 0) model.locations[index].data.current.weather[0].icon else "01d")
                 Box(
                     modifier = Modifier
                         .navigationBarsPadding(bottom = true)
@@ -110,7 +111,8 @@ fun NewMainView(model: WeatherViewModel, controller: NavController) {
                         .background(
                             brush = Brush.linearGradient(
                                 colors = listOf(
-                                    getWeatherColor(if (model.locations.size > 0) model.locations[index].data.current.weather[0].icon else "01d"),
+                                    color,
+                                    color,
                                     MaterialTheme.colors.background,
                                     MaterialTheme.colors.background,
                                     MaterialTheme.colors.background
@@ -212,7 +214,7 @@ fun NewMainView(model: WeatherViewModel, controller: NavController) {
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Text("Today", style = MaterialTheme.typography.h4)
+                                    Text(stringResource(id = R.string.today), style = MaterialTheme.typography.h4)
                                     DayDetailsView(model = model)
                                 }
                                 Divider(modifier = Modifier.fillMaxWidth())
@@ -237,7 +239,7 @@ fun NewMainView(model: WeatherViewModel, controller: NavController) {
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    Text("This Week", style = MaterialTheme.typography.h4)
+                                    Text(stringResource(id = R.string.weekly), style = MaterialTheme.typography.h4)
                                 }
                                 Divider(modifier = Modifier.fillMaxWidth())
                                 WeekView(model = model)

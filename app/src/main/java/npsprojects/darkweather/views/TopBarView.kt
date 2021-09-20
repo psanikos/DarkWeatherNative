@@ -21,6 +21,7 @@ import compose.icons.feathericons.Heart
 import compose.icons.feathericons.Menu
 import kotlinx.coroutines.launch
 import npsprojects.darkweather.R
+import npsprojects.darkweather.ago
 import npsprojects.darkweather.models.SavedLocation
 import npsprojects.darkweather.models.WeatherViewModel
 import npsprojects.darkweather.round
@@ -99,7 +100,7 @@ fun TopBarView(model: WeatherViewModel, controller: NavController){
             }
 
             Text(if(model.locations.isEmpty()) "No data" else
-                Date.from(Instant.ofEpochSecond(model.locations[model.index.value!!].data.current.dt)).timeAgo(),
+                Date.from(Instant.ofEpochSecond(model.locations[model.index.value!!].data.current.dt)).ago(),
                 style =  MaterialTheme.typography.body2.copy(color = MaterialTheme.colors.primary.copy(alpha = 0.7f)),modifier = Modifier.padding(start = 5.dp))
         }
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp),verticalAlignment = Alignment.CenterVertically) {
@@ -191,7 +192,7 @@ fun TopBarView(model: WeatherViewModel, controller: NavController){
     }
 }
 @Composable
-fun CompactTopBarView(model: WeatherViewModel, controller: NavController,onAdd:()->Unit){
+fun CompactTopBarView(model: WeatherViewModel, controller: NavController){
 
     var dropExtended by remember {
         mutableStateOf(false)

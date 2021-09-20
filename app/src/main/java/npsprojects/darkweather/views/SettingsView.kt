@@ -46,7 +46,7 @@ fun SettingsView(model: WeatherViewModel, controller: NavController) {
       //  backgroundColor = if(isSystemInDarkTheme()) Color(0xFF303030) else Color(0xFFf0f0f7),
          topBar = {
             TopAppBar(title = {
-                Text("Settings",style = MaterialTheme.typography.h2)
+                Text(stringResource(R.string.settings),style = MaterialTheme.typography.h2)
             },navigationIcon = {
                 IconButton(onClick = {
                     controller.popBackStack()

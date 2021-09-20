@@ -229,7 +229,7 @@ fun FullSearchView(model: WeatherViewModel,controller: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(title = {
-                Text("Add new place", style = MaterialTheme.typography.h2)
+                Text(stringResource(R.string.add_location), style = MaterialTheme.typography.h2)
             },
                 navigationIcon = {
                     IconButton(onClick = {
@@ -298,7 +298,7 @@ fun FullSearchView(model: WeatherViewModel,controller: NavController) {
 
                 if (searchTerm == "") {
                     Text(
-                        text = "Search",
+                        text = stringResource(R.string.searchText),
                         style = MaterialTheme.typography.body2.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black),
                         modifier = Modifier.padding(start = 30.dp)
                     )

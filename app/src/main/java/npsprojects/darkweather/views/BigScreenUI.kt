@@ -53,6 +53,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
 import coil.annotation.ExperimentalCoilApi
+import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import kotlinx.coroutines.delay
@@ -102,269 +103,318 @@ fun NewMapViewBig(model: WeatherViewModel, controller: NavController) {
 
     Scaffold(
 
-        topBar = {
-            CompactTopBarView(model = model, controller = controller,onAdd = {
-
-            })
-        },
 
     ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-    ) {
-        Box(
-            modifier = Modifier.fillMaxHeight()
-                .fillMaxWidth(0.5f)
-        ) {
-            SwipeRefresh(
-                state = rememberSwipeRefreshState(isRefreshing),
-                onRefresh = { model.initActions() },
+        Box(contentAlignment = Alignment.TopCenter) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
             ) {
-                LazyColumn(
-                    Modifier
-                        .fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(30.dp)
+                Box(
+                    modifier = Modifier.padding(top = 60.dp).navigationBarsPadding().fillMaxHeight()
+                        .fillMaxWidth(0.5f)
                 ) {
-                    item {
-                        MainCard(model = model)
-                    }
-                    if (!model.locations.isEmpty() && !model.locations[index].data.alerts.isNullOrEmpty()) {
-                        model.locations[index].data.alerts?.let {
-                            if (it.isNotEmpty()) {
-                                item {
-                                    Box(
-                                        modifier = Modifier
-                                            .padding(10.dp)
-                                            .fillMaxWidth()
-                                            .wrapContentHeight()
-                                            .background(
-                                                color = Color.Yellow.copy(alpha = 0.15f),
-                                                shape = RoundedCornerShape(6)
-                                            )
-                                            .padding(10.dp)
-                                    ) {
-                                        Column(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            horizontalAlignment = Alignment.CenterHorizontally,
-                                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                                        ) {
-                                            Icon(
-                                                Icons.Filled.Warning,
-                                                contentDescription = "",
-                                                tint = Color.Red,
-                                                modifier = Modifier.size(40.dp)
-                                            )
-                                            Text(
-                                                it[0].event ?: "Alert",
-                                                style = MaterialTheme.typography.h3.copy(fontSize = 14.sp)
-                                            )
-                                            Text(
-                                                it[0].description ?: "",
-                                                style = MaterialTheme.typography.body2,
-                                                maxLines = 3
-                                            )
-                                            Row(
-                                                horizontalArrangement = Arrangement.spacedBy(10.dp),
-                                                verticalAlignment = Alignment.CenterVertically
+                    SwipeRefresh(
+                        state = rememberSwipeRefreshState(isRefreshing),
+                        onRefresh = { model.initActions() },
+                    ) {
+                        LazyColumn(
+                            Modifier
+                                .padding(15.dp)
+                                .fillMaxSize(),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(40.dp)
+                        ) {
+                            item {
+                                MainCard(model = model)
+                            }
+                            if (!model.locations.isEmpty() && !model.locations[index].data.alerts.isNullOrEmpty()) {
+                                model.locations[index].data.alerts?.let {
+                                    if (it.isNotEmpty()) {
+                                        item {
+                                            Box(
+                                                modifier = Modifier
+                                                    .padding(10.dp)
+                                                    .fillMaxWidth()
+                                                    .wrapContentHeight()
+                                                    .background(
+                                                        color = Color.Yellow.copy(alpha = 0.15f),
+                                                        shape = RoundedCornerShape(6)
+                                                    )
+                                                    .padding(10.dp)
                                             ) {
-                                                Icon(Icons.Default.Timer, contentDescription = "")
-                                                Text(
-                                                    "From ${
-                                                        DateTimeFormatter.ofPattern("EEEE dd")
-                                                            .format(
-                                                                LocalDateTime.ofInstant(
-                                                                    Instant.ofEpochMilli((1000 * it[0].start).toLong()),
-                                                                    ZoneId.systemDefault()
-                                                                )
-                                                            )
-                                                    }" + if (it[0].end != null) " until ${
-                                                        DateTimeFormatter.ofPattern("EEEE dd")
-                                                            .format(
-                                                                LocalDateTime.ofInstant(
-                                                                    Instant.ofEpochMilli((1000 * it[0].end!!).toLong()),
-                                                                    ZoneId.systemDefault()
-                                                                )
-                                                            )
-                                                    }" else "",
-                                                    style = MaterialTheme.typography.body2
-                                                )
+                                                Column(
+                                                    modifier = Modifier.fillMaxWidth(),
+                                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                                                ) {
+                                                    Icon(
+                                                        Icons.Filled.Warning,
+                                                        contentDescription = "",
+                                                        tint = Color.Red,
+                                                        modifier = Modifier.size(40.dp)
+                                                    )
+                                                    Text(
+                                                        it[0].event ?: "Alert",
+                                                        style = MaterialTheme.typography.h3.copy(
+                                                            fontSize = 14.sp
+                                                        )
+                                                    )
+                                                    Text(
+                                                        it[0].description ?: "",
+                                                        style = MaterialTheme.typography.body2,
+                                                        maxLines = 3
+                                                    )
+                                                    Row(
+                                                        horizontalArrangement = Arrangement.spacedBy(
+                                                            10.dp
+                                                        ),
+                                                        verticalAlignment = Alignment.CenterVertically
+                                                    ) {
+                                                        Icon(
+                                                            Icons.Default.Timer,
+                                                            contentDescription = ""
+                                                        )
+                                                        Text(
+                                                            "From ${
+                                                                DateTimeFormatter.ofPattern("EEEE dd")
+                                                                    .format(
+                                                                        LocalDateTime.ofInstant(
+                                                                            Instant.ofEpochMilli((1000 * it[0].start).toLong()),
+                                                                            ZoneId.systemDefault()
+                                                                        )
+                                                                    )
+                                                            }" + if (it[0].end != null) " until ${
+                                                                DateTimeFormatter.ofPattern("EEEE dd")
+                                                                    .format(
+                                                                        LocalDateTime.ofInstant(
+                                                                            Instant.ofEpochMilli((1000 * it[0].end!!).toLong()),
+                                                                            ZoneId.systemDefault()
+                                                                        )
+                                                                    )
+                                                            }" else "",
+                                                            style = MaterialTheme.typography.body2
+                                                        )
+                                                    }
+                                                }
                                             }
                                         }
                                     }
                                 }
                             }
+                            item {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxSize(),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.spacedBy(20.dp)
+                                ) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(stringResource(id = R.string.today), style = MaterialTheme.typography.h4)
+                                        DayDetailsView(model = model)
+                                    }
+                                    Divider(modifier = Modifier.fillMaxWidth())
+                                    HourlyView(model = model)
+                                }
+                            }
+
+                            item {
+                                UVView(model = model)
+                            }
+
+
+                            item {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxSize(),
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    verticalArrangement = Arrangement.spacedBy(20.dp)
+                                ) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(stringResource(id = R.string.weekly), style = MaterialTheme.typography.h4)
+                                    }
+                                    Divider(modifier = Modifier.fillMaxWidth())
+                                    WeekView(model = model)
+                                }
+                            }
+
+                            item {
+                                AirQualityView(model = model)
+                            }
+
+                            item {
+                                Spacer(modifier = Modifier.height(60.dp))
+                            }
                         }
                     }
-                    item {
-                        HourlyView(model = model)
-                    }
-
-                    item {
-                        UVView(model = model)
-                    }
-
-
-                    item {
-                        WeekView(model = model)
-                    }
-
-                    item {
-                        AirQualityView(model = model)
-                    }
-                    item {
-                        DayDetailsView(model = model)
-                    }
-                    item {
-                        Spacer(modifier = Modifier.height(60.dp))
-                    }
                 }
-            }
-        }
 
-        Box(
-            modifier = Modifier.padding(bottom = (0.5*bottomPadding).dp).fillMaxHeight()
-                .fillMaxWidth().clip(RoundedCornerShape(6)), contentAlignment = Alignment.BottomEnd
-        ) {
-
-
-            MapViewContainer(
-                map = map,
-                latitude = coordinates.latitude,
-                longitude = coordinates.longitude,
-                mapType = mapType,
-                model = model
-            )
-            Column(
-
-                verticalArrangement = Arrangement.spacedBy(10.dp),
-                modifier = Modifier.padding(horizontal = 10.dp, vertical = bottomPadding.dp)
-            ) {
-                Button(
-                    onClick = {
-
-                        mapType = "clouds_new"
-
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        contentColor = Color.DarkGray,
-                        backgroundColor = if (mapType == "clouds_new") Color(0xFFFFFDD0) else Color.White
-                    ),
-                    contentPadding = PaddingValues(10.dp),
-                    shape = CircleShape,
-                    modifier = Modifier
-                        .width(50.dp)
-                        .height(50.dp),
-
-                    elevation = ButtonDefaults.elevation(
-                        defaultElevation = 2.dp,
-                        pressedElevation = 4.dp,
-                        disabledElevation = 2.dp
-                    )
+                Box(
+                    modifier = Modifier.navigationBarsPadding().fillMaxHeight()
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.BottomEnd
                 ) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Icon(
-                            Icons.Filled.Cloud,
-                            contentDescription = null,
-                            modifier = Modifier.size(20.dp)
-                        )
 
-                    }
-                }
 
-                Button(
-                    onClick = {
-                        mapType = "precipitation_new"
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        contentColor = Color.DarkGray,
-                        backgroundColor = if (mapType == "precipitation_new") Color(0xFFFFFDD0) else Color.White
-                    ),
-                    contentPadding = PaddingValues(10.dp),
-                    shape = CircleShape,
-                    modifier = Modifier
-                        .width(50.dp)
-                        .height(50.dp),
-                    elevation = ButtonDefaults.elevation(
-                        defaultElevation = 2.dp,
-                        pressedElevation = 4.dp,
-                        disabledElevation = 2.dp
-                    ),
+                    MapViewContainer(
+                        map = map,
+                        latitude = coordinates.latitude,
+                        longitude = coordinates.longitude,
+                        mapType = mapType,
+                        model = model
+                    )
+                    Column(
 
+                        verticalArrangement = Arrangement.spacedBy(10.dp),
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = bottomPadding.dp)
                     ) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Icon(
-                            Icons.Filled.Opacity,
-                            contentDescription = null,
-                            modifier = Modifier.size(20.dp)
-                        )
+                        Button(
+                            onClick = {
+
+                                mapType = "clouds_new"
+
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                contentColor = Color.DarkGray,
+                                backgroundColor = if (mapType == "clouds_new") Color(0xFFFFFDD0) else Color.White
+                            ),
+                            contentPadding = PaddingValues(10.dp),
+                            shape = CircleShape,
+                            modifier = Modifier
+                                .width(50.dp)
+                                .height(50.dp),
+
+                            elevation = ButtonDefaults.elevation(
+                                defaultElevation = 2.dp,
+                                pressedElevation = 4.dp,
+                                disabledElevation = 2.dp
+                            )
+                        ) {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    Icons.Filled.Cloud,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(20.dp)
+                                )
+
+                            }
+                        }
+
+                        Button(
+                            onClick = {
+                                mapType = "precipitation_new"
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                contentColor = Color.DarkGray,
+                                backgroundColor = if (mapType == "precipitation_new") Color(
+                                    0xFFFFFDD0
+                                ) else Color.White
+                            ),
+                            contentPadding = PaddingValues(10.dp),
+                            shape = CircleShape,
+                            modifier = Modifier
+                                .width(50.dp)
+                                .height(50.dp),
+                            elevation = ButtonDefaults.elevation(
+                                defaultElevation = 2.dp,
+                                pressedElevation = 4.dp,
+                                disabledElevation = 2.dp
+                            ),
+
+                            ) {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    Icons.Filled.Opacity,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+
+                        }
+                        Button(
+                            onClick = {
+                                mapType = "temp_new"
+
+
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                contentColor = Color.DarkGray,
+                                backgroundColor = if (mapType == "temp_new") Color(0xFFFFFDD0) else Color.White
+                            ),
+                            contentPadding = PaddingValues(10.dp),
+                            shape = CircleShape,
+                            modifier = Modifier
+                                .width(50.dp)
+                                .height(50.dp),
+                            elevation = ButtonDefaults.elevation(
+                                defaultElevation = 2.dp,
+                                pressedElevation = 4.dp,
+                                disabledElevation = 2.dp
+                            )
+                        ) {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    Icons.Filled.Thermostat,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(20.dp)
+                                )
+
+                            }
+                        }
+                        Button(
+                            onClick = {
+                                mapType = "wind_new"
+                            },
+                            colors = ButtonDefaults.buttonColors(
+                                contentColor = Color.DarkGray,
+                                backgroundColor = if (mapType == "wind_new") Color(0xFFFFFDD0) else Color.White
+                            ),
+                            contentPadding = PaddingValues(10.dp),
+                            shape = CircleShape,
+                            modifier = Modifier
+                                .width(50.dp)
+                                .height(50.dp),
+                            elevation = ButtonDefaults.elevation(
+                                defaultElevation = 2.dp,
+                                pressedElevation = 4.dp,
+                                disabledElevation = 2.dp
+                            )
+                        ) {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    Icons.Filled.Air,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+                        }
                     }
-
                 }
-                Button(
-                    onClick = {
-                        mapType = "temp_new"
 
-
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        contentColor = Color.DarkGray,
-                        backgroundColor = if (mapType == "temp_new") Color(0xFFFFFDD0) else Color.White
-                    ),
-                    contentPadding = PaddingValues(10.dp),
-                    shape = CircleShape,
-                    modifier = Modifier
-                        .width(50.dp)
-                        .height(50.dp),
-                    elevation = ButtonDefaults.elevation(
-                        defaultElevation = 2.dp,
-                        pressedElevation = 4.dp,
-                        disabledElevation = 2.dp
-                    )
-                ) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Icon(
-                            Icons.Filled.Thermostat,
-                            contentDescription = null,
-                            modifier = Modifier.size(20.dp)
-                        )
-
-                    }
-                }
-                Button(
-                    onClick = {
-                        mapType = "wind_new"
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        contentColor = Color.DarkGray,
-                        backgroundColor = if (mapType == "wind_new") Color(0xFFFFFDD0) else Color.White
-                    ),
-                    contentPadding = PaddingValues(10.dp),
-                    shape = CircleShape,
-                    modifier = Modifier
-                        .width(50.dp)
-                        .height(50.dp),
-                    elevation = ButtonDefaults.elevation(
-                        defaultElevation = 2.dp,
-                        pressedElevation = 4.dp,
-                        disabledElevation = 2.dp
-                    )
-                ) {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Icon(
-                            Icons.Filled.Air,
-                            contentDescription = null,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-                }
             }
+            CompactTopBarView(model = model, controller = controller)
         }
-
     }
-
-}
 
 }
 

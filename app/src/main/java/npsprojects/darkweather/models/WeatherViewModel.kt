@@ -39,6 +39,11 @@ import npsprojects.darkweather.MyApp.context
 import npsprojects.darkweather.services.DataFetcher
 import npsprojects.darkweather.services.LocationHelper
 
+
+enum class Lang {
+    EN,EL,FR
+}
+
 class WeatherViewModel : ViewModel() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private val locator = LocationHelper()
@@ -53,6 +58,7 @@ class WeatherViewModel : ViewModel() {
     private val _index =  MutableLiveData(0)
     val index:LiveData<Int> = _index
     private fun airApiCallString(lat:Double, lon:Double):String = "https://api.openweathermap.org/data/2.5/air_pollution?lat=$lat&lon=$lon&appid=$openWeatherKey"
+    private var lang by mutableStateOf(Lang.EN)
 
     fun indexChange(value:Int){
         _index.value = value
@@ -67,14 +73,23 @@ class WeatherViewModel : ViewModel() {
         initActions()
     }
 
-
+fun getLang(){
+    val locale = Locale.getDefault().displayLanguage
+    lang = when(locale.lowercase()){
+        "french" -> Lang.FR
+        "greek" -> Lang.EL
+        else -> Lang.EN
+    }
+}
 
     fun initActions(){
         loading.value = true
         isInit()
+        getLang()
         getDataFromUserDefaults()
         indexChange(0)
         locations.clear()
+
         getUserLocationData {
              getSavedLocationsData(){
                 viewModelScope.launch {
@@ -504,8 +519,9 @@ class WeatherViewModel : ViewModel() {
             if (units == WeatherUnits.AUTO) "auto" else if (units == WeatherUnits.SI) "si" else "us"
             val locale = context.resources.configuration.locales
             val language: String = if(locale.isEmpty) "en" else locale[0].language
+        println("LAN " + language)
             val searchLanguage = if (language == "el")  "el" else if (language == "fr") "fr" else "en"
-            DataFetcher.getFromUrl(url = getOpenWeatherUrl(location,units)) { it ->
+            DataFetcher.getFromUrl(url = getOpenWeatherUrl(location,units,searchLanguage)) { it ->
                 if (it != null) {
                     println("DATAAA $it")
                     val gson = Gson()

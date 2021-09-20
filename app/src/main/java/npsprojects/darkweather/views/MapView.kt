@@ -88,7 +88,7 @@ fun CustomMapView(model: WeatherViewModel,controller:NavController) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text("Weather map", style =  MaterialTheme.typography.h4)
+            Text(stringResource(id = R.string.map), style =  MaterialTheme.typography.h4)
             Button(
                 onClick = {
                     controller.navigate("Map")

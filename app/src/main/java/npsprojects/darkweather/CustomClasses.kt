@@ -1,6 +1,7 @@
 package npsprojects.darkweather
 
 import android.annotation.SuppressLint
+import android.text.format.DateUtils
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -9,12 +10,16 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.TileOverlay
 import npsprojects.darkweather.views.InitialZoom
 import npsprojects.darkweather.views.rememberMapViewWithLifecycle
 import java.io.IOException
+import java.text.ParseException
 import java.text.SimpleDateFormat
+import java.time.Instant
+import java.time.ZoneId
 import java.util.*
 
 const val openWeatherKey = "e1e45feaea76d66517c25291f2633d9a"
@@ -109,6 +114,34 @@ fun getWeatherBackground(input: String): Int {
 //        else -> R.drawable.sun
 //    }
 //}
+fun moonIcon(input:Double):Int{
+
+    return when(input){
+        0.0 -> R.drawable.moon0
+        in 0.01 .. 0.17 -> R.drawable.moon1
+        in 0.18 .. 0.34 -> R.drawable.moon2
+        in 0.35 .. 0.49 -> R.drawable.moon3
+        0.5 -> R.drawable.moon4
+        in 0.51 .. 0.67 -> R.drawable.moon5
+        in 0.68 .. 0.84 -> R.drawable.moon6
+        in 0.85 .. 0.99 -> R.drawable.moon7
+        1.0 -> R.drawable.moon0
+        else -> R.drawable.moon0
+    }
+
+}
+fun moonDecription(input:Double):Int{
+
+    return when(input){
+        0.0 ->  R.string.new_moon
+        in 0.01 .. 0.49 -> R.string.waxing
+        0.5 -> R.string.full_moon
+        in 0.51 .. 0.99 -> R.string.waning
+        1.0 -> R.string.new_moon
+        else -> R.string.new_moon
+    }
+
+}
 fun getWeatherIcon(input: String): Int {
 
     return when (input) {
@@ -170,7 +203,20 @@ fun Date.timeAgo():String {
     }
     return conversionTime
 }
-
+fun Date.ago():String {
+    val dateString = SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.getDefault()).format(this)
+    val sdf = SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.getDefault())
+    // sdf.timeZone = TimeZone.getDefault()
+    return try {
+        val time = this.toInstant().atZone(ZoneId.systemDefault()).toEpochSecond()*1000
+        val now = Instant.now().toEpochMilli()
+        val ago = DateUtils.getRelativeTimeSpanString(time, now, DateUtils.MINUTE_IN_MILLIS)
+        ago.toString()
+    } catch (e: ParseException) {
+        e.printStackTrace()
+        ""
+    }
+}
 
 @Composable
 fun OverlayView(showOverlay:Boolean,color: Color,body:@Composable () -> Unit){

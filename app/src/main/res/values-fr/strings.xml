@@ -2,13 +2,14 @@
 <resources>
     <string name="app_name">DarkWeather</string>
     <string name="searchText">Rechercher</string>
+    <string name="add_location">Rechercher</string>
     <string name="clouds">Nuages</string>
     <string name="rain">Pluie</string>
     <string name="Temperature">Température</string>
     <string name="Wind">Vent</string>
     <string name="Feels">Feels comme</string>
     <string name="AirQ">Qualité de l\'air</string>
-    <string name="SettingsTitle">Paramètres</string>
+    <string name="settings">Paramètres</string>
     <string name="Units">Unités</string>
     <string name="Auto">Auto</string>
     <string name="Good">Bien</string>
@@ -42,6 +43,12 @@
     <string name="LocationDenied">Aucun accès à la localisation n\'est fourni, si vous souhaitez voir votre position actuelle, appuyez sur pour autoriser l\'accès.</string>
     <string name="hourly">à l\'heure</string>
     <string name="weekly">Par semaine</string>
+    <string name="today">Aujourd\'hui</string>
     <string name="uv">Le rayonnement UV</string>
     <string name="map">Carte météorologique</string>
+    <string name="new_moon">Nouvelle lune</string>
+    <string name="full_moon">Pleine lune</string>
+    <string name="waning">Déclin</string>
+    <string name="waxing">Lune croissante</string>
+    <string name="ago"> Avant</string>
 </resources>

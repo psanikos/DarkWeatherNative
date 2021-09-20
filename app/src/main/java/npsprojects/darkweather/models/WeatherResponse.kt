@@ -14,9 +14,9 @@ import npsprojects.darkweather.round
 import java.util.*
 
 
-fun getOpenWeatherUrl(locale:Coordinates,units:WeatherUnits):String{
+fun getOpenWeatherUrl(locale:Coordinates,units:WeatherUnits,lang:String):String{
     val unit =  if(units == WeatherUnits.SI)  "metric" else "imperial"
-   return "https://api.openweathermap.org/data/2.5/onecall?lat=${locale.latitude}&lon=${locale.longitude}&exclude=minutely&units=${unit}&appid=e1e45feaea76d66517c25291f2633d9a"
+   return "https://api.openweathermap.org/data/2.5/onecall?lat=${locale.latitude}&lon=${locale.longitude}&exclude=minutely&units=${unit}&lang=$lang&appid=e1e45feaea76d66517c25291f2633d9a"
 }
 
 

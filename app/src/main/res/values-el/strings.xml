@@ -8,7 +8,8 @@
     <string name="Wind">Αέρας</string>
     <string name="Feels">Αισθητή</string>
     <string name="AirQ">Ποιότητα αέρα</string>
-    <string name="SettingsTitle">Ρυθμίσεις</string>
+    <string name="settings">Ρυθμίσεις</string>
+    <string name="add_location">Αναζήτηση</string>
     <string name="Units">Μονάδες</string>
     <string name="Auto">Αυτόματο</string>
     <string name="Good">Καλή</string>
@@ -41,8 +42,14 @@
     <string name="AllowAccess">Αποδοχή πρόσβασης</string>
     <string name="LocationDenied">Δεν υπάρχει πρόσβαση στην τοποθεσία σας. Πατήστε για να επιτρέψετε</string>
     <string name="hourly">Ανα ώρα</string>
+    <string name="today">Σήμερα</string>
     <string name="weekly">Ανα εβδομάδα</string>
     <string name="uv">Ηλιακή ακτινοβολιά</string>
-    <string name="map">Χάρτες καιρού</string>
+    <string name="map">Χάρτης καιρού</string>
+    <string name="new_moon">Νεα σελήνη</string>
+    <string name="full_moon">Πανσέληνος</string>
+    <string name="waning">Εξασθενίζοντας</string>
+    <string name="waxing">Κηρώνοντας</string>
+    <string name="ago"> Πριν</string>
 
 </resources>
