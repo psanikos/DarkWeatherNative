@@ -3,6 +3,7 @@ package npsprojects.darkweather.views
 import android.widget.ProgressBar
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.GenericShape
@@ -56,7 +57,7 @@ val TriangleShape = GenericShape { size, _ ->
 @Composable
 fun AirQualityView(model:WeatherViewModel) {
     val index: Int by model.index.observeAsState(initial = 0)
-    var aqi by  rememberSaveable {
+    var aqi by rememberSaveable {
         mutableStateOf(1)
     }
     LaunchedEffect(key1 = index + model.locations.size, block = {
@@ -90,51 +91,70 @@ fun AirQualityView(model:WeatherViewModel) {
 
     val configuration = LocalConfiguration.current
     val isLarge = configuration.smallestScreenWidthDp > 400
-    val pointWidth = with(LocalDensity.current){configuration.smallestScreenWidthDp/(if(isLarge) 10 else 5) - configuration.smallestScreenWidthDp/(if(isLarge) 20 else 10)}
+    val pointWidth =
+        with(LocalDensity.current) { configuration.smallestScreenWidthDp / (if (isLarge) 10 else 5) - configuration.smallestScreenWidthDp / (if (isLarge) 20 else 10) }
     var toAnimate by rememberSaveable {
         mutableStateOf(false)
     }
-    val value = animateDpAsState(targetValue = if(toAnimate) (aqi*pointWidth).dp else 0.dp,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy))
+    val value = animateDpAsState(
+        targetValue = if (toAnimate) (aqi * pointWidth).dp else 0.dp,
+        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy)
+    )
 
     LaunchedEffect(key1 = index + model.locations.size, block = {
-       toAnimate = false
-       delay(600)
+        toAnimate = false
+        delay(600)
         toAnimate = true
-    } )
+    })
 
-    if (model.locations.size  > 0 && model.locations[index].airQuality != null) {
+    if (model.locations.size > 0 && model.locations[index].airQuality != null) {
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
-                ,
+            ,
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.spacedBy(10.dp)
+        ) {
+        Text(stringResource(R.string.AirQ), style = MaterialTheme.typography.h4)
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .border(
+                    width = 2.dp,
+                    color = MaterialTheme.colors.secondary,
+                    shape = RoundedCornerShape(12.dp)
+                )
+                .padding(15.dp),
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
-            Row(modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween,verticalAlignment = Alignment.CenterVertically) {
-
-                Text(stringResource(R.string.AirQ), style = MaterialTheme.typography.h4)
-
-
-
-
-
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Text(
                     name,
-                    style = MaterialTheme.typography.h4,
+                    style = MaterialTheme.typography.h4.copy(fontWeight = FontWeight.SemiBold),
 
-                )
+                    )
             }
             Box() {
                 Row(
                     modifier = Modifier
                         .height(16.dp)
                         .fillMaxWidth()
-                        .background(brush = Brush.linearGradient(colors = listOf(
-                            green_500, yellow_500, orange_500, pink_500, red_500
-                        )),
-                           shape= RoundedCornerShape(50))
+                        .background(
+                            brush = Brush.linearGradient(
+                                colors = listOf(
+                                    green_500, yellow_500, orange_500, pink_500, red_500
+                                )
+                            ),
+                            shape = RoundedCornerShape(50)
+                        )
 
                 ) {
 //                        LinearProgressIndicator(
@@ -150,22 +170,20 @@ fun AirQualityView(model:WeatherViewModel) {
                     Modifier
                         .offset(x = value.value, y = (-2).dp)
                         .size(18.dp)
-                        .background(color = blue_grey_500, shape = TriangleShape))
+                        .background(color = blue_grey_500, shape = TriangleShape)
+                )
             }
 
-                        Text(
-                            summary,
-                            style = MaterialTheme.typography.body2
+            Text(
+                summary,
+                style = MaterialTheme.typography.body2
 
-                        )
-
-
-
-
+            )
 
 
         }
     }
+}
 }
 
 //interface Shape {

@@ -185,9 +185,11 @@ fun HourlyView(model: WeatherViewModel) {
             data = model.locations[model.index.value!!].data.hourly
         }
     })
-    Column(modifier = Modifier.fillMaxWidth().wrapContentHeight(),
+    Column(modifier = Modifier.fillMaxWidth().wrapContentHeight()
+        .border(width = 2.dp,color = MaterialTheme.colors.secondary,shape = RoundedCornerShape(12.dp))
+        .padding(15.dp),
     horizontalAlignment = Alignment.Start,
-    verticalArrangement = Arrangement.spacedBy(20.dp)) {
+    verticalArrangement = Arrangement.spacedBy(5.dp)) {
         if(data.isNotEmpty()){
 //Text("Hourly",style = MaterialTheme.typography.h2.copy(fontSize = 14.sp,color = Color.Gray))
 
@@ -225,7 +227,7 @@ fun HourlyView(model: WeatherViewModel) {
                             modifier = Modifier
                                 .height(100.dp)
                                 .width(75.dp)
-                                .padding(end = 5.dp),
+                                ,
 
                             contentAlignment = Alignment.Center
 

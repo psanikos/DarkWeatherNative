@@ -65,6 +65,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalDensity
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
@@ -94,7 +95,9 @@ fun MainPageView(model: WeatherViewModel, controller: NavController) {
     var currentPage by remember { mutableStateOf("Main") }
 
     val configuration = LocalConfiguration.current
-    val deviceType = when(configuration.smallestScreenWidthDp > 480){
+    val deviceType = when(with(LocalDensity.current){
+        configuration.screenWidthDp > 420
+    }){
         true -> DeviceType.BIGSCREEN
         false -> DeviceType.PHONE
     }

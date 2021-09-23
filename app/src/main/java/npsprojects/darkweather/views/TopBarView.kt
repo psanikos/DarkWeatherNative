@@ -16,9 +16,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import compose.icons.FeatherIcons
-import compose.icons.feathericons.Heart
-import compose.icons.feathericons.Menu
+import compose.icons.AllIcons
+import compose.icons.FontAwesomeIcons
+import compose.icons.fontawesomeicons.Solid
+import compose.icons.fontawesomeicons.solid.*
 import kotlinx.coroutines.launch
 import npsprojects.darkweather.R
 import npsprojects.darkweather.ago
@@ -62,7 +63,7 @@ fun TopBarView(model: WeatherViewModel, controller: NavController){
                         modifier = Modifier.clickable(onClick = { dropExtended = !dropExtended  })
                     ) {
                         if (model.locations[model.index.value!!].isCurrent) {
-                            Icon(Icons.Default.LocationOn, contentDescription = "")
+                            Icon(FontAwesomeIcons.Solid.LocationArrow,modifier = Modifier.size(15.dp), contentDescription = "")
                         }
                         Text(
                             model.locations[model.index.value!!].name,
@@ -86,7 +87,7 @@ fun TopBarView(model: WeatherViewModel, controller: NavController){
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 if (item.isCurrent) {
-                                    Icon(Icons.Default.LocationOn, contentDescription = "")
+                                    Icon(FontAwesomeIcons.Solid.LocationArrow,modifier = Modifier.size(15.dp), contentDescription = "")
                                 }
                                 Text(
                                     item.name,
@@ -105,7 +106,7 @@ fun TopBarView(model: WeatherViewModel, controller: NavController){
         }
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp),verticalAlignment = Alignment.CenterVertically) {
             if(!model.locations.isEmpty()) {
-                if (model.myLocations.any { it.latitude.round(3) == model.locations[model.index.value!!].data.lat.round(3) && it.longitude.round(3) == model.locations[model.index.value!!].data.lon.round(3) }) {
+                if (model.myLocations.any { it.latitude.round(2) == model.locations[model.index.value!!].data.lat.round(2) && it.longitude.round(2) == model.locations[model.index.value!!].data.lon.round(2) }) {
                     if (!model.locations[model.index.value!!].isCurrent) {
                         Box(
                             modifier = Modifier
@@ -138,7 +139,7 @@ fun TopBarView(model: WeatherViewModel, controller: NavController){
                             modifier = Modifier
 
                                 .clickable {
-                                    if (!model.myLocations.any { it.latitude.round(3) == model.locations[model.index.value!!].data.lat.round(3) && it.longitude.round(3) == model.locations[model.index.value!!].data.lon.round(3) }) {
+                                    if (!model.myLocations.any { it.latitude.round(2) == model.locations[model.index.value!!].data.lat.round(2) && it.longitude.round(2) == model.locations[model.index.value!!].data.lon.round(2) }) {
                                         scope.launch {
                                             model.saveLocation(
                                                 SavedLocation(
@@ -172,8 +173,8 @@ fun TopBarView(model: WeatherViewModel, controller: NavController){
                 Box() {
 
                     Icon(
-                        Icons.Default.Search, contentDescription = "",
-                        modifier = Modifier.size(30.dp)
+                        FontAwesomeIcons.Solid.Search, contentDescription = "",
+                        modifier = Modifier.size(20.dp)
                     )
                 }
             }
@@ -183,8 +184,8 @@ fun TopBarView(model: WeatherViewModel, controller: NavController){
                 Box() {
 
                     Icon(
-                        FeatherIcons.Menu, contentDescription = "",
-                        modifier = Modifier.size(30.dp)
+                        FontAwesomeIcons.Solid.EllipsisV, contentDescription = "",
+                        modifier = Modifier.size(20.dp)
                     )
                 }
             }
@@ -222,7 +223,7 @@ fun CompactTopBarView(model: WeatherViewModel, controller: NavController){
                         modifier = Modifier.clickable(onClick = { dropExtended = !dropExtended  })
                     ) {
                         if (model.locations[model.index.value!!].isCurrent) {
-                            Icon(Icons.Default.LocationOn, contentDescription = "")
+                            Icon(FontAwesomeIcons.Solid.LocationArrow,modifier = Modifier.size(15.dp), contentDescription = "")
                         }
                         Text(
                             model.locations[model.index.value!!].name,
@@ -245,7 +246,7 @@ fun CompactTopBarView(model: WeatherViewModel, controller: NavController){
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 if (item.isCurrent) {
-                                    Icon(Icons.Default.LocationOn, contentDescription = "")
+                                    Icon(FontAwesomeIcons.Solid.LocationArrow,modifier = Modifier.size(15.dp), contentDescription = "")
                                 }
                                 Text(
                                     item.name,
@@ -264,16 +265,13 @@ fun CompactTopBarView(model: WeatherViewModel, controller: NavController){
         }
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp),verticalAlignment = Alignment.CenterVertically) {
             if(!model.locations.isEmpty()) {
-                if (model.myLocations.any { it.name == model.locations[model.index.value!!].name }) {
+                if (model.myLocations.any {  it.latitude.round(2) == model.locations[model.index.value!!].data.lat.round(2) && it.longitude.round(2) == model.locations[model.index.value!!].data.lon.round(2) }) {
                     if (!model.locations[model.index.value!!].isCurrent) {
                         Box(
                             modifier = Modifier
                                 .width(30.dp)
                                 .height(30.dp)
-                                .background(
-                                    color = red_700,
-                                    shape = CircleShape
-                                )
+
                                 .clickable {
                                     val oldIndex = model.index.value!!
                                     model.indexChange(0)
@@ -292,7 +290,8 @@ fun CompactTopBarView(model: WeatherViewModel, controller: NavController){
                                     }
                                 }, contentAlignment = Alignment.Center
                         ) {
-                            Icon(Icons.Default.Clear, contentDescription = "",tint = Color.White)
+                            Icon(Icons.Default.Favorite, contentDescription = "",tint = Color.Red,
+                                modifier = Modifier.size(30.dp))
                         }
                     }
                 } else {
@@ -301,12 +300,9 @@ fun CompactTopBarView(model: WeatherViewModel, controller: NavController){
                             modifier = Modifier
                                 .width(30.dp)
                                 .height(30.dp)
-                                .background(
-                                    color = teal_500,
-                                    shape = CircleShape
-                                )
+
                                 .clickable {
-                                    if (!model.myLocations.any { it.name == model.locations[model.index.value!!].name }) {
+                                    if (!model.myLocations.any {  it.latitude.round(2) == model.locations[model.index.value!!].data.lat.round(2) && it.longitude.round(2) == model.locations[model.index.value!!].data.lon.round(2) }) {
                                         scope.launch {
                                             model.saveLocation(
                                                 SavedLocation(
@@ -323,25 +319,38 @@ fun CompactTopBarView(model: WeatherViewModel, controller: NavController){
                                     }
                                 }, contentAlignment = Alignment.Center
                         ) {
-                            Icon(Icons.Default.PushPin, contentDescription = "",tint = Color.White)
+                            Icon(
+                                Icons.Default.FavoriteBorder,
+                                contentDescription = "",
+                                tint = Color.Gray,
+                                modifier = Modifier.size(30.dp)
+                            )
                         }
                     }
                 }
             }
 
             IconButton(onClick = {
-              controller.navigate("Search")
+                controller.navigate("Search")
             }) {
-                Icon(
-                    Icons.Default.Search, contentDescription = "",
-                    modifier = Modifier.size(30.dp))
+                Box() {
+
+                    Icon(
+                        FontAwesomeIcons.Solid.Search, contentDescription = "",
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
             }
             IconButton(onClick = {
                 controller.navigate("Settings")
             }) {
-                Icon(
-                    Icons.Default.Menu, contentDescription = "",
-                    modifier = Modifier.size(30.dp))
+                Box() {
+
+                    Icon(
+                        FontAwesomeIcons.Solid.EllipsisV, contentDescription = "",
+                        modifier = Modifier.size(20.dp)
+                    )
+                }
             }
         }
     }

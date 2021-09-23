@@ -4,6 +4,7 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
@@ -19,6 +20,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import kotlinx.coroutines.delay
@@ -74,41 +76,62 @@ fun UVView(model: WeatherViewModel) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .wrapContentHeight()
-                ,
+                .wrapContentHeight(),
             horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-Row(modifier = Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.SpaceBetween,verticalAlignment = Alignment.CenterVertically) {
-
-
-    Text(stringResource(R.string.uv), style =  MaterialTheme.typography.h4)
-
-    Text(
-        name,
-        style = MaterialTheme.typography.h4,
-
-    )
-}
-            Box() {
+            Text(stringResource(R.string.uv), style = MaterialTheme.typography.h4)
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .border(
+                        width = 2.dp,
+                        color = MaterialTheme.colors.secondary,
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                    .padding(15.dp),
+                horizontalAlignment = Alignment.Start,
+                verticalArrangement = Arrangement.spacedBy(20.dp)
+            ) {
                 Row(
-                    modifier = Modifier
-                        .height(16.dp)
-                        .fillMaxWidth()
-                        .background(brush = Brush.linearGradient(colors = listOf(
-                            green_500, yellow_500, orange_500, pink_500, red_500
-                        )),
-                            shape= RoundedCornerShape(50))
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
 
-                }
-                Box(
-                    Modifier
-                        .offset(x = value.value, y = (-2).dp)
-                        .size(18.dp)
-                        .background(color = blue_grey_500, shape = TriangleShape))
-            }
 
+                    Text(
+                        name,
+                        style = MaterialTheme.typography.h4.copy(fontWeight = FontWeight.SemiBold),
+
+                        )
+                }
+                Box() {
+                    Row(
+                        modifier = Modifier
+                            .height(16.dp)
+                            .fillMaxWidth()
+                            .background(
+                                brush = Brush.linearGradient(
+                                    colors = listOf(
+                                        green_500, yellow_500, orange_500, pink_500, red_500
+                                    )
+                                ),
+                                shape = RoundedCornerShape(50)
+                            )
+                    ) {
+
+                    }
+                    Box(
+                        Modifier
+                            .offset(x = value.value, y = (-2).dp)
+                            .size(18.dp)
+                            .background(color = blue_grey_500, shape = TriangleShape)
+                    )
+                }
+
+            }
         }
     }
 }

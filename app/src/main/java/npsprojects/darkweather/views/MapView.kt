@@ -81,7 +81,7 @@ fun CustomMapView(model: WeatherViewModel,controller:NavController) {
             .wrapContentHeight()
         ,
         horizontalAlignment = Alignment.Start,
-        verticalArrangement = Arrangement.spacedBy(15.dp)
+        verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -113,9 +113,9 @@ fun CustomMapView(model: WeatherViewModel,controller:NavController) {
             modifier = Modifier
                 .fillMaxWidth()
                 .height(220.dp)
-                .background(color = Color.DarkGray, shape = RoundedCornerShape(8))
-                .padding(8.dp)
-                .clip(RoundedCornerShape(6))
+                .background(color = MaterialTheme.colors.secondary, shape = RoundedCornerShape(14.dp))
+                .padding(4.dp)
+                .clip(RoundedCornerShape(12.dp))
         ) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
 
@@ -296,9 +296,9 @@ class CustomInfoWindowForGoogleMap(context: Context) : GoogleMap.InfoWindowAdapt
 }
 
 
-const val InitialZoom = 5f
-const val MinZoom = 2f
-const val MaxZoom = 8f
+const val InitialZoom = 4f
+const val MinZoom = 3f
+const val MaxZoom = 5f
 
 
 
@@ -382,6 +382,7 @@ fun MapViewContainer(
 //            )
                 it.animateCamera(CameraUpdateFactory.newLatLng(coordinates))
                 it.uiSettings.isScrollGesturesEnabled = false
+                it.uiSettings.isZoomGesturesEnabled = true
                 val tile = it.addTileOverlay(
                     TileOverlayOptions()
                         .tileProvider(tileProvider).fadeIn(true)
@@ -390,7 +391,7 @@ fun MapViewContainer(
 
                 tile?.let { overlay ->
                     overlay.transparency = 0.2f
-
+                    overlay.fadeIn = true
                     overlays.add(overlay)
                 }
                 overlays.forEachIndexed { index, item ->

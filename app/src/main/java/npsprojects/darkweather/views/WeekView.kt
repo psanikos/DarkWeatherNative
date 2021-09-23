@@ -1,6 +1,7 @@
 package npsprojects.darkweather.views
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -55,6 +56,8 @@ fun WeekView(model: WeatherViewModel){
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
+                .border(width = 2.dp,color = MaterialTheme.colors.secondary,shape = RoundedCornerShape(12.dp))
+                .padding(15.dp)
             ,
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.spacedBy(10.dp)
@@ -82,7 +85,7 @@ fun WeekViewItem(model:WeatherViewModel,day:Daily) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth(0.2f)
+            modifier = Modifier.width(60.dp)
         ) {
             Text(
                 SimpleDateFormat("EEE", Locale.getDefault()).format(
@@ -117,7 +120,7 @@ fun WeekViewItem(model:WeatherViewModel,day:Daily) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth(0.9f)
+            modifier = Modifier.padding(start = 10.dp).fillMaxWidth()
         ) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(5.dp),
@@ -150,7 +153,7 @@ fun WeekViewItem(model:WeatherViewModel,day:Daily) {
                     style = MaterialTheme.typography.body2
                 )
                 val width = 5 * (day.temp.max.toUInt() - day.temp.min.toUInt()).toDouble()
-                val boxWidth = if (width > 40.0) (if (width > 120.0) 120.0 else width) else 40.0
+                val boxWidth = if (width > 40.0) (if (width > 110.0) 110.0 else width) else 40.0
                 Box(
                     modifier = Modifier.height(16.dp).width(width = boxWidth.dp)
                         .background(
