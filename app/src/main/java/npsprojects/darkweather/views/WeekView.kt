@@ -17,6 +17,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -56,7 +57,8 @@ fun WeekView(model: WeatherViewModel){
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
-                .border(width = 2.dp,color = MaterialTheme.colors.secondary,shape = RoundedCornerShape(12.dp))
+                .clip(RoundedCornerShape(12.dp))
+                .frosted(isDark = isSystemInDarkTheme())
                 .padding(15.dp)
             ,
             horizontalAlignment = Alignment.Start,

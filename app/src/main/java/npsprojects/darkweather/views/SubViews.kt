@@ -22,6 +22,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.painter.Painter
@@ -185,9 +186,15 @@ fun HourlyView(model: WeatherViewModel) {
             data = model.locations[model.index.value!!].data.hourly
         }
     })
-    Column(modifier = Modifier.fillMaxWidth().wrapContentHeight()
-        .border(width = 2.dp,color = MaterialTheme.colors.secondary,shape = RoundedCornerShape(12.dp))
-        .padding(15.dp),
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .wrapContentHeight()
+        .clip(RoundedCornerShape(12.dp))
+        .frosted(isDark = isSystemInDarkTheme())
+        .padding(15.dp)
+
+
+       ,
     horizontalAlignment = Alignment.Start,
     verticalArrangement = Arrangement.spacedBy(5.dp)) {
         if(data.isNotEmpty()){

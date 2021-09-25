@@ -5,6 +5,7 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
@@ -85,11 +86,8 @@ fun UVView(model: WeatherViewModel) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .wrapContentHeight()
-                    .border(
-                        width = 2.dp,
-                        color = MaterialTheme.colors.secondary,
-                        shape = RoundedCornerShape(12.dp)
-                    )
+                    .clip(RoundedCornerShape(12.dp))
+                    .frosted(isDark = isSystemInDarkTheme())
                     .padding(15.dp),
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.spacedBy(20.dp)

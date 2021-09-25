@@ -9,7 +9,7 @@ import androidx.compose.ui.graphics.Color
 
 private val DarkColorPalette = darkColors(
     primary = Color.White,
-    background = Color(0xFF252525),
+    background = Color(0xFF303030),
     primaryVariant = Color.Black,
     secondary = Color.LightGray,
     onSurface = Color.White,
@@ -21,7 +21,7 @@ private val DarkColorPalette = darkColors(
 
 private val LightColorPalette = lightColors(
     primary = Color.Black,
-    background = Color(0xFFFEFEFE),
+    background = Color(0xFFEFEFEF),
     primaryVariant = Color.White,
     secondary = Color.DarkGray,
     onSurface = Color.Black,
