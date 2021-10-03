@@ -61,7 +61,7 @@ fun AirQualityView(model:WeatherViewModel) {
         mutableStateOf(1)
     }
     LaunchedEffect(key1 = index + model.locations.size, block = {
-        if (!model.locations.isEmpty() && (model.locations[index].airQuality != null)) {
+        if (  model.locations.isNotEmpty() && model.locations.size > index && (model.locations[index].airQuality != null)) {
             aqi = model.locations[index].airQuality!!.list!![0].main!!.aqi!!
 
         }
@@ -115,7 +115,7 @@ fun AirQualityView(model:WeatherViewModel) {
                 .wrapContentHeight()
             ,
             horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+            verticalArrangement = Arrangement.spacedBy(15.dp)
         ) {
         Text(stringResource(R.string.AirQ), style = MaterialTheme.typography.h4)
         Column(
@@ -124,7 +124,7 @@ fun AirQualityView(model:WeatherViewModel) {
                 .wrapContentHeight()
                 .clip(RoundedCornerShape(12.dp))
                 .frosted(isDark = isSystemInDarkTheme())
-                .padding(15.dp),
+                .padding(horizontal = 15.dp,vertical = 20.dp),
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {

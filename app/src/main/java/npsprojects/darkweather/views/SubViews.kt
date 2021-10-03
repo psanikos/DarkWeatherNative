@@ -182,8 +182,8 @@ fun HourlyView(model: WeatherViewModel) {
         mutableStateOf(listOf())
     }
     LaunchedEffect(key1 = index + model.locations.size, block = {
-        if (!model.locations.isEmpty()) {
-            data = model.locations[model.index.value!!].data.hourly
+        if (model.locations.isNotEmpty() && model.locations.size > index) {
+            data = model.locations[index].data.hourly
         }
     })
     Column(modifier = Modifier
@@ -191,10 +191,8 @@ fun HourlyView(model: WeatherViewModel) {
         .wrapContentHeight()
         .clip(RoundedCornerShape(12.dp))
         .frosted(isDark = isSystemInDarkTheme())
-        .padding(15.dp)
-
-
-       ,
+        .padding(horizontal = 15.dp,vertical = 20.dp)
+        ,
     horizontalAlignment = Alignment.Start,
     verticalArrangement = Arrangement.spacedBy(5.dp)) {
         if(data.isNotEmpty()){

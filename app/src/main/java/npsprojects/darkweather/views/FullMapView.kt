@@ -38,10 +38,10 @@ fun FullMapView(model: WeatherViewModel,controller:NavController) {
     var zoom by rememberSaveable(map) { mutableStateOf(InitialZoom) }
     val overlays: MutableList<TileOverlay> by rememberSaveable { mutableStateOf(ArrayList<TileOverlay>()) }
     LaunchedEffect(key1 = index + model.locations.size, block = {
-        if (model.locations.isNotEmpty()) {
+        if (model.locations.isNotEmpty() && model.locations.size > index) {
             coordinates = LatLng(
-                model.locations[model.index.value!!].data.lat,
-                model.locations[model.index.value!!].data.lon
+                model.locations[index].data.lat,
+                model.locations[index].data.lon
             )
         }
 
@@ -67,10 +67,17 @@ fun FullMapView(model: WeatherViewModel,controller:NavController) {
               backgroundColor = Color.Transparent,
               modifier = Modifier.height(120.dp),
               title = {
-                  Text(
-                      model.locations[model.index.value!!].name,
-                      style = MaterialTheme.typography.h3
-                  )
+                  if (model.locations.isNotEmpty() && model.locations.size > index) {
+                      Text(
+                          model.locations[index].name,
+                          style = MaterialTheme.typography.h3
+                      )
+                  }else {
+                      Text(
+                          "Map view",
+                          style = MaterialTheme.typography.h3
+                      )
+                  }
               }
           )
 
@@ -215,3 +222,4 @@ fun FullMapView(model: WeatherViewModel,controller:NavController) {
       }
   }
 }
+

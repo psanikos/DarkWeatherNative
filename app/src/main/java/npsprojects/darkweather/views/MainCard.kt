@@ -70,15 +70,15 @@ fun MainCard(model:WeatherViewModel) {
 val index:Int by  model.index.observeAsState(initial = 0)
 
     LaunchedEffect(key1 = index + model.locations.size, block ={
-        if(model.locations.size > 0){
-          icon = model.locations[model.index.value!!].data.current.weather[0].icon
-            temp = model.locations[model.index.value!!].data.current.temp.toUInt().toString() + "°"
-            tempHigh = model.locations[model.index.value!!].data.daily[0].temp.max.toUInt().toString() + "°"
-            tempLow = model.locations[model.index.value!!].data.daily[0].temp.min.toUInt().toString() + "°"
-            description = model.locations[model.index.value!!].data.current.weather[0].description
-            angle = model.locations[model.index.value!!].data.current.wind_deg.toFloat()
-            air = model.locations[model.index.value!!].data.current.wind_speed.round(1)
-            pop = (100*(model.locations[model.index.value!!].data.current.pop ?: 0.0)).toInt()
+        if (model.locations.isNotEmpty() && model.locations.size > index){
+          icon = model.locations[index].data.current.weather[0].icon
+            temp = model.locations[index].data.current.temp.toUInt().toString() + "°"
+            tempHigh = model.locations[index].data.daily[0].temp.max.toUInt().toString() + "°"
+            tempLow = model.locations[index].data.daily[0].temp.min.toUInt().toString() + "°"
+            description = model.locations[index].data.current.weather[0].description
+            angle = model.locations[index].data.current.wind_deg.toFloat()
+            air = model.locations[index].data.current.wind_speed.round(1)
+            pop = (100*(model.locations[index].data.current.pop ?: 0.0)).toInt()
         }
     })
         Column(

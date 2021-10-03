@@ -48,8 +48,8 @@ fun WeekView(model: WeatherViewModel){
     }
 
         LaunchedEffect(key1 = index + model.locations.size, block = {
-            if (!model.locations.isEmpty()) {
-                week = model.locations[model.index.value!!].data.daily
+            if (model.locations.isNotEmpty() && model.locations.size > index) {
+                week = model.locations[index].data.daily
             }
         })
     if(week.isNotEmpty()) {
@@ -59,10 +59,10 @@ fun WeekView(model: WeatherViewModel){
                 .wrapContentHeight()
                 .clip(RoundedCornerShape(12.dp))
                 .frosted(isDark = isSystemInDarkTheme())
-                .padding(15.dp)
+                .padding(horizontal = 15.dp,vertical = 20.dp)
             ,
             horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+            verticalArrangement = Arrangement.spacedBy(15.dp)
         ) {
 
       //      Text("Week", style = MaterialTheme.typography.h2.copy(fontSize = 14.sp,color = Color.Gray))

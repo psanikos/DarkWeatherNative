@@ -9,6 +9,7 @@ import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -39,6 +40,7 @@ fun TopBarView(model: WeatherViewModel, controller: NavController){
         mutableStateOf(false)
     }
     val scope = rememberCoroutineScope()
+    val index:Int by model.index.observeAsState(initial = 0)
     Row(modifier = Modifier
         .padding(top = 20.dp)
         .padding(horizontal = 20.dp)
@@ -54,7 +56,7 @@ fun TopBarView(model: WeatherViewModel, controller: NavController){
                 .fillMaxWidth(0.55f)) {
 
             Box() {
-                if (model.locations.isEmpty()) {
+                if (!(model.locations.isNotEmpty() && model.locations.size > index)) {
                     Text("N/A", style = MaterialTheme.typography.h4)
                 } else {
                     Row(
@@ -62,11 +64,11 @@ fun TopBarView(model: WeatherViewModel, controller: NavController){
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.clickable(onClick = { dropExtended = !dropExtended  })
                     ) {
-                        if (model.locations[model.index.value!!].isCurrent) {
+                        if (model.locations[index].isCurrent) {
                             Icon(FontAwesomeIcons.Solid.LocationArrow,modifier = Modifier.size(15.dp), contentDescription = "")
                         }
                         Text(
-                            model.locations[model.index.value!!].name,
+                            model.locations[index].name,
                             style = MaterialTheme.typography.h4
 
                         )
@@ -100,18 +102,18 @@ fun TopBarView(model: WeatherViewModel, controller: NavController){
                 }
             }
 
-            Text(if(model.locations.isEmpty()) "No data" else
-                Date.from(Instant.ofEpochSecond(model.locations[model.index.value!!].data.current.dt)).ago(),
+            Text(  if (!(model.locations.isNotEmpty() && model.locations.size > index)) "No data" else
+                Date.from(Instant.ofEpochSecond(model.locations[index].data.current.dt)).ago(),
                 style =  MaterialTheme.typography.body2.copy(color = MaterialTheme.colors.primary.copy(alpha = 0.7f)),modifier = Modifier.padding(start = 5.dp))
         }
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp),verticalAlignment = Alignment.CenterVertically) {
-            if(!model.locations.isEmpty()) {
-                if (model.myLocations.any { it.latitude.round(2) == model.locations[model.index.value!!].data.lat.round(2) && it.longitude.round(2) == model.locations[model.index.value!!].data.lon.round(2) }) {
-                    if (!model.locations[model.index.value!!].isCurrent) {
+            if (model.locations.isNotEmpty() && model.locations.size > index) {
+                if (model.myLocations.any { it.latitude.round(2) == model.locations[index].data.lat.round(2) && it.longitude.round(2) == model.locations[index].data.lon.round(2) }) {
+                    if (!model.locations[index].isCurrent) {
                         Box(
                             modifier = Modifier
                                 .clickable {
-                                    val oldIndex = model.index.value!!
+                                    val oldIndex = index
                                     model.indexChange(0)
                                     scope.launch {
                                         model.remove(
@@ -134,20 +136,20 @@ fun TopBarView(model: WeatherViewModel, controller: NavController){
                         }
                     }
                 } else {
-                    if (!model.locations[model.index.value!!].isCurrent) {
+                    if (!model.locations[index].isCurrent) {
                         Box(
                             modifier = Modifier
 
                                 .clickable {
-                                    if (!model.myLocations.any { it.latitude.round(2) == model.locations[model.index.value!!].data.lat.round(2) && it.longitude.round(2) == model.locations[model.index.value!!].data.lon.round(2) }) {
+                                    if (!model.myLocations.any { it.latitude.round(2) == model.locations[index].data.lat.round(2) && it.longitude.round(2) == model.locations[index].data.lon.round(2) }) {
                                         scope.launch {
                                             model.saveLocation(
                                                 SavedLocation(
-                                                    model.locations[model.index.value!!].name,
-                                                    model.locations[model.index.value!!].data.lat.round(
+                                                    model.locations[index].name,
+                                                    model.locations[index].data.lat.round(
                                                         2
                                                     ),
-                                                    model.locations[model.index.value!!].data.lon.round(
+                                                    model.locations[index].data.lon.round(
                                                         2
                                                     )
                                                 )
@@ -199,6 +201,7 @@ fun CompactTopBarView(model: WeatherViewModel, controller: NavController){
         mutableStateOf(false)
     }
     val scope = rememberCoroutineScope()
+    val index:Int by model.index.observeAsState(initial = 0)
     Row(modifier = Modifier
         .padding(top = 20.dp)
         .padding(horizontal = 20.dp)
@@ -222,11 +225,11 @@ fun CompactTopBarView(model: WeatherViewModel, controller: NavController){
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.clickable(onClick = { dropExtended = !dropExtended  })
                     ) {
-                        if (model.locations[model.index.value!!].isCurrent) {
+                        if (model.locations[index].isCurrent) {
                             Icon(FontAwesomeIcons.Solid.LocationArrow,modifier = Modifier.size(15.dp), contentDescription = "")
                         }
                         Text(
-                            model.locations[model.index.value!!].name,
+                            model.locations[index].name,
                             style = MaterialTheme.typography.h3
                         )
                     }
@@ -259,21 +262,21 @@ fun CompactTopBarView(model: WeatherViewModel, controller: NavController){
                 }
             }
 
-            Text(if(model.locations.isEmpty()) "No data" else
-                Date.from(Instant.ofEpochSecond(model.locations[model.index.value!!].data.current.dt)).timeAgo(),
+            Text(if(  !(model.locations.isNotEmpty() && model.locations.size > index)) "No data" else
+                Date.from(Instant.ofEpochSecond(model.locations[index].data.current.dt)).timeAgo(),
                 style =  MaterialTheme.typography.body2.copy(color = Color.Gray),modifier = Modifier.padding(start = 5.dp))
         }
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp),verticalAlignment = Alignment.CenterVertically) {
-            if(!model.locations.isEmpty()) {
-                if (model.myLocations.any {  it.latitude.round(2) == model.locations[model.index.value!!].data.lat.round(2) && it.longitude.round(2) == model.locations[model.index.value!!].data.lon.round(2) }) {
-                    if (!model.locations[model.index.value!!].isCurrent) {
+            if(model.locations.isNotEmpty() && model.locations.size > index) {
+                if (model.myLocations.any {  it.latitude.round(2) == model.locations[index].data.lat.round(2) && it.longitude.round(2) == model.locations[index].data.lon.round(2) }) {
+                    if (!model.locations[index].isCurrent) {
                         Box(
                             modifier = Modifier
                                 .width(30.dp)
                                 .height(30.dp)
 
                                 .clickable {
-                                    val oldIndex = model.index.value!!
+                                    val oldIndex = index
                                     model.indexChange(0)
                                     scope.launch {
                                         model.remove(
@@ -295,22 +298,28 @@ fun CompactTopBarView(model: WeatherViewModel, controller: NavController){
                         }
                     }
                 } else {
-                    if (!model.locations[model.index.value!!].isCurrent) {
+                    if (!model.locations[index].isCurrent) {
                         Box(
                             modifier = Modifier
                                 .width(30.dp)
                                 .height(30.dp)
 
                                 .clickable {
-                                    if (!model.myLocations.any {  it.latitude.round(2) == model.locations[model.index.value!!].data.lat.round(2) && it.longitude.round(2) == model.locations[model.index.value!!].data.lon.round(2) }) {
+                                    if (!model.myLocations.any {
+                                            it.latitude.round(2) == model.locations[index].data.lat.round(
+                                                2
+                                            ) && it.longitude.round(2) == model.locations[index].data.lon.round(
+                                                2
+                                            )
+                                        }) {
                                         scope.launch {
                                             model.saveLocation(
                                                 SavedLocation(
-                                                    model.locations[model.index.value!!].name,
-                                                    model.locations[model.index.value!!].data.lat.round(
+                                                    model.locations[index].name,
+                                                    model.locations[index].data.lat.round(
                                                         2
                                                     ),
-                                                    model.locations[model.index.value!!].data.lon.round(
+                                                    model.locations[index].data.lon.round(
                                                         2
                                                     )
                                                 )

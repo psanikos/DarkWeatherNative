@@ -68,8 +68,8 @@ fun CustomMapView(model: WeatherViewModel,controller:NavController) {
     LaunchedEffect(key1 = index + model.locations.size, block = {
         if (model.locations.isNotEmpty()) {
             coordinates = LatLng(
-                model.locations[model.index.value!!].data.lat,
-                model.locations[model.index.value!!].data.lon
+                model.locations[index].data.lat,
+                model.locations[index].data.lon
             )
         }
 

@@ -46,8 +46,8 @@ fun DayDetailsView(model: WeatherViewModel){
         mutableStateOf(null)
     }
     LaunchedEffect(key1 = index + model.locations.size, block ={
-        if(!model.locations.isEmpty()) {
-            day = model.locations[model.index.value!!].data.daily[0]
+        if (model.locations.isNotEmpty() && model.locations.size > index){
+            day = model.locations[index].data.daily[0]
         }
     })
    if (day != null) {

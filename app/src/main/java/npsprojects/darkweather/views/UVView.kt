@@ -36,7 +36,7 @@ fun UVView(model: WeatherViewModel) {
         mutableStateOf(0.0)
     }
     LaunchedEffect(key1 = index + model.locations.size, block = {
-        if (!model.locations.isEmpty() ) {
+        if (model.locations.isNotEmpty() && model.locations.size > index) {
             input = if(model.locations[index].data.current.uvi > 10.0) 10.0 else model.locations[index].data.current.uvi
 
         }
@@ -79,7 +79,7 @@ fun UVView(model: WeatherViewModel) {
                 .fillMaxWidth()
                 .wrapContentHeight(),
             horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.spacedBy(10.dp)
+            verticalArrangement = Arrangement.spacedBy(15.dp)
         ) {
             Text(stringResource(R.string.uv), style = MaterialTheme.typography.h4)
             Column(
@@ -88,7 +88,7 @@ fun UVView(model: WeatherViewModel) {
                     .wrapContentHeight()
                     .clip(RoundedCornerShape(12.dp))
                     .frosted(isDark = isSystemInDarkTheme())
-                    .padding(15.dp),
+                    .padding(horizontal = 15.dp,vertical = 20.dp),
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {
