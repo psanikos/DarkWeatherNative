@@ -208,7 +208,7 @@ fun HourlyView(model: WeatherViewModel) {
                 item {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(5.dp)
+                        horizontalArrangement = Arrangement.spacedBy(2.dp)
                     ) {
                         if (DateTimeFormatter.ofPattern("HH:mm").format(
                                 LocalDateTime.ofInstant(
@@ -231,7 +231,7 @@ fun HourlyView(model: WeatherViewModel) {
                         Box(
                             modifier = Modifier
                                 .height(100.dp)
-                                .width(75.dp)
+                                .width(70.dp)
                                 ,
 
                             contentAlignment = Alignment.Center

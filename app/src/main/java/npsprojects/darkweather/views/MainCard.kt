@@ -1,5 +1,6 @@
 package npsprojects.darkweather.views
 
+import android.util.Range
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -23,21 +24,31 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
+import npsprojects.darkweather.R
 import npsprojects.darkweather.WeatherUnits
 import npsprojects.darkweather.getWeatherIcon
+import npsprojects.darkweather.models.Current
 import npsprojects.darkweather.models.WeatherModel
 import npsprojects.darkweather.models.WeatherViewModel
 import npsprojects.darkweather.round
 import npsprojects.darkweather.timeAgo
 import npsprojects.darkweather.ui.theme.*
+import java.text.SimpleDateFormat
 import java.time.Instant
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.*
+import java.util.concurrent.TimeUnit
+import kotlin.math.roundToInt
 
 @ExperimentalCoilApi
 @Composable
@@ -47,6 +58,9 @@ fun MainCard(model:WeatherViewModel) {
             mutableStateOf("02d")
         }
     var temp by rememberSaveable {
+        mutableStateOf("N/A°")
+    }
+    var feel by rememberSaveable {
         mutableStateOf("N/A°")
     }
     var tempHigh by rememberSaveable {
@@ -78,7 +92,8 @@ val index:Int by  model.index.observeAsState(initial = 0)
             description = model.locations[index].data.current.weather[0].description
             angle = model.locations[index].data.current.wind_deg.toFloat()
             air = model.locations[index].data.current.wind_speed.round(1)
-            pop = (100*(model.locations[index].data.current.pop ?: 0.0)).toInt()
+            pop = (100 * (model.locations[index].data.daily[0].pop ?: 0.0)).roundToInt()
+            feel = model.locations[index].data.current.feels_like.toUInt().toString() + "°"
         }
     })
         Column(
@@ -97,7 +112,7 @@ val index:Int by  model.index.observeAsState(initial = 0)
          contentAlignment = Alignment.TopCenter){
              Column(
 
-                 verticalArrangement = Arrangement.spacedBy(30.dp),
+                 verticalArrangement = Arrangement.spacedBy(10.dp),
                  horizontalAlignment = Alignment.CenterHorizontally
              ) {
 
@@ -107,7 +122,7 @@ val index:Int by  model.index.observeAsState(initial = 0)
                          painter = rememberImagePainter(data = "https://openweathermap.org/img/wn/${icon}@4x.png"),
                          contentDescription = "",
                          modifier = Modifier
-                             .offset(x = 1.dp, y = 41.dp)
+                             .offset(y = 41.dp)
                              .size(180.dp),
                          colorFilter = ColorFilter.tint(color = Color.Gray.copy(alpha = 0.5f))
 
@@ -126,6 +141,9 @@ val index:Int by  model.index.observeAsState(initial = 0)
 
 
                  Text(description, style = MaterialTheme.typography.body1)
+                 Text("Feels like: $feel",
+                     style = MaterialTheme.typography.body2.copy(color = if(isSystemInDarkTheme()) light_blue_800 else light_blue_100,
+                     fontWeight = FontWeight.Bold))
 
              }
          }
@@ -198,7 +216,91 @@ val index:Int by  model.index.observeAsState(initial = 0)
     }
 
 
+@Composable
+fun RainAlert(model: WeatherViewModel){
+    val index by model.index.observeAsState(initial = 0)
+    var hourly:List<Current>? = null
+var range:Range<Date>? by remember {
+    mutableStateOf(null)
+}
 
+    fun getRange(): Range<Date>? {
+        var start:Date? = null
+        var end:Date? = null
+
+        hourly?.forEach {
+            if(start == null && (it.pop!! > 0.49)){
+                start = Date.from(Instant.ofEpochMilli(it.dt*1000))
+                end = start
+            }
+            else if((it.pop!! > 0.49)) {
+
+                val dif = if (end != null)  TimeUnit.HOURS.convert(it.dt*1000 - end!!.time,TimeUnit.MILLISECONDS) else 99
+
+                if(dif < 2){
+                    end = Date.from(Instant.ofEpochMilli(it.dt * 1000))
+                }
+
+                println("ENDDD" + SimpleDateFormat("HH:mm", Locale.getDefault()).format(end!!))
+            }
+        }
+
+        return if(start != null && end != null) Range(start,end) else null
+    }
+
+            LaunchedEffect(key1 = "$index ${model.locations.size}", block ={
+               hourly =  if(model.locations.size > 0 && index < model.locations.size) model.locations[index].data.hourly else listOf()
+                range = getRange()
+            } )
+if(range != null && range?.lower != null && range?.upper != null) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .background(
+                color = Color.Blue.copy(alpha = 0.15f),
+                shape = RoundedCornerShape(6)
+            )
+            .padding(10.dp)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Icon(
+                Icons.Filled.Warning,
+                contentDescription = "",
+                tint = Color.Blue,
+                modifier = Modifier.size(40.dp)
+            )
+            Text(
+                stringResource(id = R.string.phenomena),
+                style = MaterialTheme.typography.h3.copy(
+                    fontSize = 14.sp
+                )
+            )
+            Text(
+                stringResource(id = R.string.expect) + " " +
+                    SimpleDateFormat(
+                        "EEEE HH:mm",
+                        Locale.getDefault()
+                    ).format(range!!.lower)
+                        + " "
+               + stringResource(id = R.string.until) + " " +
+                    SimpleDateFormat(
+                        "EEEE HH:mm",
+                        Locale.getDefault()
+                    ).format(range!!.upper)
+                ,
+                style = MaterialTheme.typography.body2,
+                maxLines = 3
+            )
+
+        }
+    }
+}
+}
 
 //@Preview
 //@Composable

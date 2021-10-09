@@ -58,5 +58,8 @@
     <string name="waning">Waning</string>
     <string name="waxing">Waxing</string>
     <string name="ago"> ago</string>
+    <string name="phenomena">Weather phenomena alert</string>
+    <string name="expect">Expect weather phenomena from</string>
+    <string name="until">until</string>
 
 </resources>

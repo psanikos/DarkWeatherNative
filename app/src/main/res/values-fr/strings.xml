@@ -51,4 +51,7 @@
     <string name="waning">Déclin</string>
     <string name="waxing">Lune croissante</string>
     <string name="ago"> Avant</string>
+    <string name="phenomena">Alerte aux phénomènes météorologiques</string>
+    <string name="expect">Attendez-vous à des phénomènes météorologiques de</string>
+    <string name="until">jusqu\'à</string>
 </resources>

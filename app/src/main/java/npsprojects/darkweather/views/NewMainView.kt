@@ -118,8 +118,8 @@ fun NewMainView(model: WeatherViewModel, controller: NavController) {
 
                                         MaterialTheme.colors.background
                                     ),
-                                    start = Offset(x = width.value/2, y = 0f),
-                                    end = Offset(x = width.value/2, y = height.value)
+                                    start = Offset(x = width.value / 2, y = 0f),
+                                    end = Offset(x = width.value / 2, y = height.value)
                                 )
                             ),
                         contentAlignment = Alignment.TopCenter
@@ -209,6 +209,11 @@ fun NewMainView(model: WeatherViewModel, controller: NavController) {
                                     }
                                 }
                             }
+
+                            if (!model.locations.isEmpty() && !model.locations[index].data.hourly.isNullOrEmpty()){
+                          item{
+                              RainAlert(model= model )
+                          }}
                             item {
                                 AirQualityView(model = model)
                             }

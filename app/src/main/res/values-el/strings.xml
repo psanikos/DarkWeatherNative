@@ -51,5 +51,7 @@
     <string name="waning">Εξασθενίζοντας</string>
     <string name="waxing">Κηρώνοντας</string>
     <string name="ago"> Πριν</string>
-
+    <string name="phenomena">Ειδοποιήση καιρικών φαινομένων</string>
+    <string name="expect">Διαρκεία φαινομένων απο</string>
+    <string name="until">μέχρι</string>
 </resources>
