@@ -135,6 +135,9 @@ fun getLang(){
             units =
                 if (savedUnit == "si") WeatherUnits.SI else if (savedUnit == "us") WeatherUnits.US else WeatherUnits.AUTO
         }
+        else {
+            units = WeatherUnits.SI
+        }
     }
     fun saveUnit(inputUnit: WeatherUnits) {
         val context = MyApp.context

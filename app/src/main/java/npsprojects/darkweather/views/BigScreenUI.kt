@@ -126,7 +126,7 @@ fun NewMapViewBig(model: WeatherViewModel, controller: NavController) {
                             verticalArrangement = Arrangement.spacedBy(40.dp)
                         ) {
                             item {
-                                MainCard(model = model)
+                                MainCard(model = model,controller)
                             }
                             if (!model.locations.isEmpty() && !model.locations[index].data.alerts.isNullOrEmpty()) {
                                 model.locations[index].data.alerts?.let {

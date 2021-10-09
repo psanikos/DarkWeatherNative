@@ -61,5 +61,7 @@
     <string name="phenomena">Weather phenomena alert</string>
     <string name="expect">Expect weather phenomena from</string>
     <string name="until">until</string>
+    <string name="high">High</string>
+    <string name="vHigh">Very high</string>
 
 </resources>

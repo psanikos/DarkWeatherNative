@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
@@ -30,6 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberImagePainter
 import npsprojects.darkweather.R
@@ -52,11 +54,11 @@ import kotlin.math.roundToInt
 
 @ExperimentalCoilApi
 @Composable
-fun MainCard(model:WeatherViewModel) {
+fun MainCard(model:WeatherViewModel,controller:NavController) {
 
-        var icon by rememberSaveable {
-            mutableStateOf("02d")
-        }
+    var icon by rememberSaveable {
+        mutableStateOf("02d")
+    }
     var temp by rememberSaveable {
         mutableStateOf("N/A°")
     }
@@ -66,26 +68,29 @@ fun MainCard(model:WeatherViewModel) {
     var tempHigh by rememberSaveable {
         mutableStateOf("N/A°")
     }
-    var tempLow by  rememberSaveable {
+    var tempLow by rememberSaveable {
         mutableStateOf("N/A°")
     }
-    var description by  rememberSaveable{
+    var description by rememberSaveable {
         mutableStateOf("N/A")
     }
-    var angle by  rememberSaveable {
+    var angle by rememberSaveable {
         mutableStateOf(0f)
     }
     var air by rememberSaveable {
         mutableStateOf(0.0)
     }
-    var pop by  rememberSaveable {
+    var pop by rememberSaveable {
         mutableStateOf(0)
     }
-val index:Int by  model.index.observeAsState(initial = 0)
+    var dayDescription by rememberSaveable {
+        mutableStateOf("")
+    }
+    val index: Int by model.index.observeAsState(initial = 0)
 
-    LaunchedEffect(key1 = index + model.locations.size, block ={
-        if (model.locations.isNotEmpty() && model.locations.size > index){
-          icon = model.locations[index].data.current.weather[0].icon
+    LaunchedEffect(key1 = index + model.locations.size, block = {
+        if (model.locations.isNotEmpty() && model.locations.size > index) {
+            icon = model.locations[index].data.current.weather[0].icon
             temp = model.locations[index].data.current.temp.toUInt().toString() + "°"
             tempHigh = model.locations[index].data.daily[0].temp.max.toUInt().toString() + "°"
             tempLow = model.locations[index].data.daily[0].temp.min.toUInt().toString() + "°"
@@ -94,68 +99,80 @@ val index:Int by  model.index.observeAsState(initial = 0)
             air = model.locations[index].data.current.wind_speed.round(1)
             pop = (100 * (model.locations[index].data.daily[0].pop ?: 0.0)).roundToInt()
             feel = model.locations[index].data.current.feels_like.toUInt().toString() + "°"
+            dayDescription = model.locations[index].data.daily[0].weather[0].description
         }
     })
+
+
         Column(
             modifier = Modifier
-
+                .padding(horizontal = 15.dp)
+                .padding(top = 20.dp)
                 .fillMaxWidth()
                 .wrapContentHeight(),
-            verticalArrangement = Arrangement.spacedBy(40.dp),
+            verticalArrangement = Arrangement.spacedBy(30.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-         Box(modifier = Modifier
-             .height(350.dp)
-             .width(220.dp)
-           //  .background(color = if (isSystemInDarkTheme()) Color(0xFF373737) else Color(0xFFF7FBFE), shape = RoundedCornerShape(20))
-             ,
-         contentAlignment = Alignment.TopCenter){
-             Column(
-
-                 verticalArrangement = Arrangement.spacedBy(10.dp),
-                 horizontalAlignment = Alignment.CenterHorizontally
-             ) {
-
-                 Box() {
-
-                     Image(
-                         painter = rememberImagePainter(data = "https://openweathermap.org/img/wn/${icon}@4x.png"),
-                         contentDescription = "",
-                         modifier = Modifier
-                             .offset(y = 41.dp)
-                             .size(180.dp),
-                         colorFilter = ColorFilter.tint(color = Color.Gray.copy(alpha = 0.5f))
-
-                     )
-                     Image(
-                         painter = rememberImagePainter(data = "https://openweathermap.org/img/wn/${icon}@4x.png"),
-                         contentDescription = "weather image",
-                         modifier = Modifier
-                             .offset(y = 40.dp)
-                             .size(180.dp),
-                         contentScale = ContentScale.Fit
-                     )
-                 }
-                 Text(text = temp, style =  MaterialTheme.typography.h1.copy(fontSize = 60.sp)
-                    )
 
 
-                 Text(description, style = MaterialTheme.typography.body1)
-                 Text("Feels like: $feel",
-                     style = MaterialTheme.typography.body2.copy(color = if(isSystemInDarkTheme()) light_blue_800 else light_blue_100,
-                     fontWeight = FontWeight.Bold))
-
-             }
-         }
-            Row(
-                modifier= Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = 15.dp)
+                    .padding(top = 20.dp)
+                    .fillMaxWidth()
+                    .wrapContentHeight(),
+                verticalArrangement = Arrangement.spacedBy(2.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Box() {
+
+                    Image(
+                        painter = rememberImagePainter(data = "https://openweathermap.org/img/wn/${icon}@4x.png"),
+                        contentDescription = "",
+                        modifier = Modifier
+                            .offset(x = 1.dp, y = 1.dp)
+                            .size(150.dp),
+                        colorFilter = ColorFilter.tint(color = Color.Gray.copy(alpha = 0.5f))
+
+                    )
+                    Image(
+                        painter = rememberImagePainter(data = "https://openweathermap.org/img/wn/${icon}@4x.png"),
+                        contentDescription = "weather image",
+                        modifier = Modifier
+
+                            .size(150.dp),
+                        contentScale = ContentScale.Fit
+                    )
+                }
+
+                Text(
+                    text = temp,
+                    style = MaterialTheme.typography.h1.copy(
+                        fontSize = 60.sp,
+                        fontWeight = FontWeight.Black
+                    )
+                )
+
+
+                Text(description, style = MaterialTheme.typography.body1)
+                Text(
+                    "Feels like: $feel",
+                    style = MaterialTheme.typography.body2.copy(
+                        color = if (isSystemInDarkTheme()) light_blue_800 else light_blue_100,
+                        fontWeight = FontWeight.Bold
+                    )
+                )
+            }
+
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
 
 
                         ColoredIcon(
@@ -164,16 +181,19 @@ val index:Int by  model.index.observeAsState(initial = 0)
                             modifier = Modifier
                                 .size(25.dp)
                                 .rotate(angle),
-                            tint = if(isSystemInDarkTheme()) Color.White else Color.Black,
+                            tint = if (isSystemInDarkTheme()) Color.White else Color.Black,
 
+                            )
+
+                        Text(
+                            text = "$air " + if (model.units == WeatherUnits.SI) "km/h" else "mph",
+                            style = MaterialTheme.typography.body1
                         )
-
-                    Text(text = "$air " + if(model.units == WeatherUnits.SI) "km/h" else "mph", style = MaterialTheme.typography.body1)
-                }
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                    }
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
 
                         ColoredIcon(
                             Icons.Filled.ArrowUpward,
@@ -182,125 +202,134 @@ val index:Int by  model.index.observeAsState(initial = 0)
                             tint = Color.Red
                         )
 
-                    Text(text = tempHigh, style = MaterialTheme.typography.body1)
-                }
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
+                        Text(text = tempHigh, style = MaterialTheme.typography.body1)
+                    }
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
 
-                    ColoredIcon(
-                        Icons.Filled.ArrowDownward,
+                        ColoredIcon(
+                            Icons.Filled.ArrowDownward,
+                            contentDescription = "",
+                            modifier = Modifier.size(25.dp),
+                            tint = purple_500
+                        )
+
+                        Text(text = tempLow, style = MaterialTheme.typography.body1)
+                    }
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(6.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        ColoredIcon(
+                            Icons.Filled.Umbrella, contentDescription = "",
+                            modifier = Modifier.size(25.dp),
+                            tint = light_blue_500
+                        )
+
+                        Text(
+                            text = "${pop}%",
+                            style = MaterialTheme.typography.body1
+                        )
+                    }
+                }
+
+            }
+
+    }
+
+    @Composable
+    fun RainAlert(model: WeatherViewModel) {
+        val index by model.index.observeAsState(initial = 0)
+        var hourly: List<Current>? = null
+        var range: Range<Date>? by remember {
+            mutableStateOf(null)
+        }
+
+        fun getRange(): Range<Date>? {
+            var start: Date? = null
+            var end: Date? = null
+
+            hourly?.forEach {
+                if (start == null && (it.pop!! > 0.49)) {
+                    start = Date.from(Instant.ofEpochMilli(it.dt * 1000))
+                    end = start
+                } else if ((it.pop!! > 0.49)) {
+
+                    val dif = if (end != null) TimeUnit.HOURS.convert(
+                        it.dt * 1000 - end!!.time,
+                        TimeUnit.MILLISECONDS
+                    ) else 99
+
+                    if (dif < 2) {
+                        end = Date.from(Instant.ofEpochMilli(it.dt * 1000))
+                    }
+
+                    println("ENDDD" + SimpleDateFormat("HH:mm", Locale.getDefault()).format(end!!))
+                }
+            }
+
+            return if (start != null && end != null) Range(start, end) else null
+        }
+
+        LaunchedEffect(key1 = "$index ${model.locations.size}", block = {
+            hourly =
+                if (model.locations.size > 0 && index < model.locations.size) model.locations[index].data.hourly else listOf()
+            range = getRange()
+        })
+        if (range != null && range?.lower != null && range?.upper != null) {
+            Box(
+                modifier = Modifier
+                    .padding(horizontal = 15.dp)
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .background(
+                        color = Color.Blue.copy(alpha = 0.15f),
+                        shape = RoundedCornerShape(6)
+                    )
+                    .padding(10.dp)
+            ) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                ) {
+                    Icon(
+                        Icons.Filled.Warning,
                         contentDescription = "",
-                        modifier = Modifier.size(25.dp),
-                        tint = purple_500
+                        tint = Color.Blue,
+                        modifier = Modifier.size(40.dp)
+                    )
+                    Text(
+                        stringResource(id = R.string.phenomena),
+                        style = MaterialTheme.typography.h3.copy(
+                            fontSize = 14.sp
+                        )
+                    )
+                    Text(
+                        stringResource(id = R.string.expect) + " " +
+                                SimpleDateFormat(
+                                    "EEEE HH:mm",
+                                    Locale.getDefault()
+                                ).format(range!!.lower)
+                                + " "
+                                + stringResource(id = R.string.until) + " " +
+                                SimpleDateFormat(
+                                    "EEEE HH:mm",
+                                    Locale.getDefault()
+                                ).format(range!!.upper),
+                        style = MaterialTheme.typography.body2,
+                        maxLines = 3
                     )
 
-                    Text(text = tempLow, style = MaterialTheme.typography.body1)
                 }
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    verticalAlignment = Alignment.CenterVertically) {
-                            ColoredIcon(Icons.Filled.Umbrella, contentDescription = "",
-                                modifier = Modifier.size(25.dp),
-                                tint = light_blue_500)
-
-                            Text(
-                                text = "${pop}%",
-                                style = MaterialTheme.typography.body1
-                            )
-                        }
-                }
-
-        }
-    }
-
-
-@Composable
-fun RainAlert(model: WeatherViewModel){
-    val index by model.index.observeAsState(initial = 0)
-    var hourly:List<Current>? = null
-var range:Range<Date>? by remember {
-    mutableStateOf(null)
-}
-
-    fun getRange(): Range<Date>? {
-        var start:Date? = null
-        var end:Date? = null
-
-        hourly?.forEach {
-            if(start == null && (it.pop!! > 0.49)){
-                start = Date.from(Instant.ofEpochMilli(it.dt*1000))
-                end = start
-            }
-            else if((it.pop!! > 0.49)) {
-
-                val dif = if (end != null)  TimeUnit.HOURS.convert(it.dt*1000 - end!!.time,TimeUnit.MILLISECONDS) else 99
-
-                if(dif < 2){
-                    end = Date.from(Instant.ofEpochMilli(it.dt * 1000))
-                }
-
-                println("ENDDD" + SimpleDateFormat("HH:mm", Locale.getDefault()).format(end!!))
             }
         }
 
-        return if(start != null && end != null) Range(start,end) else null
     }
 
-            LaunchedEffect(key1 = "$index ${model.locations.size}", block ={
-               hourly =  if(model.locations.size > 0 && index < model.locations.size) model.locations[index].data.hourly else listOf()
-                range = getRange()
-            } )
-if(range != null && range?.lower != null && range?.upper != null) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .background(
-                color = Color.Blue.copy(alpha = 0.15f),
-                shape = RoundedCornerShape(6)
-            )
-            .padding(10.dp)
-    ) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            Icon(
-                Icons.Filled.Warning,
-                contentDescription = "",
-                tint = Color.Blue,
-                modifier = Modifier.size(40.dp)
-            )
-            Text(
-                stringResource(id = R.string.phenomena),
-                style = MaterialTheme.typography.h3.copy(
-                    fontSize = 14.sp
-                )
-            )
-            Text(
-                stringResource(id = R.string.expect) + " " +
-                    SimpleDateFormat(
-                        "EEEE HH:mm",
-                        Locale.getDefault()
-                    ).format(range!!.lower)
-                        + " "
-               + stringResource(id = R.string.until) + " " +
-                    SimpleDateFormat(
-                        "EEEE HH:mm",
-                        Locale.getDefault()
-                    ).format(range!!.upper)
-                ,
-                style = MaterialTheme.typography.body2,
-                maxLines = 3
-            )
 
-        }
-    }
-}
-}
 
 //@Preview
 //@Composable

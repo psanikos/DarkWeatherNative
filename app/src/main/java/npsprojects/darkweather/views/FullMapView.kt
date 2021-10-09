@@ -52,34 +52,7 @@ fun FullMapView(model: WeatherViewModel,controller:NavController) {
 
   Scaffold(
       topBar = {
-          TopAppBar(
-              navigationIcon = {
-                  IconButton(onClick = {
-                      controller.popBackStack()
-                  }) {
-                      Icon(
-                          Icons.Default.ChevronLeft, contentDescription = "",
-                          modifier = Modifier.size(40.dp)
-                      )
-                  }
-              },
-              elevation = 0.dp,
-              backgroundColor = Color.Transparent,
-              modifier = Modifier.height(120.dp),
-              title = {
-                  if (model.locations.isNotEmpty() && model.locations.size > index) {
-                      Text(
-                          model.locations[index].name,
-                          style = MaterialTheme.typography.h3
-                      )
-                  }else {
-                      Text(
-                          "Map view",
-                          style = MaterialTheme.typography.h3
-                      )
-                  }
-              }
-          )
+          MapTopBarView(model,controller)
 
       },
   ) {

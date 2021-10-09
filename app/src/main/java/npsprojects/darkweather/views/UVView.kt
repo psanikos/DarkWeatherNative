@@ -43,10 +43,10 @@ fun UVView(model: WeatherViewModel) {
     })
 
     val name = when (input.toInt()) {
-        in 0 .. 3 -> "Low"
-        in 4..6 -> "Medium"
-        in 7..9 -> "High"
-        else -> "Very High"
+        in 0 .. 3 -> stringResource(id = R.string.Good)
+        in 4..6 -> stringResource(id = R.string.Fair)
+        in 7..9 -> stringResource(id = R.string.high)
+        else -> stringResource(id = R.string.vHigh)
     }
 //    val summary = when (aqi) {
 //        1 -> stringResource(id = R.string.GoodText)
@@ -76,19 +76,30 @@ fun UVView(model: WeatherViewModel) {
     if (model.locations.size  > 0) {
         Column(
             modifier = Modifier
+                .padding(horizontal = 15.dp)
                 .fillMaxWidth()
-                .wrapContentHeight(),
+                .wrapContentHeight()
+                .clip(RoundedCornerShape(4.dp)),
             horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.spacedBy(15.dp)
+            verticalArrangement = Arrangement.spacedBy(0.dp)
         ) {
-            Text(stringResource(R.string.uv), style = MaterialTheme.typography.h4)
+            Box(modifier = Modifier
+                .fillMaxWidth()
+                .height(45.dp)
+                .background(if (isSystemInDarkTheme()) iceBlack else frosted)
+                .padding(horizontal = 10.dp),contentAlignment = Alignment.CenterStart) {
+                Text(
+                    stringResource(R.string.uv),
+                    style = MaterialTheme.typography.h4.copy(fontWeight = FontWeight.ExtraBold))
+            }
             Column(
                 modifier = Modifier
+                    .background(if (isSystemInDarkTheme()) Color(0xFF202020) else Color.White)
+                    .padding(horizontal = 10.dp,vertical = 15.dp)
                     .fillMaxWidth()
                     .wrapContentHeight()
-                    .clip(RoundedCornerShape(12.dp))
-                    .frosted(isDark = isSystemInDarkTheme())
-                    .padding(horizontal = 15.dp,vertical = 20.dp),
+                   ,
+
                 horizontalAlignment = Alignment.Start,
                 verticalArrangement = Arrangement.spacedBy(20.dp)
             ) {

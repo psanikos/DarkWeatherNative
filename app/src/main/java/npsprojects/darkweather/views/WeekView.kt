@@ -5,6 +5,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -53,23 +54,21 @@ fun WeekView(model: WeatherViewModel){
             }
         })
     if(week.isNotEmpty()) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .clip(RoundedCornerShape(12.dp))
-                .frosted(isDark = isSystemInDarkTheme())
-                .padding(horizontal = 15.dp,vertical = 20.dp)
-            ,
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.spacedBy(15.dp)
-        ) {
 
-      //      Text("Week", style = MaterialTheme.typography.h2.copy(fontSize = 14.sp,color = Color.Gray))
-            week.forEach {
-                WeekViewItem(model = model,day = it)
-            }
+
+    Column(modifier = Modifier
+        .background(if(isSystemInDarkTheme()) Color(0xFF202020) else Color.White)
+        .padding(horizontal = 10.dp,vertical = 15.dp)
+        .fillMaxWidth()
+        .wrapContentHeight(),
+    verticalArrangement = Arrangement.spacedBy(10.dp)) {
+
+
+        week.forEach {
+            WeekViewItem(model = model, day = it)
+            Divider(color = Color.Gray.copy(alpha = 0.3f))
         }
+    }
     }
 }
 
@@ -87,7 +86,7 @@ fun WeekViewItem(model:WeatherViewModel,day:Daily) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.width(60.dp)
+            modifier = Modifier.width(75.dp)
         ) {
             Text(
                 SimpleDateFormat("EEE", Locale.getDefault()).format(
@@ -102,8 +101,7 @@ fun WeekViewItem(model:WeatherViewModel,day:Daily) {
                     contentDescription = "",
                     modifier = Modifier
                         .offset(x = 1.dp, y = 2.dp)
-                        .height(40.dp)
-                        .width(40.dp),
+                        .size(40.dp),
                     colorFilter = ColorFilter.tint(color = Color.Gray.copy(alpha = 0.5f))
 
                 )
@@ -112,8 +110,7 @@ fun WeekViewItem(model:WeatherViewModel,day:Daily) {
                     painter = painterResource(id = getWeatherIcon(day.weather[0].icon)),
                     contentDescription = "",
                     modifier = Modifier
-                        .height(40.dp)
-                        .width(40.dp)
+                        .size(40.dp)
 
                 )
             }
@@ -122,7 +119,9 @@ fun WeekViewItem(model:WeatherViewModel,day:Daily) {
         Row(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(start = 10.dp).fillMaxWidth()
+            modifier = Modifier
+                .padding(start = 10.dp)
+                .fillMaxWidth()
         ) {
             Row(
                 horizontalArrangement = Arrangement.spacedBy(5.dp),
@@ -155,9 +154,11 @@ fun WeekViewItem(model:WeatherViewModel,day:Daily) {
                     style = MaterialTheme.typography.body2
                 )
                 val width = 5 * (day.temp.max.toUInt() - day.temp.min.toUInt()).toDouble()
-                val boxWidth = if (width > 40.0) (if (width > 110.0) 110.0 else width) else 40.0
+                val boxWidth = if (width > 40.0) (if (width > 100.0) 100.0 else width) else 40.0
                 Box(
-                    modifier = Modifier.height(16.dp).width(width = boxWidth.dp)
+                    modifier = Modifier
+                        .height(16.dp)
+                        .width(width = boxWidth.dp)
                         .background(
                             brush = Brush.linearGradient(
                                 colors = listOf(

@@ -78,47 +78,35 @@ fun SettingsView(model: WeatherViewModel, controller: NavController) {
                 )
                 Surface(
                     modifier = Modifier
-                        .height(30.dp)
-                        .width(180.dp)
+                        .height(35.dp)
+                        .width(220.dp)
                         .clip(RoundedCornerShape(12.dp)), color = Color.LightGray
                 ) {
                     Row() {
+
                         Box(modifier = Modifier
-                            .height(30.dp)
-                            .width(80.dp)
-                            .background(color = if (units == WeatherUnits.AUTO) Color.DarkGray else Color.LightGray)
-                            .clickable {
-                                units = WeatherUnits.AUTO
-                                model.saveUnit(inputUnit = units)
-                            }, contentAlignment = Alignment.Center) {
-                            Text(
-                                stringResource(R.string.Auto),
-                                style = MaterialTheme.typography.button.copy(color = if (units == WeatherUnits.AUTO) Color.White else Color.Gray)
-                            )
-                        }
-                        Box(modifier = Modifier
-                            .height(30.dp)
-                            .width(60.dp)
+                            .height(35.dp)
+                            .width(110.dp)
                             .background(color = if (units == WeatherUnits.SI) Color.DarkGray else Color.LightGray)
                             .clickable {
                                 units = WeatherUnits.SI
                                 model.saveUnit(inputUnit = units)
                             }, contentAlignment = Alignment.Center) {
                             Text(
-                                "SI",
+                                "Celsius",
                                 style = MaterialTheme.typography.button.copy(color = if (units == WeatherUnits.SI) Color.White else Color.Gray)
                             )
                         }
                         Box(modifier = Modifier
-                            .height(30.dp)
-                            .width(60.dp)
+                            .height(35.dp)
+                            .width(110.dp)
                             .background(color = if (units == WeatherUnits.US) Color.DarkGray else Color.LightGray)
                             .clickable {
                                 units = WeatherUnits.US
                                 model.saveUnit(inputUnit = units)
                             }, contentAlignment = Alignment.Center) {
                             Text(
-                                "US",
+                                "Fahrenheit",
                                 style = MaterialTheme.typography.button.copy(color = if (units == WeatherUnits.US) Color.White else Color.Gray)
                             )
                         }

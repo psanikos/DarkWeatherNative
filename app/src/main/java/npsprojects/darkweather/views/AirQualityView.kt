@@ -8,10 +8,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.LinearProgressIndicator
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Air
 import androidx.compose.runtime.*
@@ -111,20 +108,24 @@ fun AirQualityView(model:WeatherViewModel) {
 
         Column(
             modifier = Modifier
+                .padding(horizontal = 15.dp)
                 .fillMaxWidth()
                 .wrapContentHeight()
+                .clip(RoundedCornerShape(4.dp))
             ,
             horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.spacedBy(15.dp)
+            verticalArrangement = Arrangement.spacedBy(0.dp)
         ) {
-        Text(stringResource(R.string.AirQ), style = MaterialTheme.typography.h4)
+    Box(modifier = Modifier.fillMaxWidth().height(45.dp).background(if(isSystemInDarkTheme()) iceBlack else frosted).padding(horizontal = 10.dp),contentAlignment = Alignment.CenterStart){
+        Text(stringResource(R.string.AirQ), style = MaterialTheme.typography.h4.copy(fontWeight = FontWeight.ExtraBold))
+    }
         Column(
             modifier = Modifier
+                .background(color = if(isSystemInDarkTheme()) Color(0xFF202020) else Color.White)
+                .padding(horizontal = 10.dp,vertical = 15.dp)
                 .fillMaxWidth()
-                .wrapContentHeight()
-                .clip(RoundedCornerShape(12.dp))
-                .frosted(isDark = isSystemInDarkTheme())
-                .padding(horizontal = 15.dp,vertical = 20.dp),
+                .wrapContentHeight(),
+
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.spacedBy(20.dp)
         ) {
@@ -179,6 +180,7 @@ fun AirQualityView(model:WeatherViewModel) {
 
 
         }
+
     }
 }
 }

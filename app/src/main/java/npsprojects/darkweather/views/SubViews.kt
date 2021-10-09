@@ -59,120 +59,6 @@ class ChartData constructor(
 )
 
 
-//
-//@Composable
-//fun RainTimeAlert(rainProbability: List<Current>) {
-//    var category: RainTimeCategory by remember { mutableStateOf(RainTimeCategory.HOURLY) }
-//    var timeUntilRain: Long? = null
-//    var timeUntilEnd: Long? = null
-//    var firstRainTimeIndex: Int? = rainProbability.indexOfFirst { it.pop!! >= 0.5 }
-//    var precip = "rain"
-//    if (firstRainTimeIndex != null && firstRainTimeIndex >= 0) {
-//        timeUntilRain =
-//            (1000 * rainProbability[firstRainTimeIndex].dt!!.toLong() - Calendar.getInstance().timeInMillis)
-//        precip = rainProbability[firstRainTimeIndex]. ?: "rain"
-//    }
-//    if (firstRainTimeIndex != null && firstRainTimeIndex >= 0) {
-//        rainProbability.forEachIndexed { index, item ->
-//            if (index > firstRainTimeIndex) {
-//                if (timeUntilEnd == null) {
-//                    if (item.precipProbability!! <= 0.4) {
-//                        timeUntilEnd =
-//                            1000 * item.time!!.toLong() - Calendar.getInstance().timeInMillis
-//                        precip = item.precipType ?: "rain"
-//                    }
-//                }
-//            }
-//        }
-//    }
-//
-//        if (timeUntilRain != null) {
-//            Box(
-//                modifier = Modifier
-//                    .width(360.dp)
-//                    .height(80.dp)
-//                    .background(
-//                        color = indigo_500.copy(alpha = 0.8f),
-//                        shape = RoundedCornerShape(12.dp)
-//                    )
-//            ) {
-//
-//
-//                    Row(
-//                        horizontalArrangement = Arrangement.Start,
-//                        verticalAlignment = Alignment.CenterVertically
-//                    ) {
-//                        Icon(
-//                            Icons.TwoTone.Warning,
-//                            tint = indigo_800,
-//                            contentDescription = "",
-//                            modifier = Modifier
-//                                .padding(6.dp)
-//                                .size(30.dp),
-//                        )
-//                        Column(
-//                            horizontalAlignment = Alignment.Start,
-//                            verticalArrangement = Arrangement.SpaceBetween,
-//                            modifier = Modifier
-//                                .padding(6.dp)
-//                                .height(90.dp)
-//                        ) {
-//                            Text(
-//                                if(precip == "rain") stringResource(id = R.string.RainAlert) else stringResource(
-//                                    id = R.string.SnowAlert
-//                                ),
-//                                style = MaterialTheme.typography.h4.copy(fontSize = 14.sp)
-//                            )
-//                        if (timeUntilRain > 0) {
-//                            Text(
-//                                (if(precip == "rain") stringResource(id = R.string.RainStarts) else stringResource(id = R.string.SnowStarts)) + " " +
-//                                        String.format(
-//                                            "%d h, %d min",
-//                                            TimeUnit.MILLISECONDS.toHours(timeUntilRain),
-//                                            TimeUnit.MILLISECONDS.toMinutes(timeUntilRain) -
-//                                                    TimeUnit.HOURS.toMinutes(
-//                                                        TimeUnit.MILLISECONDS.toHours(
-//                                                            timeUntilRain
-//                                                        )
-//                                                    )
-//                                        ),
-//                                style = MaterialTheme.typography.button.copy(fontSize = 11.sp),
-//                                modifier = Modifier.padding(vertical = 5.dp),
-//
-//                            )
-//                        } else {
-//                            if (timeUntilEnd != null) {
-//                                Text(
-//                                    (if(precip == "rain") stringResource(id = R.string.RainEnds) else stringResource(id = R.string.RainEnds)) + " " +
-//                                            String.format(
-//                                                "%d h, %d min",
-//                                                TimeUnit.MILLISECONDS.toHours(timeUntilEnd!!),
-//                                                TimeUnit.MILLISECONDS.toMinutes(timeUntilEnd!!) -
-//                                                        TimeUnit.HOURS.toMinutes(
-//                                                            TimeUnit.MILLISECONDS.toHours(
-//                                                                timeUntilEnd!!
-//                                                            )
-//                                                        )
-//                                            ),
-//                                    style = MaterialTheme.typography.button.copy(fontSize = 11.sp),
-//                                    modifier = Modifier.padding(vertical = 5.dp),
-//                                )
-//                            } else {
-//                                Text(
-//                                    if(precip == "rain") stringResource(id = R.string.RainContinue) else stringResource(id = R.string.RainContinue),
-//                                    style = MaterialTheme.typography.body2,
-//                                    modifier = Modifier.padding(vertical = 5.dp)
-//                                )
-//                            }
-//                        }
-//                            Text("")
-//                    }
-//                }
-//            }
-//        }
-//
-//}
-//
 
 @Composable
 fun HourlyView(model: WeatherViewModel) {
@@ -186,20 +72,13 @@ fun HourlyView(model: WeatherViewModel) {
             data = model.locations[index].data.hourly
         }
     })
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .wrapContentHeight()
-        .clip(RoundedCornerShape(12.dp))
-        .frosted(isDark = isSystemInDarkTheme())
-        .padding(horizontal = 15.dp,vertical = 20.dp)
-        ,
-    horizontalAlignment = Alignment.Start,
-    verticalArrangement = Arrangement.spacedBy(5.dp)) {
+
         if(data.isNotEmpty()){
 //Text("Hourly",style = MaterialTheme.typography.h2.copy(fontSize = 14.sp,color = Color.Gray))
 
         LazyRow(
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.background(color = if(isSystemInDarkTheme()) Color(0xFF202020) else Color.White)
+                .padding(horizontal = 10.dp,vertical = 15.dp).fillMaxWidth()
 
 
         ) {
@@ -230,7 +109,7 @@ fun HourlyView(model: WeatherViewModel) {
 
                         Box(
                             modifier = Modifier
-                                .height(100.dp)
+                                .height(120.dp)
                                 .width(70.dp)
                                 ,
 
@@ -251,7 +130,7 @@ fun HourlyView(model: WeatherViewModel) {
                                             ZoneId.systemDefault()
                                         )
                                     ),
-                                    style = MaterialTheme.typography.body2
+                                    style = MaterialTheme.typography.body2.copy(color = Color.Gray,fontWeight = FontWeight.SemiBold)
                                 )
 
                                 Box() {
@@ -260,8 +139,8 @@ fun HourlyView(model: WeatherViewModel) {
                                         contentDescription = "",
                                         modifier = Modifier
                                             .offset(x = 1.dp, y = 1.dp)
-                                            .height(40.dp)
-                                            .width(40.dp),
+                                            .height(45.dp)
+                                            .width(45.dp),
                                         colorFilter = ColorFilter.tint(color = Color.Gray.copy(alpha = 0.5f))
 
                                     )
@@ -270,19 +149,18 @@ fun HourlyView(model: WeatherViewModel) {
                                         painter = painterResource(id = getWeatherIcon(it.weather[0].icon)),
                                         contentDescription = "",
                                         modifier = Modifier
-                                            .height(40.dp)
-                                            .width(40.dp)
+                                            .height(45.dp)
+                                            .width(45.dp)
 
                                     )
                                 }
                                 Text(
                                     "${it.temp.toInt()}°",
                                     style = MaterialTheme.typography.body1.copy(
-                                        shadow = Shadow(
-                                            color = Color.Black
+                                       fontWeight = FontWeight.Bold
                                         )
                                     )
-                                )
+
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.spacedBy(1.dp)
@@ -292,7 +170,7 @@ fun HourlyView(model: WeatherViewModel) {
                                         contentDescription = "",
                                         modifier = Modifier
                                             .size(18.dp),
-                                        tint = Color.Gray
+                                        tint = light_blue_800
                                     )
                                     Text(
                                         "${(100 * (it.pop ?: 0.0)).roundToInt()}%",
@@ -307,7 +185,7 @@ fun HourlyView(model: WeatherViewModel) {
                 }
             }
         }
-    }
+
 }
 //
 //@Composable

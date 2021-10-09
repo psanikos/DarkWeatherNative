@@ -2,6 +2,7 @@ package npsprojects.darkweather.views
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.google.accompanist.insets.statusBarsPadding
 import compose.icons.AllIcons
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
@@ -34,7 +36,7 @@ import java.time.Instant
 import java.util.*
 
 @Composable
-fun TopBarView(model: WeatherViewModel, controller: NavController){
+fun TopBarView(model: WeatherViewModel, controller: NavController,color: Color){
 
     var dropExtended by remember {
         mutableStateOf(false)
@@ -42,10 +44,17 @@ fun TopBarView(model: WeatherViewModel, controller: NavController){
     val scope = rememberCoroutineScope()
     val index:Int by model.index.observeAsState(initial = 0)
     Row(modifier = Modifier
-        .padding(top = 20.dp)
-        .padding(horizontal = 20.dp)
+        .background(
+            color = if (isSystemInDarkTheme()) Color(0xFF353535).copy(alpha = 0.9f) else Color.White.copy(
+                alpha = 0.9f
+            )
+        )
+        .statusBarsPadding()
+        .padding(horizontal = 15.dp)
         .fillMaxWidth()
-        .height(90.dp),
+
+
+        ,
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically) {
         Column(
@@ -362,5 +371,90 @@ fun CompactTopBarView(model: WeatherViewModel, controller: NavController){
                 }
             }
         }
+    }
+}
+@Composable
+fun MapTopBarView(model: WeatherViewModel, controller: NavController){
+
+    var dropExtended by remember {
+        mutableStateOf(false)
+    }
+    val scope = rememberCoroutineScope()
+    val index:Int by model.index.observeAsState(initial = 0)
+    Row(modifier = Modifier
+        .background(
+            color = if (isSystemInDarkTheme()) Color(0xFF353535).copy(alpha = 0.9f) else Color.White.copy(
+                alpha = 0.9f
+            )
+        )
+        .statusBarsPadding()
+
+        .fillMaxWidth()
+
+
+        ,
+        horizontalArrangement = Arrangement.spacedBy(10.dp),
+        verticalAlignment = Alignment.CenterVertically) {
+        IconButton(onClick = {
+            controller.popBackStack()
+        }) {
+            Icon(FontAwesomeIcons.Solid.ArrowLeft,contentDescription = "",modifier = Modifier.size(20.dp))
+        }
+        Column(
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.SpaceEvenly,
+            modifier = Modifier
+                .height(50.dp)
+                .fillMaxWidth(0.55f)) {
+
+            Box() {
+                if (!(model.locations.isNotEmpty() && model.locations.size > index)) {
+                    Text("N/A", style = MaterialTheme.typography.h4)
+                } else {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(5.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.clickable(onClick = { dropExtended = !dropExtended  })
+                    ) {
+                        if (model.locations[index].isCurrent) {
+                            Icon(FontAwesomeIcons.Solid.LocationArrow,modifier = Modifier.size(15.dp), contentDescription = "")
+                        }
+                        Text(
+                            model.locations[index].name,
+                            style = MaterialTheme.typography.h4
+
+                        )
+                    }
+                }
+                DropdownMenu(expanded = dropExtended, onDismissRequest = { /*TODO*/ }) {
+
+
+                    model.locations.forEachIndexed { index, item ->
+                        DropdownMenuItem(onClick = {
+                            model.indexChange(index)
+
+                            dropExtended = false
+                        },
+                            modifier = Modifier.width(160.dp)) {
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(5.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                if (item.isCurrent) {
+                                    Icon(FontAwesomeIcons.Solid.LocationArrow,modifier = Modifier.size(15.dp), contentDescription = "")
+                                }
+                                Text(
+                                    item.name,
+                                    style = MaterialTheme.typography.body2
+                                )
+                            }
+                        }
+                    }
+
+                }
+            }
+
+           }
+
     }
 }
