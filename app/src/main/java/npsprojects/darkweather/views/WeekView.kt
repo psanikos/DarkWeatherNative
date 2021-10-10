@@ -57,7 +57,7 @@ fun WeekView(model: WeatherViewModel){
 
 
     Column(modifier = Modifier
-        .background(if(isSystemInDarkTheme()) Color(0xFF202020) else Color.White)
+        .background(if(isSystemInDarkTheme()) Color.DarkGray else Color.White)
         .padding(horizontal = 10.dp,vertical = 15.dp)
         .fillMaxWidth()
         .wrapContentHeight(),

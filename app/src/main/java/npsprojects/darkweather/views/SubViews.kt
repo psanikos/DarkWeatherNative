@@ -77,7 +77,7 @@ fun HourlyView(model: WeatherViewModel) {
 //Text("Hourly",style = MaterialTheme.typography.h2.copy(fontSize = 14.sp,color = Color.Gray))
 
         LazyRow(
-            modifier = Modifier.background(color = if(isSystemInDarkTheme()) Color(0xFF202020) else Color.White)
+            modifier = Modifier.background(color = if(isSystemInDarkTheme()) Color.DarkGray else Color.White)
                 .padding(horizontal = 10.dp,vertical = 15.dp).fillMaxWidth()
 
 

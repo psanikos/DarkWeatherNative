@@ -2,6 +2,7 @@ package npsprojects.darkweather.views
 
 import android.graphics.drawable.Icon
 import android.graphics.drawable.ShapeDrawable
+import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
@@ -40,6 +41,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -102,10 +104,16 @@ fun NewMainView(model: WeatherViewModel, controller: NavController) {
     var color by remember {
         mutableStateOf(Color(0xFF2F4276))
     }
-
+val error by model.error.observeAsState()
     LaunchedEffect(key1 = "$index ${model.locations.size}", block ={
         color = getWeatherColor(if (model.locations.size > 0) model.locations[index].data.current.weather[0].icon else "01d")
     } )
+    val context = LocalContext.current
+    LaunchedEffect(key1 =error, block = {
+        if(error != WeatherError.NONE){
+            Toast.makeText(context,"Please check your internet connection and location access",Toast.LENGTH_LONG).show()
+        }
+    })
     Scaffold(
         topBar = { TopBarView(model = model, controller = controller,color=color)},
         floatingActionButton = { FloatingActionButton(onClick = {
@@ -148,7 +156,7 @@ fun NewMainView(model: WeatherViewModel, controller: NavController) {
                                             .wrapContentHeight()
                                             .background(
                                                 color = Color.Yellow.copy(alpha = 0.15f),
-                                                shape = RoundedCornerShape(6)
+                                                shape = RoundedCornerShape(12)
                                             )
                                             .padding(10.dp)
                                     ) {
@@ -226,7 +234,7 @@ fun NewMainView(model: WeatherViewModel, controller: NavController) {
                             modifier = Modifier
                                 .padding(horizontal = 15.dp)
                                 .fillMaxSize()
-                                .clip(RoundedCornerShape(4.dp)),
+                                .clip(RoundedCornerShape(12.dp)),
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.spacedBy(0.dp)
                         ) {
@@ -266,7 +274,7 @@ fun NewMainView(model: WeatherViewModel, controller: NavController) {
                             modifier = Modifier
                                 .padding(horizontal = 15.dp)
                                 .fillMaxSize()
-                                .clip(RoundedCornerShape(4.dp)),
+                                .clip(RoundedCornerShape(12.dp)),
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.spacedBy(0.dp)
                         ) {

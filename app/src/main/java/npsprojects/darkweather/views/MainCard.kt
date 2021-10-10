@@ -286,7 +286,7 @@ fun MainCard(model:WeatherViewModel,controller:NavController) {
                     .wrapContentHeight()
                     .background(
                         color = Color.Blue.copy(alpha = 0.15f),
-                        shape = RoundedCornerShape(6)
+                        shape = RoundedCornerShape(12)
                     )
                     .padding(10.dp)
             ) {

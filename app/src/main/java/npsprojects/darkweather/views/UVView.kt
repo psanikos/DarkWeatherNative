@@ -79,7 +79,7 @@ fun UVView(model: WeatherViewModel) {
                 .padding(horizontal = 15.dp)
                 .fillMaxWidth()
                 .wrapContentHeight()
-                .clip(RoundedCornerShape(4.dp)),
+                .clip(RoundedCornerShape(12.dp)),
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.spacedBy(0.dp)
         ) {
@@ -94,7 +94,7 @@ fun UVView(model: WeatherViewModel) {
             }
             Column(
                 modifier = Modifier
-                    .background(if (isSystemInDarkTheme()) Color(0xFF202020) else Color.White)
+                    .background(if (isSystemInDarkTheme()) Color.DarkGray else Color.White)
                     .padding(horizontal = 10.dp,vertical = 15.dp)
                     .fillMaxWidth()
                     .wrapContentHeight()
@@ -112,7 +112,7 @@ fun UVView(model: WeatherViewModel) {
 
                     Text(
                         name,
-                        style = MaterialTheme.typography.h4.copy(fontWeight = FontWeight.SemiBold),
+                        style = MaterialTheme.typography.h4.copy(fontWeight = FontWeight.SemiBold,color = Color.Gray),
 
                         )
                 }

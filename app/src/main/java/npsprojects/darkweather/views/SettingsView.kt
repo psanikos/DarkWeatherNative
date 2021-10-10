@@ -79,14 +79,14 @@ fun SettingsView(model: WeatherViewModel, controller: NavController) {
                 Surface(
                     modifier = Modifier
                         .height(35.dp)
-                        .width(220.dp)
+                        .width(200.dp)
                         .clip(RoundedCornerShape(12.dp)), color = Color.LightGray
                 ) {
                     Row() {
 
                         Box(modifier = Modifier
                             .height(35.dp)
-                            .width(110.dp)
+                            .width(100.dp)
                             .background(color = if (units == WeatherUnits.SI) Color.DarkGray else Color.LightGray)
                             .clickable {
                                 units = WeatherUnits.SI
@@ -99,7 +99,7 @@ fun SettingsView(model: WeatherViewModel, controller: NavController) {
                         }
                         Box(modifier = Modifier
                             .height(35.dp)
-                            .width(110.dp)
+                            .width(100.dp)
                             .background(color = if (units == WeatherUnits.US) Color.DarkGray else Color.LightGray)
                             .clickable {
                                 units = WeatherUnits.US

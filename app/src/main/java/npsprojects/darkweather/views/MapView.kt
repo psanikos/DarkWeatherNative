@@ -121,9 +121,9 @@ class CustomInfoWindowForGoogleMap(context: Context) : GoogleMap.InfoWindowAdapt
 }
 
 
-const val InitialZoom = 4f
-const val MinZoom = 3f
-const val MaxZoom = 5f
+const val InitialZoom = 8f
+const val MinZoom = 5f
+const val MaxZoom = 20f
 
 
 
@@ -179,7 +179,7 @@ fun MapViewContainer(
                         return zoom in minZoom..maxZoom
                     }
                 }
-                it.setZoom(mapZoom)
+
                 it.setInfoWindowAdapter(CustomInfoWindowForGoogleMap(context = context))
 
                 val icon = BitmapFactory.decodeResource(context.resources,getWeatherIcon(input = if(model.locations.isNotEmpty()) (model.locations[index].data.current.weather[0].icon ?: "") else ""))
@@ -200,7 +200,7 @@ fun MapViewContainer(
 
                     markerOptions.position(coordinates)
                 )
-                marker?.showInfoWindow()
+               // marker?.showInfoWindow()
 //            it.addMarker(
 //
 //                MarkerOptions().position(position)
@@ -227,7 +227,7 @@ fun MapViewContainer(
                     }
                 }
 
-
+                it.setZoom(zoom)
             }
 
         }

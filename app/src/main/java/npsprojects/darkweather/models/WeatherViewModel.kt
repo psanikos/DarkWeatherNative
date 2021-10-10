@@ -51,7 +51,7 @@ class WeatherViewModel : ViewModel() {
     var loading =  MutableLiveData(false)
     var units: WeatherUnits by mutableStateOf(WeatherUnits.AUTO)
     var myLocations: List<SavedLocation> by mutableStateOf(listOf())
-    var error =  mutableStateOf(WeatherError.NONE)
+    var error =  MutableLiveData(WeatherError.NONE)
     var hasInit: Boolean by mutableStateOf(false)
     private val _permissionGranted = MutableLiveData(false)
     val permissionGranted = _permissionGranted
@@ -83,6 +83,7 @@ fun getLang(){
 }
 
     fun initActions(){
+        error.value = WeatherError.NONE
         loading.value = true
         isInit()
         getLang()
