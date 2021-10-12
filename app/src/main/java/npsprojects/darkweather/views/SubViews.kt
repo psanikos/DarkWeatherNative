@@ -1,7 +1,5 @@
 package npsprojects.darkweather.views
 
-import android.graphics.drawable.Icon
-import android.service.autofill.OnClickAction
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -10,13 +8,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Air
-import androidx.compose.material.icons.filled.ArrowDownward
-import androidx.compose.material.icons.filled.ArrowUpward
-import androidx.compose.material.icons.filled.Opacity
 import androidx.compose.material.icons.rounded.Umbrella
-import androidx.compose.material.icons.twotone.Refresh
-import androidx.compose.material.icons.twotone.Warning
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -25,18 +17,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.*
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import npsprojects.darkweather.R
-import npsprojects.darkweather.RainTimeCategory
-import npsprojects.darkweather.WeatherUnits
 import npsprojects.darkweather.getWeatherIcon
 import npsprojects.darkweather.models.Current
 
@@ -47,8 +30,6 @@ import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
-import java.util.*
-import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
 
 class ChartData constructor(
@@ -77,8 +58,11 @@ fun HourlyView(model: WeatherViewModel) {
 //Text("Hourly",style = MaterialTheme.typography.h2.copy(fontSize = 14.sp,color = Color.Gray))
 
         LazyRow(
-            modifier = Modifier.background(color = if(isSystemInDarkTheme()) Color.DarkGray else Color.White)
-                .padding(horizontal = 10.dp,vertical = 15.dp).fillMaxWidth()
+            modifier = Modifier
+                .clip(RoundedCornerShape(12.dp))
+                .background(color = if (isSystemInDarkTheme()) Color.DarkGray else Color.White)
+                .padding(horizontal = 10.dp, vertical = 15.dp)
+                .fillMaxWidth()
 
 
         ) {
@@ -134,25 +118,12 @@ fun HourlyView(model: WeatherViewModel) {
                                 )
 
                                 Box() {
-                                    Image(
-                                        painter = painterResource(id = getWeatherIcon(it.weather[0].icon)),
-                                        contentDescription = "",
-                                        modifier = Modifier
-                                            .offset(x = 1.dp, y = 1.dp)
-                                            .height(45.dp)
-                                            .width(45.dp),
-                                        colorFilter = ColorFilter.tint(color = Color.Gray.copy(alpha = 0.5f))
 
-                                    )
-
-                                    Image(
-                                        painter = painterResource(id = getWeatherIcon(it.weather[0].icon)),
-                                        contentDescription = "",
-                                        modifier = Modifier
-                                            .height(45.dp)
-                                            .width(45.dp)
-
-                                    )
+                               Icon(
+                                   imageVector = getWeatherIcon(it.weather[0].id,it.weather[0].icon.contains("n")),
+                                   contentDescription = "",
+                                    modifier = Modifier.size(35.dp)
+                               )
                                 }
                                 Text(
                                     "${it.temp.toInt()}°",

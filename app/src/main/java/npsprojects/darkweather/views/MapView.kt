@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.scale
 import androidx.navigation.NavController
+import com.google.android.material.shape.MarkerEdgeTreatment
 import npsprojects.darkweather.R
 import npsprojects.darkweather.getWeatherIcon
 import npsprojects.darkweather.models.WeatherViewModel
@@ -121,7 +122,7 @@ class CustomInfoWindowForGoogleMap(context: Context) : GoogleMap.InfoWindowAdapt
 }
 
 
-const val InitialZoom = 8f
+const val InitialZoom = 9f
 const val MinZoom = 5f
 const val MaxZoom = 20f
 
@@ -182,23 +183,23 @@ fun MapViewContainer(
 
                 it.setInfoWindowAdapter(CustomInfoWindowForGoogleMap(context = context))
 
-                val icon = BitmapFactory.decodeResource(context.resources,getWeatherIcon(input = if(model.locations.isNotEmpty()) (model.locations[index].data.current.weather[0].icon ?: "") else ""))
-                val width: Int = icon.width
-                val height: Int = icon.height
-                val ratio:Double = height.toDouble()/width.toDouble()
+//                val icon = BitmapFactory.decodeResource(context.resources,getWeatherIcon(input = if(model.locations.isNotEmpty()) (model.locations[index].data.current.weather[0].icon ?: "") else ""))
+//                val width: Int = icon.width
+//                val height: Int = icon.height
+//                val ratio:Double = height.toDouble()/width.toDouble()
+//
+//                val smallMarker = icon.scale(width = 90,height = (90*ratio).toInt(),filter = false)
+//
+//                val markerOptions = MarkerOptions()
+//                    .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
+//                    .title(if(model.locations.isNotEmpty()) "${model.locations[index].name},${model.locations[index].data.current.temp.toUInt()}°" else ",")
+//                    .snippet(if(model.locations.isNotEmpty()) model.locations[index].data.current.weather[0].description else "")
 
-                val smallMarker = icon.scale(width = 90,height = (90*ratio).toInt(),filter = false)
 
-                val markerOptions = MarkerOptions()
-                    .icon(BitmapDescriptorFactory.fromBitmap(smallMarker))
-                    .title(if(model.locations.isNotEmpty()) "${model.locations[index].name},${model.locations[index].data.current.temp.toUInt()}°" else ",")
-                    .snippet(if(model.locations.isNotEmpty()) model.locations[index].data.current.weather[0].description else "")
-
-
-
+                it.clear()
                 val marker =  it.addMarker(
 
-                    markerOptions.position(coordinates)
+                    MarkerOptions().position(coordinates)
                 )
                // marker?.showInfoWindow()
 //            it.addMarker(
@@ -227,7 +228,7 @@ fun MapViewContainer(
                     }
                 }
 
-                it.setZoom(zoom)
+                it.setZoom(mapZoom)
             }
 
         }

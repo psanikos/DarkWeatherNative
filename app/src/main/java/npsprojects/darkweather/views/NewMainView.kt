@@ -63,6 +63,7 @@ import coil.compose.rememberImagePainter
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.navigationBarsHeight
 import com.google.accompanist.insets.navigationBarsPadding
+import com.google.accompanist.insets.statusBarsPadding
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.google.android.gms.maps.model.LatLng
@@ -115,12 +116,13 @@ val error by model.error.observeAsState()
         }
     })
     Scaffold(
-        topBar = { TopBarView(model = model, controller = controller,color=color)},
+
         floatingActionButton = { FloatingActionButton(onClick = {
             controller.navigate("Map")
         },modifier = Modifier.navigationBarsPadding()) {
             Icon(FontAwesomeIcons.Solid.Map,contentDescription = "map",modifier = Modifier.size(20.dp),tint = if(isSystemInDarkTheme()) Color.Black else Color.White)
-        }}
+        }},
+
        // backgroundColor = color.copy(alpha = 0.7f)
     ) {
 
@@ -130,182 +132,168 @@ val error by model.error.observeAsState()
                 onRefresh = { model.initActions() }
             ) {
 
+Box(modifier = Modifier.fillMaxSize()
+    ) {
+    LazyColumn(
+        modifier = Modifier.background(Brush.verticalGradient(listOf(color,MaterialTheme.colors.background,MaterialTheme.colors.background))).padding(horizontal = 10.dp) .statusBarsPadding()
+            .padding(top=50.dp)
+            .fillMaxSize(),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(50.dp),
+        state = listState
+    ) {
 
-                LazyColumn(
-                    modifier = Modifier
-                        .navigationBarsPadding()
-                        .fillMaxSize(),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(50.dp),
-                    state = listState
-                ) {
+        item {
+            MainCard(model = model, controller = controller)
 
+        }
+
+        if (!model.locations.isEmpty() && !model.locations[index].data.alerts.isNullOrEmpty()) {
+            model.locations[index].data.alerts?.let {
+                if (it.isNotEmpty()) {
                     item {
-                        MainCard(model = model, controller = controller)
-
-                    }
-
-                    if (!model.locations.isEmpty() && !model.locations[index].data.alerts.isNullOrEmpty()) {
-                        model.locations[index].data.alerts?.let {
-                            if (it.isNotEmpty()) {
-                                item {
-                                    Box(
-                                        modifier = Modifier
-                                            .padding(horizontal = 15.dp)
-                                            .fillMaxWidth()
-                                            .wrapContentHeight()
-                                            .background(
-                                                color = Color.Yellow.copy(alpha = 0.15f),
-                                                shape = RoundedCornerShape(12)
-                                            )
-                                            .padding(10.dp)
-                                    ) {
-                                        Column(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            horizontalAlignment = Alignment.CenterHorizontally,
-                                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                                        ) {
-                                            Icon(
-                                                Icons.Filled.Warning,
-                                                contentDescription = "",
-                                                tint = Color.Red,
-                                                modifier = Modifier.size(40.dp)
-                                            )
-                                            Text(
-                                                it[0].event ?: "Alert",
-                                                style = MaterialTheme.typography.h3.copy(
-                                                    fontSize = 14.sp
-                                                )
-                                            )
-                                            Text(
-                                                it[0].description ?: "",
-                                                style = MaterialTheme.typography.body2,
-                                                maxLines = 3
-                                            )
-                                            Row(
-                                                horizontalArrangement = Arrangement.spacedBy(
-                                                    10.dp
-                                                ),
-                                                verticalAlignment = Alignment.CenterVertically
-                                            ) {
-                                                Icon(
-                                                    Icons.Default.Timer,
-                                                    contentDescription = ""
-                                                )
-                                                Text(
-                                                    "From ${
-                                                        DateTimeFormatter.ofPattern("EEEE dd")
-                                                            .format(
-                                                                LocalDateTime.ofInstant(
-                                                                    Instant.ofEpochMilli((1000 * it[0].start).toLong()),
-                                                                    ZoneId.systemDefault()
-                                                                )
-                                                            )
-                                                    }" + if (it[0].end != null) " until ${
-                                                        DateTimeFormatter.ofPattern("EEEE dd")
-                                                            .format(
-                                                                LocalDateTime.ofInstant(
-                                                                    Instant.ofEpochMilli((1000 * it[0].end!!).toLong()),
-                                                                    ZoneId.systemDefault()
-                                                                )
-                                                            )
-                                                    }" else "",
-                                                    style = MaterialTheme.typography.body2
-                                                )
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-
-                    if (!model.locations.isEmpty() && !model.locations[index].data.hourly.isNullOrEmpty() && (model.locations[index].data.hourly.firstOrNull { it.pop!! > 0.49 } != null)) {
-                        item {
-                            RainAlert(model = model)
-                        }
-                    }
-                    item {
-                        AirQualityView(model = model)
-                    }
-
-                    item {
-                        Column(
+                        Box(
                             modifier = Modifier
                                 .padding(horizontal = 15.dp)
-                                .fillMaxSize()
-                                .clip(RoundedCornerShape(12.dp)),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(0.dp)
+                                .fillMaxWidth()
+                                .wrapContentHeight()
+                                .background(
+                                    color = Color.Yellow.copy(alpha = 0.15f),
+                                    shape = RoundedCornerShape(12)
+                                )
+                                .padding(10.dp)
                         ) {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(45.dp)
-                                    .background(if (isSystemInDarkTheme()) iceBlack else frosted)
-                                    .padding(horizontal = 10.dp),
-                                contentAlignment = Alignment.CenterStart
+                            Column(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
                             ) {
-                                Row(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Text(
-                                        stringResource(id = R.string.today),
-                                        style = MaterialTheme.typography.h4.copy(
-                                            fontWeight = FontWeight.ExtraBold,
-
-                                        )
-                                    )
-                                    DayDetailsView(model = model)
-                                }
-                            }
-                            HourlyView(model = model)
-                        }
-                    }
-
-                    item {
-                        UVView(model = model)
-                    }
-
-                    item {
-                        Column(
-                            modifier = Modifier
-                                .padding(horizontal = 15.dp)
-                                .fillMaxSize()
-                                .clip(RoundedCornerShape(12.dp)),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(0.dp)
-                        ) {
-
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(45.dp)
-                                    .background(if (isSystemInDarkTheme()) iceBlack else frosted)
-                                    .padding(horizontal = 10.dp),
-                                contentAlignment = Alignment.CenterStart
-                            ) {
+                                Icon(
+                                    Icons.Filled.Warning,
+                                    contentDescription = "",
+                                    tint = Color.Red,
+                                    modifier = Modifier.size(40.dp)
+                                )
                                 Text(
-                                    stringResource(id = R.string.weekly),
-                                    style = MaterialTheme.typography.h4.copy(
-                                        fontWeight = FontWeight.ExtraBold,
-
+                                    it[0].event ?: "Alert",
+                                    style = MaterialTheme.typography.h3.copy(
+                                        fontSize = 14.sp
                                     )
                                 )
+                                Text(
+                                    it[0].description ?: "",
+                                    style = MaterialTheme.typography.body2,
+                                    maxLines = 3
+                                )
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(
+                                        10.dp
+                                    ),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Icon(
+                                        Icons.Default.Timer,
+                                        contentDescription = ""
+                                    )
+                                    Text(
+                                        "From ${
+                                            DateTimeFormatter.ofPattern("EEEE dd")
+                                                .format(
+                                                    LocalDateTime.ofInstant(
+                                                        Instant.ofEpochMilli((1000 * it[0].start).toLong()),
+                                                        ZoneId.systemDefault()
+                                                    )
+                                                )
+                                        }" + if (it[0].end != null) " until ${
+                                            DateTimeFormatter.ofPattern("EEEE dd")
+                                                .format(
+                                                    LocalDateTime.ofInstant(
+                                                        Instant.ofEpochMilli((1000 * it[0].end!!).toLong()),
+                                                        ZoneId.systemDefault()
+                                                    )
+                                                )
+                                        }" else "",
+                                        style = MaterialTheme.typography.body2
+                                    )
+                                }
                             }
-
-                            WeekView(model = model)
                         }
                     }
-item{ Spacer(modifier = Modifier.height(40.dp))}
+                }
+            }
+        }
+
+        if (!model.locations.isEmpty() && !model.locations[index].data.hourly.isNullOrEmpty() && (model.locations[index].data.hourly.firstOrNull { it.pop!! > 0.49 } != null)) {
+            item {
+                RainAlert(model = model)
+            }
+        }
+        item {
+            AirQualityView(model = model)
+        }
+
+        item {
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = 15.dp)
+                    .fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            stringResource(id = R.string.today),
+                            style = MaterialTheme.typography.h4.copy(
+                                fontWeight = FontWeight.ExtraBold,
+
+                                )
+                        )
+                        DayDetailsView(model = model)
 
                 }
+                HourlyView(model = model)
+            }
+        }
+
+        item {
+            UVView(model = model)
+        }
+
+        item {
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = 15.dp)
+                    .fillMaxSize()
+                  ,
+                horizontalAlignment = Alignment.Start,
+                verticalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
 
 
+                    Text(
+                        stringResource(id = R.string.weekly),
+                        style = MaterialTheme.typography.h4.copy(
+                            fontWeight = FontWeight.ExtraBold,
+
+                            )
+                    )
 
 
+                WeekView(model = model)
+            }
+        }
+        item { Spacer(modifier = Modifier.height(40.dp)) }
+
+    }
+
+    TopBarView(model = model, controller = controller,color=color)
+
+}
         }
     }
 }

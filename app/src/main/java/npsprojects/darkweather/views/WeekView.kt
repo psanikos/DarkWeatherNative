@@ -1,18 +1,15 @@
 package npsprojects.darkweather.views
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
+import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDownward
-import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Navigation
-import androidx.compose.material.icons.filled.Umbrella
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -31,14 +28,9 @@ import npsprojects.darkweather.getWeatherIcon
 import npsprojects.darkweather.models.Daily
 import npsprojects.darkweather.models.WeatherViewModel
 import npsprojects.darkweather.round
-import npsprojects.darkweather.ui.theme.blue_500
-import npsprojects.darkweather.ui.theme.blue_grey_500
 import npsprojects.darkweather.ui.theme.light_blue_500
 import npsprojects.darkweather.ui.theme.pink_500
 import java.text.SimpleDateFormat
-import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
 import java.util.*
 
 @Composable
@@ -57,6 +49,7 @@ fun WeekView(model: WeatherViewModel){
 
 
     Column(modifier = Modifier
+        .clip(RoundedCornerShape(12.dp))
         .background(if(isSystemInDarkTheme()) Color.DarkGray else Color.White)
         .padding(horizontal = 10.dp,vertical = 15.dp)
         .fillMaxWidth()
@@ -66,7 +59,7 @@ fun WeekView(model: WeatherViewModel){
 
         week.forEach {
             WeekViewItem(model = model, day = it)
-            Divider(color = Color.Gray.copy(alpha = 0.3f))
+
         }
     }
     }
@@ -96,23 +89,9 @@ fun WeekViewItem(model:WeatherViewModel,day:Daily) {
 
 
             Box() {
-                Image(
-                    painter = painterResource(id = getWeatherIcon(day.weather[0].icon)),
-                    contentDescription = "",
-                    modifier = Modifier
-                        .offset(x = 1.dp, y = 2.dp)
-                        .size(40.dp),
-                    colorFilter = ColorFilter.tint(color = Color.Gray.copy(alpha = 0.5f))
+        Icon(getWeatherIcon(day.weather[0].id,day.weather[0].icon.contains("n")),contentDescription = "",modifier = Modifier.size(30.dp))
 
-                )
 
-                Image(
-                    painter = painterResource(id = getWeatherIcon(day.weather[0].icon)),
-                    contentDescription = "",
-                    modifier = Modifier
-                        .size(40.dp)
-
-                )
             }
         }
 

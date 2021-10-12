@@ -1,53 +1,37 @@
 package npsprojects.darkweather.views
 
 import android.util.Range
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
-import androidx.compose.material.swipeable
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.annotation.ExperimentalCoilApi
-import coil.compose.rememberImagePainter
 import npsprojects.darkweather.R
 import npsprojects.darkweather.WeatherUnits
 import npsprojects.darkweather.getWeatherIcon
 import npsprojects.darkweather.models.Current
-import npsprojects.darkweather.models.WeatherModel
 import npsprojects.darkweather.models.WeatherViewModel
 import npsprojects.darkweather.round
-import npsprojects.darkweather.timeAgo
 import npsprojects.darkweather.ui.theme.*
 import java.text.SimpleDateFormat
 import java.time.Instant
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
@@ -58,6 +42,9 @@ fun MainCard(model:WeatherViewModel,controller:NavController) {
 
     var icon by rememberSaveable {
         mutableStateOf("02d")
+    }
+    var iconId by rememberSaveable {
+        mutableStateOf(500)
     }
     var temp by rememberSaveable {
         mutableStateOf("N/A°")
@@ -91,6 +78,7 @@ fun MainCard(model:WeatherViewModel,controller:NavController) {
     LaunchedEffect(key1 = index + model.locations.size, block = {
         if (model.locations.isNotEmpty() && model.locations.size > index) {
             icon = model.locations[index].data.current.weather[0].icon
+            iconId = model.locations[index].data.current.weather[0].id.toInt()
             temp = model.locations[index].data.current.temp.toUInt().toString() + "°"
             tempHigh = model.locations[index].data.daily[0].temp.max.toUInt().toString() + "°"
             tempLow = model.locations[index].data.daily[0].temp.min.toUInt().toString() + "°"
@@ -126,23 +114,7 @@ fun MainCard(model:WeatherViewModel,controller:NavController) {
             ) {
                 Box() {
 
-                    Image(
-                        painter = rememberImagePainter(data = "https://openweathermap.org/img/wn/${icon}@4x.png"),
-                        contentDescription = "",
-                        modifier = Modifier
-                            .offset(x = 1.dp, y = 1.dp)
-                            .size(150.dp),
-                        colorFilter = ColorFilter.tint(color = Color.Gray.copy(alpha = 0.5f))
-
-                    )
-                    Image(
-                        painter = rememberImagePainter(data = "https://openweathermap.org/img/wn/${icon}@4x.png"),
-                        contentDescription = "weather image",
-                        modifier = Modifier
-
-                            .size(150.dp),
-                        contentScale = ContentScale.Fit
-                    )
+                  Icon(imageVector =  getWeatherIcon(iconId,icon.contains("n")), contentDescription = "",Modifier.size(150.dp))
                 }
 
                 Text(
@@ -158,7 +130,7 @@ fun MainCard(model:WeatherViewModel,controller:NavController) {
                 Text(
                     "Feels like: $feel",
                     style = MaterialTheme.typography.body2.copy(
-                        color = if (isSystemInDarkTheme()) light_blue_800 else light_blue_100,
+                        color = if (isSystemInDarkTheme()) Color.LightGray else Color.DarkGray,
                         fontWeight = FontWeight.Bold
                     )
                 )

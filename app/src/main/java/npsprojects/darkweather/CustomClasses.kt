@@ -1,6 +1,7 @@
 package npsprojects.darkweather
 
 import android.annotation.SuppressLint
+import android.graphics.drawable.VectorDrawable
 import android.text.format.DateUtils
 import android.util.Log
 import androidx.compose.foundation.background
@@ -10,9 +11,13 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.TileOverlay
+import compose.icons.AllIcons
+import compose.icons.WeatherIcons
+import compose.icons.weathericons.*
 import npsprojects.darkweather.views.InitialZoom
 import npsprojects.darkweather.views.rememberMapViewWithLifecycle
 import java.io.IOException
@@ -79,21 +84,200 @@ fun getWeatherColor(input: String): Color {
         else -> Color(0xFF2F4276)
     }
 }
-fun getWeatherBackground(input: String): Int {
-    return when (input) {
-        "01d","01n" -> R.drawable.sunnyback
-        "09d","10d","09n","10n" -> R.drawable.rainback
-        "13d","13n" -> R.drawable.snowback
-
-        "50d","50n" -> R.drawable.mistback // fog
-
-        "04d","04n","03d","03n" -> R.drawable.cloudyback // cloudy
-        "02d", "02n" -> R.drawable.partlycloudyback
-
-        "11d","11n" -> R.drawable.stormback
-
-        else ->  R.drawable.partlycloudyback
+fun getWeatherIcon(input: Int, night:Boolean): ImageVector {
+    if(!night) {
+        //Day-----
+        return when (input) {
+            200 -> WeatherIcons.DayThunderstorm
+            201 -> WeatherIcons.DayThunderstorm
+            202 -> WeatherIcons.DayThunderstorm
+            210 -> WeatherIcons.DayLightning
+            211 -> WeatherIcons.DayLightning
+            212 -> WeatherIcons.DayLightning
+            221 -> WeatherIcons.DayLightning
+            230 -> WeatherIcons.DayThunderstorm
+            231 -> WeatherIcons.DayThunderstorm
+            232 -> WeatherIcons.DayThunderstorm
+            300 -> WeatherIcons.DaySprinkle
+            301 -> WeatherIcons.DaySprinkle
+            302 -> WeatherIcons.DayRain
+            310 -> WeatherIcons.DayRain
+            311 -> WeatherIcons.DayRain
+            312 -> WeatherIcons.DayRain
+            313 -> WeatherIcons.DayRain
+            314 -> WeatherIcons.DayRain
+            321 -> WeatherIcons.DaySprinkle
+            500 -> WeatherIcons.DaySprinkle
+            501 -> WeatherIcons.DayRain
+            502 -> WeatherIcons.DayRain
+            503 -> WeatherIcons.DayRain
+            504 -> WeatherIcons.DayRain
+            511 -> WeatherIcons.DayRainMix
+            520 -> WeatherIcons.DayShowers
+            521 -> WeatherIcons.DayShowers
+            522 -> WeatherIcons.DayShowers
+            531 -> WeatherIcons.DayStormShowers
+            600 -> WeatherIcons.DaySnow
+            601 -> WeatherIcons.DaySleet
+            602 -> WeatherIcons.DaySnow
+            611 -> WeatherIcons.DayRainMix
+            612 -> WeatherIcons.DayRainMix
+            615 -> WeatherIcons.DayRainMix
+            616 -> WeatherIcons.DayRainMix
+            620 -> WeatherIcons.DayRainMix
+            621 -> WeatherIcons.DaySnow
+            622 -> WeatherIcons.DaySnow
+            701 -> WeatherIcons.DayShowers
+            711 -> WeatherIcons.Smoke
+            721 -> WeatherIcons.DayHaze
+            731 -> WeatherIcons.Dust
+            741 -> WeatherIcons.DayFog
+            761 -> WeatherIcons.Dust
+            762 -> WeatherIcons.Dust
+            781 -> WeatherIcons.Tornado
+            800 -> WeatherIcons.DaySunny
+            801 -> WeatherIcons.DayCloudyGusts
+            802 -> WeatherIcons.DayCloudyGusts
+            803 -> WeatherIcons.DayCloudyGusts
+            804 -> WeatherIcons.DaySunnyOvercast
+            900 -> WeatherIcons.Tornado
+            902 -> WeatherIcons.Hurricane
+            903 -> WeatherIcons.SnowflakeCold
+            904 -> WeatherIcons.Hot
+            906 -> WeatherIcons.DayHail
+            957 -> WeatherIcons.StrongWind
+            else -> WeatherIcons.DaySunny
+        }
     }
+    else {
+        //Night----
+        return when (input) {
+            200 -> WeatherIcons.NightAltThunderstorm
+            201 -> WeatherIcons.NightAltThunderstorm
+            202 -> WeatherIcons.NightAltThunderstorm
+            210 -> WeatherIcons.NightAltLightning
+            211 -> WeatherIcons.NightAltLightning
+            212 -> WeatherIcons.NightAltLightning
+            221 -> WeatherIcons.NightAltLightning
+            230 -> WeatherIcons.NightAltThunderstorm
+            231 -> WeatherIcons.NightAltThunderstorm
+            232 -> WeatherIcons.NightAltThunderstorm
+            300 -> WeatherIcons.NightAltSprinkle
+            301 -> WeatherIcons.NightAltSprinkle
+            302 -> WeatherIcons.NightAltRain
+            310 -> WeatherIcons.NightAltRain
+            311 -> WeatherIcons.NightAltRain
+            312 -> WeatherIcons.NightAltRain
+            313 -> WeatherIcons.NightAltRain
+            314 -> WeatherIcons.NightAltRain
+            321 -> WeatherIcons.NightAltSprinkle
+            500 -> WeatherIcons.NightAltSprinkle
+            501 -> WeatherIcons.NightAltRain
+            502 -> WeatherIcons.NightAltRain
+            503 -> WeatherIcons.NightAltRain
+            504 -> WeatherIcons.NightAltRain
+            511 -> WeatherIcons.NightAltRainMix
+            520 -> WeatherIcons.NightAltShowers
+            521 -> WeatherIcons.NightAltShowers
+            522 -> WeatherIcons.NightAltShowers
+            531 -> WeatherIcons.NightAltStormShowers
+            600 -> WeatherIcons.NightAltSnow
+            601 -> WeatherIcons.NightAltSleet
+            602 -> WeatherIcons.NightAltSnow
+            611 -> WeatherIcons.NightAltRainMix
+            612 -> WeatherIcons.NightAltRainMix
+            615 -> WeatherIcons.NightAltRainMix
+            616 -> WeatherIcons.NightAltRainMix
+            620 -> WeatherIcons.NightAltRainMix
+            621 -> WeatherIcons.NightAltSnow
+            622 -> WeatherIcons.NightAltSnow
+            701 -> WeatherIcons.NightAltShowers
+            711 -> WeatherIcons.Smoke
+            721 -> WeatherIcons.DayHaze
+            731 -> WeatherIcons.Dust
+            741 -> WeatherIcons.NightFog
+            761 -> WeatherIcons.Dust
+            762 -> WeatherIcons.Dust
+            781 -> WeatherIcons.Tornado
+            800 -> WeatherIcons.NightClear
+            801 -> WeatherIcons.NightAltCloudyGusts
+            802 -> WeatherIcons.NightAltCloudyGusts
+            803 -> WeatherIcons.NightAltCloudyGusts
+            804 -> WeatherIcons.NightAltCloudy
+            900 -> WeatherIcons.Tornado
+            902 -> WeatherIcons.Hurricane
+            903 -> WeatherIcons.SnowflakeCold
+            904 -> WeatherIcons.Hot
+            906 -> WeatherIcons.NightAltHail
+            957 -> WeatherIcons.StrongWind
+            else -> WeatherIcons.NightClear
+        }
+    }
+//return when (input){
+//    200-> WeatherIcons.Thunderstorm
+//    201-> WeatherIcons.Thunderstorm
+//    202-> WeatherIcons.Thunderstorm
+//    210-> WeatherIcons.Lightning
+//    211-> WeatherIcons.Lightning
+//    212-> WeatherIcons.Lightning
+//    221-> WeatherIcons.Lightning
+//    230-> WeatherIcons.Thunderstorm
+//    231-> WeatherIcons.Thunderstorm
+//    232-> WeatherIcons.Thunderstorm
+//    300-> WeatherIcons.Sprinkle
+//    301-> WeatherIcons.Sprinkle
+//    302-> WeatherIcons.Rain
+//    310-> WeatherIcons.RainMix
+//    311-> WeatherIcons.Rain
+//    312-> WeatherIcons.Rain
+//    313-> WeatherIcons.Showers
+//    314-> WeatherIcons.Rain
+//    321-> WeatherIcons.Sprinkle
+//    500-> WeatherIcons.Sprinkle
+//    501-> WeatherIcons.Rain
+//    502-> WeatherIcons.Rain
+//    503-> WeatherIcons.Rain
+//    504-> WeatherIcons.Rain
+//    511-> WeatherIcons.RainMix
+//    520-> WeatherIcons.Showers
+//    521-> WeatherIcons.Showers
+//    522-> WeatherIcons.Showers
+//    531-> WeatherIcons.StormShowers
+//    600-> WeatherIcons.Snow
+//    601-> WeatherIcons.Snow
+//    602-> WeatherIcons.Sleet
+//    611-> WeatherIcons.RainMix
+//    612-> WeatherIcons.RainMix
+//    615-> WeatherIcons.RainMix
+//    616-> WeatherIcons.RainMix
+//    620-> WeatherIcons.RainMix
+//    621-> WeatherIcons.Snow
+//    622-> WeatherIcons.Snow
+//    701-> WeatherIcons.Showers
+//    711-> WeatherIcons.Smoke
+//    721-> WeatherIcons.DayHaze
+//    731-> WeatherIcons.Dust
+//    741-> WeatherIcons.Fog
+//    761-> WeatherIcons.Dust
+//    762-> WeatherIcons.Dust
+//    771-> WeatherIcons.CloudyGusts
+//    781-> WeatherIcons.Tornado
+//    800-> WeatherIcons.DaySunny
+//    801-> WeatherIcons.CloudyGusts
+//    802-> WeatherIcons.CloudyGusts
+//    803-> WeatherIcons.CloudyGusts
+//    804-> WeatherIcons.Cloudy
+//    900-> WeatherIcons.Tornado
+//    901-> WeatherIcons.StormShowers
+//    902-> WeatherIcons.Hurricane
+//    903-> WeatherIcons.SnowflakeCold
+//    904-> WeatherIcons.Hot
+//    905-> WeatherIcons.Windy
+//    906-> WeatherIcons.Hail
+//    957-> WeatherIcons.StrongWind
+//    else -> WeatherIcons.DaySunny
+//}
+//
 }
 //fun getWeatherIcon(input: String): Int {
 //
@@ -142,30 +326,30 @@ fun moonDecription(input:Double):Int{
     }
 
 }
-fun getWeatherIcon(input: String): Int {
-
-    return when (input) {
-        "01d" -> R.drawable.i01d
-        "02d" -> R.drawable.i02d
-        "03d" -> R.drawable.i03d
-        "04d" -> R.drawable.i04d
-        "01n" -> R.drawable.i01n
-        "02n" -> R.drawable.i02n
-        "03n" -> R.drawable.i03n
-        "04n" -> R.drawable.i04n
-        "09n" -> R.drawable.i09n
-        "10n" -> R.drawable.i10n
-        "11n" -> R.drawable.i11n
-        "13n" -> R.drawable.i13n
-        "50n" -> R.drawable.i50n
-        "09d" -> R.drawable.i09d
-        "10d" -> R.drawable.i10d
-        "11d" -> R.drawable.i11d
-        "13d" -> R.drawable.i13d
-        "50d" -> R.drawable.i50d
-        else -> R.drawable.i02d
-    }
-}
+//fun getWeatherIcon(input: String): Int {
+//
+//    return when (input) {
+//        "01d" -> R.drawable.i01d
+//        "02d" -> R.drawable.i02d
+//        "03d" -> R.drawable.i03d
+//        "04d" -> R.drawable.i04d
+//        "01n" -> R.drawable.i01n
+//        "02n" -> R.drawable.i02n
+//        "03n" -> R.drawable.i03n
+//        "04n" -> R.drawable.i04n
+//        "09n" -> R.drawable.i09n
+//        "10n" -> R.drawable.i10n
+//        "11n" -> R.drawable.i11n
+//        "13n" -> R.drawable.i13n
+//        "50n" -> R.drawable.i50n
+//        "09d" -> R.drawable.i09d
+//        "10d" -> R.drawable.i10d
+//        "11d" -> R.drawable.i11d
+//        "13d" -> R.drawable.i13d
+//        "50d" -> R.drawable.i50d
+//        else -> R.drawable.i02d
+//    }
+//}
 
 fun Date.timeAgo():String {
   val dateString = SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.getDefault()).format(this)

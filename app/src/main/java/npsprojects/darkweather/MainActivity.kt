@@ -81,7 +81,7 @@ class MainActivity : ComponentActivity() {
 
                             delay(8000)
                             if (mInterstitialAd != null) {
-                         //       mInterstitialAd?.show(MyApp.activity)
+                                mInterstitialAd?.show(MyApp.activity)
                             } else {
                                 Log.d("TAG", "The interstitial ad wasn't ready yet.")
                             }

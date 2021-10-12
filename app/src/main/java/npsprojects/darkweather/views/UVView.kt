@@ -79,21 +79,18 @@ fun UVView(model: WeatherViewModel) {
                 .padding(horizontal = 15.dp)
                 .fillMaxWidth()
                 .wrapContentHeight()
-                .clip(RoundedCornerShape(12.dp)),
+              ,
             horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.spacedBy(0.dp)
+            verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-            Box(modifier = Modifier
-                .fillMaxWidth()
-                .height(45.dp)
-                .background(if (isSystemInDarkTheme()) iceBlack else frosted)
-                .padding(horizontal = 10.dp),contentAlignment = Alignment.CenterStart) {
+
                 Text(
                     stringResource(R.string.uv),
                     style = MaterialTheme.typography.h4.copy(fontWeight = FontWeight.ExtraBold))
-            }
+
             Column(
                 modifier = Modifier
+                    .clip(RoundedCornerShape(12.dp))
                     .background(if (isSystemInDarkTheme()) Color.DarkGray else Color.White)
                     .padding(horizontal = 10.dp,vertical = 15.dp)
                     .fillMaxWidth()

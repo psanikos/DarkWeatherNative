@@ -45,8 +45,8 @@ fun TopBarView(model: WeatherViewModel, controller: NavController,color: Color){
     val index:Int by model.index.observeAsState(initial = 0)
     Row(modifier = Modifier
         .background(
-            color = if (isSystemInDarkTheme()) Color(0xFF353535).copy(alpha = 0.9f) else Color.White.copy(
-                alpha = 0.9f
+            color = if (isSystemInDarkTheme()) Color(0xFF353535).copy(alpha = 0.1f) else Color.White.copy(
+                alpha = 0.1f
             )
         )
         .statusBarsPadding()
