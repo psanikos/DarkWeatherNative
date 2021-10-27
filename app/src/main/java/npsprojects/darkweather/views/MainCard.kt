@@ -94,8 +94,6 @@ fun MainCard(model:WeatherViewModel,controller:NavController) {
 
         Column(
             modifier = Modifier
-                .padding(horizontal = 15.dp)
-                .padding(top = 20.dp)
                 .fillMaxWidth()
                 .wrapContentHeight(),
             verticalArrangement = Arrangement.spacedBy(30.dp),
@@ -253,7 +251,6 @@ fun MainCard(model:WeatherViewModel,controller:NavController) {
         if (range != null && range?.lower != null && range?.upper != null) {
             Box(
                 modifier = Modifier
-                    .padding(horizontal = 15.dp)
                     .fillMaxWidth()
                     .wrapContentHeight()
                     .background(
@@ -294,7 +291,7 @@ fun MainCard(model:WeatherViewModel,controller:NavController) {
                         style = MaterialTheme.typography.body2,
                         maxLines = 3
                     )
-
+                    Spacer(modifier = Modifier.height(10.dp))
                 }
             }
         }

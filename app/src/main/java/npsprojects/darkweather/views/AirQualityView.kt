@@ -109,7 +109,6 @@ fun AirQualityView(model:WeatherViewModel) {
         Column(
             modifier = Modifier
 
-                .padding(horizontal = 15.dp)
                 .fillMaxWidth()
                 .wrapContentHeight()
 
@@ -122,8 +121,8 @@ fun AirQualityView(model:WeatherViewModel) {
         Column(
             modifier = Modifier
                 .clip(RoundedCornerShape(12.dp))
-                .background(color = if(isSystemInDarkTheme()) Color.DarkGray else Color.White)
-                .padding(horizontal = 10.dp,vertical = 15.dp)
+                .background(color = if(isSystemInDarkTheme()) Color.DarkGray.copy(alpha = 0.6f) else frosted.copy(alpha = 0.6f))
+                .padding(10.dp)
                 .fillMaxWidth()
                 .wrapContentHeight()
             ,

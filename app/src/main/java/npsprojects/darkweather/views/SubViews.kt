@@ -60,7 +60,7 @@ fun HourlyView(model: WeatherViewModel) {
         LazyRow(
             modifier = Modifier
                 .clip(RoundedCornerShape(12.dp))
-                .background(color = if (isSystemInDarkTheme()) Color.DarkGray else Color.White)
+                .background(color = if(isSystemInDarkTheme()) Color.DarkGray.copy(alpha = 0.6f) else frosted.copy(alpha = 0.6f))
                 .padding(horizontal = 10.dp, vertical = 15.dp)
                 .fillMaxWidth()
 

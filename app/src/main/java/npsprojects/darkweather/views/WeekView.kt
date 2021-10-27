@@ -28,6 +28,7 @@ import npsprojects.darkweather.getWeatherIcon
 import npsprojects.darkweather.models.Daily
 import npsprojects.darkweather.models.WeatherViewModel
 import npsprojects.darkweather.round
+import npsprojects.darkweather.ui.theme.frosted
 import npsprojects.darkweather.ui.theme.light_blue_500
 import npsprojects.darkweather.ui.theme.pink_500
 import java.text.SimpleDateFormat
@@ -50,7 +51,7 @@ fun WeekView(model: WeatherViewModel){
 
     Column(modifier = Modifier
         .clip(RoundedCornerShape(12.dp))
-        .background(if(isSystemInDarkTheme()) Color.DarkGray else Color.White)
+        .background(color = if(isSystemInDarkTheme()) Color.DarkGray.copy(alpha = 0.6f) else frosted.copy(alpha = 0.6f))
         .padding(horizontal = 10.dp,vertical = 15.dp)
         .fillMaxWidth()
         .wrapContentHeight(),

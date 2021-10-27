@@ -10,10 +10,7 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -81,6 +78,7 @@ import npsprojects.darkweather.models.WeatherViewModel
 import npsprojects.darkweather.ui.theme.*
 import java.lang.reflect.Array.get
 import java.lang.reflect.Array.set
+import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -134,27 +132,37 @@ val error by model.error.observeAsState()
 
 Box(modifier = Modifier.fillMaxSize()
     ) {
-    LazyColumn(
-        modifier = Modifier.background(Brush.verticalGradient(listOf(color,MaterialTheme.colors.background,MaterialTheme.colors.background))).padding(horizontal = 10.dp) .statusBarsPadding()
-            .padding(top=50.dp)
-            .fillMaxSize(),
+    Column(
+        modifier = Modifier
+            .background(
+                Brush.verticalGradient(
+                    listOf(
+                        color,
+                        MaterialTheme.colors.background,
+                        MaterialTheme.colors.background
+                    )
+                )
+            )
+            .padding(horizontal = 15.dp)
+            .statusBarsPadding()
+            .padding(top = 50.dp)
+            .fillMaxSize()
+            .verticalScroll(state = ScrollState(0)),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(50.dp),
-        state = listState
+        verticalArrangement = Arrangement.spacedBy(40.dp)
     ) {
 
-        item {
             MainCard(model = model, controller = controller)
 
-        }
+
 
         if (!model.locations.isEmpty() && !model.locations[index].data.alerts.isNullOrEmpty()) {
             model.locations[index].data.alerts?.let {
                 if (it.isNotEmpty()) {
-                    item {
+
                         Box(
                             modifier = Modifier
-                                .padding(horizontal = 15.dp)
+
                                 .fillMaxWidth()
                                 .wrapContentHeight()
                                 .background(
@@ -185,57 +193,27 @@ Box(modifier = Modifier.fillMaxSize()
                                     style = MaterialTheme.typography.body2,
                                     maxLines = 3
                                 )
-                                Row(
-                                    horizontalArrangement = Arrangement.spacedBy(
-                                        10.dp
-                                    ),
-                                    verticalAlignment = Alignment.CenterVertically
-                                ) {
-                                    Icon(
-                                        Icons.Default.Timer,
-                                        contentDescription = ""
-                                    )
-                                    Text(
-                                        "From ${
-                                            DateTimeFormatter.ofPattern("EEEE dd")
-                                                .format(
-                                                    LocalDateTime.ofInstant(
-                                                        Instant.ofEpochMilli((1000 * it[0].start).toLong()),
-                                                        ZoneId.systemDefault()
-                                                    )
-                                                )
-                                        }" + if (it[0].end != null) " until ${
-                                            DateTimeFormatter.ofPattern("EEEE dd")
-                                                .format(
-                                                    LocalDateTime.ofInstant(
-                                                        Instant.ofEpochMilli((1000 * it[0].end!!).toLong()),
-                                                        ZoneId.systemDefault()
-                                                    )
-                                                )
-                                        }" else "",
-                                        style = MaterialTheme.typography.body2
-                                    )
-                                }
+                           Spacer(modifier = Modifier.height(5.dp))
                             }
                         }
                     }
                 }
             }
-        }
+
 
         if (!model.locations.isEmpty() && !model.locations[index].data.hourly.isNullOrEmpty() && (model.locations[index].data.hourly.firstOrNull { it.pop!! > 0.49 } != null)) {
-            item {
+
                 RainAlert(model = model)
-            }
-        }
-        item {
-            AirQualityView(model = model)
+
         }
 
-        item {
+            AirQualityView(model = model)
+
+
+
             Column(
                 modifier = Modifier
-                    .padding(horizontal = 15.dp)
+
                     .fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.spacedBy(10.dp)
@@ -258,16 +236,15 @@ Box(modifier = Modifier.fillMaxSize()
                 }
                 HourlyView(model = model)
             }
-        }
 
-        item {
+
+
             UVView(model = model)
-        }
 
-        item {
+
+
             Column(
                 modifier = Modifier
-                    .padding(horizontal = 15.dp)
                     .fillMaxSize()
                   ,
                 horizontalAlignment = Alignment.Start,
@@ -286,8 +263,7 @@ Box(modifier = Modifier.fillMaxSize()
 
                 WeekView(model = model)
             }
-        }
-        item { Spacer(modifier = Modifier.height(40.dp)) }
+         Spacer(modifier = Modifier.height(40.dp))
 
     }
 
