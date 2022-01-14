@@ -51,12 +51,25 @@
         <entry key="../../../../layout/compose-model-1631390831844.xml" value="0.25760135135135137" />
         <entry key="../../../../layout/compose-model-1631989044910.xml" value="0.21368243243243243" />
         <entry key="../../../../layout/compose-model-1632058840427.xml" value="0.27533783783783783" />
+        <entry key="../../../../layout/compose-model-1642107896928.xml" value="0.26851851851851855" />
+        <entry key="../../../../layout/compose-model-1642141954339.xml" value="0.25" />
+        <entry key="../../../../layout/compose-model-1642144135237.xml" value="0.24351851851851852" />
+        <entry key="../../../../layout/compose-model-1642145095462.xml" value="0.26851851851851855" />
+        <entry key="../../../../layout/compose-model-1642146210906.xml" value="0.25" />
+        <entry key="../../../../layout/compose-model-1642148490775.xml" value="0.23796296296296296" />
+        <entry key="../../../../layout/compose-model-1642149098753.xml" value="0.23796296296296296" />
+        <entry key="../../../../layout/compose-model-1642149111487.xml" value="0.23796296296296296" />
+        <entry key="../../../../layout/compose-model-1642149290836.xml" value="0.23796296296296296" />
+        <entry key="../../../../layout/compose-model-1642153492119.xml" value="0.27037037037037037" />
+        <entry key="../../../../layout/compose-model-1642164084941.xml" value="0.19087837837837837" />
+        <entry key="../../../../layout/compose-model-1642168418510.xml" value="0.19594594594594594" />
+        <entry key="../../../../layout/compose-model-1642177174117.xml" value="0.16018518518518518" />
         <entry key="app/src/main/res/drawable-v21/app_widget_background.xml" value="0.3235897435897436" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/rain.xml" value="0.2490740740740741" />
         <entry key="app/src/main/res/drawable/rounded_rectangle.xml" value="0.12962962962962962" />
         <entry key="app/src/main/res/drawable/widgetbackgroundsmall.xml" value="0.24259259259259258" />
-        <entry key="app/src/main/res/layout/custom_info_window.xml" value="0.31476683937823835" />
+        <entry key="app/src/main/res/layout/custom_info_window.xml" value="0.1" />
         <entry key="app/src/main/res/layout/dark_weather_small.xml" value="0.20376900999816994" />
         <entry key="app/src/main/res/layout/dark_weather_widget.xml" value="0.28289473684210525" />
         <entry key="app/src/main/res/layout/dark_widget.xml" value="0.165" />

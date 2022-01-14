@@ -33,6 +33,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.math.round
 import com.google.gson.annotations.SerializedName
+import kotlinx.coroutines.Dispatchers
 import npsprojects.darkweather.*
 
 import npsprojects.darkweather.MyApp.context
@@ -47,7 +48,7 @@ enum class Lang {
 class WeatherViewModel : ViewModel() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private val locator = LocationHelper()
-    var locations = mutableStateListOf<WeatherModel>()
+    var locations = MutableLiveData<List<WeatherModel>>()
     var loading =  MutableLiveData(false)
     var units: WeatherUnits by mutableStateOf(WeatherUnits.AUTO)
     var myLocations: List<SavedLocation> by mutableStateOf(listOf())
@@ -89,7 +90,7 @@ fun getLang(){
         getLang()
         getDataFromUserDefaults()
         indexChange(0)
-        locations.clear()
+        locations.value = listOf<WeatherModel>()
 
         getUserLocationData {
              getSavedLocationsData(){
@@ -211,10 +212,10 @@ fun getLang(){
         return savedItems
     }
 
-    fun remove(item: SavedLocation) {
-        //----List of locations----
+    fun remove(item: WeatherModel) {
 
-        locations.removeIf { it.name == item.name }
+        //----List of locations----
+        locations.value = locations.value?.minus(item)
         //---------------------------
 
         val context = MyApp.context
@@ -401,12 +402,17 @@ fun getLang(){
             context = context,
             latitude = location.latitude,
             longitude = location.longitude
-        ) {
-
-            getLocationData(location = Coordinates(location.latitude,location.longitude),name = it,isCurrent = true){ weather->
+        ) { item ->
+            val oldList = locations.value?.toMutableList() ?: mutableListOf()
+            getLocationData(location = Coordinates(location.latitude,location.longitude),name = item,isCurrent = true){ weather->
                 weather?.let {
-                    if(locations.firstOrNull { it.data.lat.round(3) == weather.data.lat.round(3) && it.data.lon.round(3) == weather.data.lon.round(3)} == null) {
-                        locations.add(0, weather)
+                    oldList.add(0,it)
+                    if(locations.value?.firstOrNull { it.data.lat.round(3) == weather.data.lat.round(3) && it.data.lon.round(3) == weather.data.lon.round(3)} == null) {
+                       viewModelScope.launch {
+                           launch(Dispatchers.Main){
+                               locations.value = oldList.toList()
+                           }
+                       }
                     }
                 }
             }
@@ -488,18 +494,25 @@ fun getLang(){
             context = context,
             latitude = location.latitude,
             longitude = location.longitude
-        ) {
-            val currentLocationName = it
+        ) { item ->
+            val currentLocationName = item
+            val oldList = locations.value?.toMutableList() ?: mutableListOf()
+
             getLocationData(location = location,isCurrent = false,name = currentLocationName){ weather->
                 weather?.let {
                     if (
-                        locations.firstOrNull {
+                        locations.value?.firstOrNull {
                             it.data.lat.round(3) == weather.data.lat.round(3) && it.data.lon.round(
                                 3
                             ) == weather.data.lon.round(3)
                         } == null
                     ) {
-                        locations.add(weather)
+                        oldList.add(weather)
+                        viewModelScope.launch {
+                            launch(Dispatchers.Main){
+                                locations.value = oldList.toList()
+                            }
+                        }
                     }
                 }
             }

@@ -51,140 +51,140 @@ val TriangleShape = GenericShape { size, _ ->
     lineTo(size.width, 0f)
 }
 
-@Composable
-fun AirQualityView(model:WeatherViewModel) {
-    val index: Int by model.index.observeAsState(initial = 0)
-    var aqi by rememberSaveable {
-        mutableStateOf(1)
-    }
-    LaunchedEffect(key1 = index + model.locations.size, block = {
-        if (  model.locations.isNotEmpty() && model.locations.size > index && (model.locations[index].airQuality != null)) {
-            aqi = model.locations[index].airQuality!!.list!![0].main!!.aqi!!
-
-        }
-    })
-    val color = when (aqi) {
-        1 -> teal_500
-        2 -> yellow_500
-        3 -> orange_500
-        4 -> pink_500
-        else -> red_500
-    }
-    val name = when (aqi) {
-        1 -> stringResource(id = R.string.Good)
-        2 -> stringResource(id = R.string.Fair)
-        3 -> stringResource(id = R.string.Moderate)
-        4 -> stringResource(id = R.string.Poor)
-        else -> stringResource(id = R.string.VeryPoor)
-    }
-    val summary = when (aqi) {
-        1 -> stringResource(id = R.string.GoodText)
-        2 -> stringResource(id = R.string.FairText)
-        3 -> stringResource(id = R.string.ModerateText)
-        4 -> stringResource(id = R.string.PoorText)
-        else -> stringResource(id = R.string.VeryPoorText)
-    }
-
-
-    val configuration = LocalConfiguration.current
-    val isLarge = configuration.smallestScreenWidthDp > 400
-    val pointWidth =
-        with(LocalDensity.current) { configuration.smallestScreenWidthDp / (if (isLarge) 10 else 5) - configuration.smallestScreenWidthDp / (if (isLarge) 20 else 10) }
-    var toAnimate by rememberSaveable {
-        mutableStateOf(false)
-    }
-    val value = animateDpAsState(
-        targetValue = if (toAnimate) (aqi * pointWidth).dp else 0.dp,
-        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy)
-    )
-
-    LaunchedEffect(key1 = index + model.locations.size, block = {
-        toAnimate = false
-        delay(600)
-        toAnimate = true
-    })
-
-    if (model.locations.size > 0 && model.locations[index].airQuality != null) {
-
-        Column(
-            modifier = Modifier
-
-                .fillMaxWidth()
-                .wrapContentHeight()
-
-            ,
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-        Text(stringResource(R.string.AirQ), style = MaterialTheme.typography.h4.copy(fontWeight = FontWeight.ExtraBold))
-
-        Column(
-            modifier = Modifier
-                .clip(RoundedCornerShape(12.dp))
-                .background(color = if(isSystemInDarkTheme()) Color.DarkGray.copy(alpha = 0.6f) else frosted.copy(alpha = 0.6f))
-                .padding(10.dp)
-                .fillMaxWidth()
-                .wrapContentHeight()
-            ,
-
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.spacedBy(20.dp)
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.Start,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    name,
-                    style = MaterialTheme.typography.h4.copy(fontWeight = FontWeight.SemiBold,color = Color.Gray),
-
-                    )
-            }
-            Box() {
-                Row(
-                    modifier = Modifier
-                        .height(16.dp)
-                        .fillMaxWidth()
-                        .background(
-                            brush = Brush.linearGradient(
-                                colors = listOf(
-                                    green_500, yellow_500, orange_500, pink_500, red_500
-                                )
-                            ),
-                            shape = RoundedCornerShape(50)
-                        )
-
-                ) {
-//                        LinearProgressIndicator(
-//                            modifier = Modifier.fillMaxWidth().height(18.dp)
-//                                .clip(RoundedCornerShape(50)),backgroundColor = Color.Gray,
-//                            progress = value.value,
-//                            color = color
+//@Composable
+//fun AirQualityView(model:WeatherViewModel) {
+//    val index: Int by model.index.observeAsState(initial = 0)
+//    var aqi by rememberSaveable {
+//        mutableStateOf(1)
+//    }
+//    LaunchedEffect(key1 = index + model.locations.size, block = {
+//        if (  model.locations.isNotEmpty() && model.locations.size > index && (model.locations[index].airQuality != null)) {
+//            aqi = model.locations[index].airQuality!!.list!![0].main!!.aqi!!
+//
+//        }
+//    })
+//    val color = when (aqi) {
+//        1 -> teal_500
+//        2 -> yellow_500
+//        3 -> orange_500
+//        4 -> pink_500
+//        else -> red_500
+//    }
+//    val name = when (aqi) {
+//        1 -> stringResource(id = R.string.Good)
+//        2 -> stringResource(id = R.string.Fair)
+//        3 -> stringResource(id = R.string.Moderate)
+//        4 -> stringResource(id = R.string.Poor)
+//        else -> stringResource(id = R.string.VeryPoor)
+//    }
+//    val summary = when (aqi) {
+//        1 -> stringResource(id = R.string.GoodText)
+//        2 -> stringResource(id = R.string.FairText)
+//        3 -> stringResource(id = R.string.ModerateText)
+//        4 -> stringResource(id = R.string.PoorText)
+//        else -> stringResource(id = R.string.VeryPoorText)
+//    }
+//
+//
+//    val configuration = LocalConfiguration.current
+//    val isLarge = configuration.smallestScreenWidthDp > 400
+//    val pointWidth =
+//        with(LocalDensity.current) { configuration.smallestScreenWidthDp / (if (isLarge) 10 else 5) - configuration.smallestScreenWidthDp / (if (isLarge) 20 else 10) }
+//    var toAnimate by rememberSaveable {
+//        mutableStateOf(false)
+//    }
+//    val value = animateDpAsState(
+//        targetValue = if (toAnimate) (aqi * pointWidth).dp else 0.dp,
+//        animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy)
+//    )
+//
+//    LaunchedEffect(key1 = index + model.locations.size, block = {
+//        toAnimate = false
+//        delay(600)
+//        toAnimate = true
+//    })
+//
+//    if (model.locations.size > 0 && model.locations[index].airQuality != null) {
+//
+//        Column(
+//            modifier = Modifier
+//
+//                .fillMaxWidth()
+//                .wrapContentHeight()
+//
+//            ,
+//            horizontalAlignment = Alignment.Start,
+//            verticalArrangement = Arrangement.spacedBy(10.dp)
+//        ) {
+//        Text(stringResource(R.string.AirQ), style = MaterialTheme.typography.h4.copy(fontWeight = FontWeight.ExtraBold))
+//
+//        Column(
+//            modifier = Modifier
+//                .clip(RoundedCornerShape(12.dp))
+//                .background(color = if(isSystemInDarkTheme()) Color.DarkGray.copy(alpha = 0.6f) else frosted.copy(alpha = 0.6f))
+//                .padding(10.dp)
+//                .fillMaxWidth()
+//                .wrapContentHeight()
+//            ,
+//
+//            horizontalAlignment = Alignment.Start,
+//            verticalArrangement = Arrangement.spacedBy(20.dp)
+//        ) {
+//            Row(
+//                modifier = Modifier.fillMaxWidth(),
+//                horizontalArrangement = Arrangement.Start,
+//                verticalAlignment = Alignment.CenterVertically
+//            ) {
+//                Text(
+//                    name,
+//                    style = MaterialTheme.typography.h4.copy(fontWeight = FontWeight.SemiBold,color = Color.Gray),
+//
+//                    )
+//            }
+//            Box() {
+//                Row(
+//                    modifier = Modifier
+//                        .height(16.dp)
+//                        .fillMaxWidth()
+//                        .background(
+//                            brush = Brush.linearGradient(
+//                                colors = listOf(
+//                                    green_500, yellow_500, orange_500, pink_500, red_500
+//                                )
+//                            ),
+//                            shape = RoundedCornerShape(50)
 //                        )
-
-
-                }
-                Box(
-                    Modifier
-                        .offset(x = value.value, y = (-2).dp)
-                        .size(18.dp)
-                        .background(color = blue_grey_500, shape = TriangleShape)
-                )
-            }
-
-            Text(
-                summary,
-                style = MaterialTheme.typography.body2
-
-            )
-
-
-        }
-
-    }
-}
-}
+//
+//                ) {
+////                        LinearProgressIndicator(
+////                            modifier = Modifier.fillMaxWidth().height(18.dp)
+////                                .clip(RoundedCornerShape(50)),backgroundColor = Color.Gray,
+////                            progress = value.value,
+////                            color = color
+////                        )
+//
+//
+//                }
+//                Box(
+//                    Modifier
+//                        .offset(x = value.value, y = (-2).dp)
+//                        .size(18.dp)
+//                        .background(color = blue_grey_500, shape = TriangleShape)
+//                )
+//            }
+//
+//            Text(
+//                summary,
+//                style = MaterialTheme.typography.body2
+//
+//            )
+//
+//
+//        }
+//
+//    }
+//}
+//}
 
 //interface Shape {
 //

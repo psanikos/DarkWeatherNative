@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.LayoutModifier
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import npsprojects.darkweather.ui.theme.iceBlack
 
@@ -47,6 +48,7 @@ fun ColoredIcon(
     imageVector: ImageVector,
     contentDescription: String?,
     modifier: Modifier = Modifier,
+    padding: Dp = 4.dp,
     tint: Color = LocalContentColor.current.copy(alpha = LocalContentAlpha.current)
 ) {
     Box(
@@ -55,7 +57,7 @@ fun ColoredIcon(
                 color = tint.copy(alpha = 0.15f),
                 shape = CircleShape
             )
-            .padding(4.dp),
+            .padding(padding),
         contentAlignment = Alignment.Center
     ) {
         androidx.compose.material.Icon(

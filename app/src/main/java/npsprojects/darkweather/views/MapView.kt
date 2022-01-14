@@ -43,7 +43,7 @@ import androidx.core.graphics.scale
 import androidx.navigation.NavController
 import com.google.android.material.shape.MarkerEdgeTreatment
 import npsprojects.darkweather.R
-import npsprojects.darkweather.getWeatherIcon
+import npsprojects.darkweather.models.WeatherModel
 import npsprojects.darkweather.models.WeatherViewModel
 import npsprojects.darkweather.ui.theme.indigo_500
 import npsprojects.darkweather.ui.theme.pink_500
@@ -57,6 +57,8 @@ fun CustomMapView(model: WeatherViewModel,controller:NavController) {
     val map = rememberMapViewWithLifecycle()
     var mapType by rememberSaveable { mutableStateOf("none") }
     val index: Int by model.index.observeAsState(initial = 0)
+    val locations by model.locations.observeAsState(initial = listOf<WeatherModel>())
+
     val testCoordinates = LatLng(37.98384, 23.72753)
 
     var coordinates by rememberSaveable {
@@ -66,11 +68,11 @@ fun CustomMapView(model: WeatherViewModel,controller:NavController) {
     }
     var zoom by rememberSaveable(map) { mutableStateOf(InitialZoom) }
     val overlays: MutableList<TileOverlay> by rememberSaveable { mutableStateOf(java.util.ArrayList<TileOverlay>()) }
-    LaunchedEffect(key1 = index + model.locations.size, block = {
-        if (model.locations.isNotEmpty()) {
+    LaunchedEffect(key1 = index + locations.size, block = {
+        if (locations.isNotEmpty()) {
             coordinates = LatLng(
-                model.locations[index].data.lat,
-                model.locations[index].data.lon
+                locations[index].data.lat,
+                locations[index].data.lon
             )
         }
 

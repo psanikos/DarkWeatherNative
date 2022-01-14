@@ -62,7 +62,7 @@ val Typography = Typography(
     ),
     h3 = TextStyle(
         fontFamily = appFont,
-        fontWeight = FontWeight.Black,
+        fontWeight = FontWeight.Bold    ,
         fontSize = 24.sp,
         letterSpacing = 0.5.sp
     ),
@@ -80,7 +80,7 @@ val Typography = Typography(
     ),
     caption = TextStyle(
         fontFamily = appFont,
-        fontWeight = FontWeight.Thin,
+        fontWeight = FontWeight.Medium,
         fontSize = 11.sp,
         letterSpacing = 0.sp
     )

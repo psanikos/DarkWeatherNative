@@ -27,9 +27,11 @@ import kotlinx.coroutines.launch
 import npsprojects.darkweather.R
 import npsprojects.darkweather.ago
 import npsprojects.darkweather.models.SavedLocation
+import npsprojects.darkweather.models.WeatherModel
 import npsprojects.darkweather.models.WeatherViewModel
 import npsprojects.darkweather.round
 import npsprojects.darkweather.timeAgo
+import npsprojects.darkweather.ui.theme.grey_100
 import npsprojects.darkweather.ui.theme.red_700
 import npsprojects.darkweather.ui.theme.teal_500
 import java.time.Instant
@@ -37,6 +39,7 @@ import java.util.*
 
 @Composable
 fun TopBarView(model: WeatherViewModel, controller: NavController,color: Color){
+    val locations by model.locations.observeAsState(initial = listOf<WeatherModel>())
 
     var dropExtended by remember {
         mutableStateOf(false)
@@ -44,11 +47,7 @@ fun TopBarView(model: WeatherViewModel, controller: NavController,color: Color){
     val scope = rememberCoroutineScope()
     val index:Int by model.index.observeAsState(initial = 0)
     Row(modifier = Modifier
-        .background(
-            color = if (isSystemInDarkTheme()) Color(0xFF353535).copy(alpha = 0.1f) else Color.White.copy(
-                alpha = 0.1f
-            )
-        )
+
         .statusBarsPadding()
         .padding(horizontal = 15.dp)
         .fillMaxWidth()
@@ -65,20 +64,20 @@ fun TopBarView(model: WeatherViewModel, controller: NavController,color: Color){
                 .fillMaxWidth(0.55f)) {
 
             Box() {
-                if (!(model.locations.isNotEmpty() && model.locations.size > index)) {
-                    Text("N/A", style = MaterialTheme.typography.h4)
+                if (!(locations.isNotEmpty() && locations.size > index)) {
+                    Text("N/A", style = MaterialTheme.typography.h4.copy(color = Color.White))
                 } else {
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(5.dp),
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.clickable(onClick = { dropExtended = !dropExtended  })
                     ) {
-                        if (model.locations[index].isCurrent) {
-                            Icon(FontAwesomeIcons.Solid.LocationArrow,modifier = Modifier.size(15.dp), contentDescription = "")
+                        if (locations[index].isCurrent) {
+                            Icon(FontAwesomeIcons.Solid.LocationArrow,modifier = Modifier.size(15.dp), contentDescription = "", tint = Color.White)
                         }
                         Text(
-                            model.locations[index].name,
-                            style = MaterialTheme.typography.h4
+                            locations[index].name,
+                            style = MaterialTheme.typography.h4.copy(color = Color.White)
 
                         )
                     }
@@ -86,7 +85,7 @@ fun TopBarView(model: WeatherViewModel, controller: NavController,color: Color){
                 DropdownMenu(expanded = dropExtended, onDismissRequest = { /*TODO*/ }) {
 
 
-                    model.locations.forEachIndexed { index, item ->
+                    locations.forEachIndexed { index, item ->
                         DropdownMenuItem(onClick = {
                             model.indexChange(index)
 
@@ -98,7 +97,8 @@ fun TopBarView(model: WeatherViewModel, controller: NavController,color: Color){
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
                                 if (item.isCurrent) {
-                                    Icon(FontAwesomeIcons.Solid.LocationArrow,modifier = Modifier.size(15.dp), contentDescription = "")
+                                    Icon(FontAwesomeIcons.Solid.LocationArrow,modifier = Modifier.size(15.dp), contentDescription = "",
+                                    )
                                 }
                                 Text(
                                     item.name,
@@ -111,14 +111,14 @@ fun TopBarView(model: WeatherViewModel, controller: NavController,color: Color){
                 }
             }
 
-            Text(  if (!(model.locations.isNotEmpty() && model.locations.size > index)) "No data" else
-                Date.from(Instant.ofEpochSecond(model.locations[index].data.current.dt)).ago(),
-                style =  MaterialTheme.typography.body2.copy(color = MaterialTheme.colors.primary.copy(alpha = 0.7f)),modifier = Modifier.padding(start = 5.dp))
+            Text(  if (!(locations.isNotEmpty() && locations.size > index)) "No data" else
+                Date.from(Instant.ofEpochSecond(locations[index].data.current.dt)).ago(),
+                style =  MaterialTheme.typography.body2.copy(color = Color.White),modifier = Modifier.padding(start = 5.dp))
         }
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp),verticalAlignment = Alignment.CenterVertically) {
-            if (model.locations.isNotEmpty() && model.locations.size > index) {
-                if (model.myLocations.any { it.latitude.round(2) == model.locations[index].data.lat.round(2) && it.longitude.round(2) == model.locations[index].data.lon.round(2) }) {
-                    if (!model.locations[index].isCurrent) {
+            if (locations.isNotEmpty() && locations.size > index) {
+                if (model.myLocations.any { it.latitude.round(2) == locations[index].data.lat.round(2) && it.longitude.round(2) == locations[index].data.lon.round(2) }) {
+                    if (!locations[index].isCurrent) {
                         Box(
                             modifier = Modifier
                                 .clickable {
@@ -126,15 +126,7 @@ fun TopBarView(model: WeatherViewModel, controller: NavController,color: Color){
                                     model.indexChange(0)
                                     scope.launch {
                                         model.remove(
-                                            SavedLocation(
-                                                model.locations[oldIndex].name,
-                                                model.locations[oldIndex].data.lat.round(
-                                                    2
-                                                ),
-                                                model.locations[oldIndex].data.lon.round(
-                                                    2
-                                                )
-                                            )
+                                         locations[oldIndex]
                                         )
                                     }
                                 }, contentAlignment = Alignment.Center
@@ -145,20 +137,20 @@ fun TopBarView(model: WeatherViewModel, controller: NavController,color: Color){
                         }
                     }
                 } else {
-                    if (!model.locations[index].isCurrent) {
+                    if (!locations[index].isCurrent) {
                         Box(
                             modifier = Modifier
 
                                 .clickable {
-                                    if (!model.myLocations.any { it.latitude.round(2) == model.locations[index].data.lat.round(2) && it.longitude.round(2) == model.locations[index].data.lon.round(2) }) {
+                                    if (!model.myLocations.any { it.latitude.round(2) == locations[index].data.lat.round(2) && it.longitude.round(2) == locations[index].data.lon.round(2) }) {
                                         scope.launch {
                                             model.saveLocation(
                                                 SavedLocation(
-                                                    model.locations[index].name,
-                                                    model.locations[index].data.lat.round(
+                                                    locations[index].name,
+                                                    locations[index].data.lat.round(
                                                         2
                                                     ),
-                                                    model.locations[index].data.lon.round(
+                                                    locations[index].data.lon.round(
                                                         2
                                                     )
                                                 )
@@ -183,28 +175,25 @@ fun TopBarView(model: WeatherViewModel, controller: NavController,color: Color){
             }) {
                 Box() {
 
-                    Icon(
-                        FontAwesomeIcons.Solid.Search, contentDescription = "",
-                        modifier = Modifier.size(20.dp)
-                    )
+                   ColoredIcon(imageVector =  FontAwesomeIcons.Solid.Search, contentDescription = "",
+                   tint = grey_100, modifier = Modifier.size(30.dp), padding = 6.dp)
                 }
             }
             IconButton(onClick = {
                 controller.navigate("Settings")
             }) {
-                Box() {
 
-                    Icon(
-                        FontAwesomeIcons.Solid.EllipsisV, contentDescription = "",
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
+                    ColoredIcon(imageVector =  FontAwesomeIcons.Solid.EllipsisV, contentDescription = "",
+                        tint = grey_100, modifier = Modifier.size(30.dp), padding = 6.dp)
+
+
             }
         }
     }
 }
 @Composable
 fun CompactTopBarView(model: WeatherViewModel, controller: NavController){
+    val locations by model.locations.observeAsState(initial = listOf<WeatherModel>())
 
     var dropExtended by remember {
         mutableStateOf(false)
@@ -226,7 +215,7 @@ fun CompactTopBarView(model: WeatherViewModel, controller: NavController){
                 .fillMaxWidth(0.75f)) {
 
             Box() {
-                if (model.locations.isEmpty()) {
+                if (locations.isEmpty()) {
                     Text("N/A", style = MaterialTheme.typography.h3)
                 } else {
                     Row(
@@ -234,11 +223,11 @@ fun CompactTopBarView(model: WeatherViewModel, controller: NavController){
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.clickable(onClick = { dropExtended = !dropExtended  })
                     ) {
-                        if (model.locations[index].isCurrent) {
+                        if (locations[index].isCurrent) {
                             Icon(FontAwesomeIcons.Solid.LocationArrow,modifier = Modifier.size(15.dp), contentDescription = "")
                         }
                         Text(
-                            model.locations[index].name,
+                            locations[index].name,
                             style = MaterialTheme.typography.h3
                         )
                     }
@@ -246,7 +235,7 @@ fun CompactTopBarView(model: WeatherViewModel, controller: NavController){
                 DropdownMenu(expanded = dropExtended, onDismissRequest = { /*TODO*/ }) {
 
 
-                    model.locations.forEachIndexed { index, item ->
+                    locations.forEachIndexed { index, item ->
                         DropdownMenuItem(onClick = {
                             model.indexChange(index)
 
@@ -271,14 +260,14 @@ fun CompactTopBarView(model: WeatherViewModel, controller: NavController){
                 }
             }
 
-            Text(if(  !(model.locations.isNotEmpty() && model.locations.size > index)) "No data" else
-                Date.from(Instant.ofEpochSecond(model.locations[index].data.current.dt)).timeAgo(),
+            Text(if(  !(locations.isNotEmpty() && locations.size > index)) "No data" else
+                Date.from(Instant.ofEpochSecond(locations[index].data.current.dt)).timeAgo(),
                 style =  MaterialTheme.typography.body2.copy(color = Color.Gray),modifier = Modifier.padding(start = 5.dp))
         }
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp),verticalAlignment = Alignment.CenterVertically) {
-            if(model.locations.isNotEmpty() && model.locations.size > index) {
-                if (model.myLocations.any {  it.latitude.round(2) == model.locations[index].data.lat.round(2) && it.longitude.round(2) == model.locations[index].data.lon.round(2) }) {
-                    if (!model.locations[index].isCurrent) {
+            if(locations.isNotEmpty() && locations.size > index) {
+                if (model.myLocations.any {  it.latitude.round(2) == locations[index].data.lat.round(2) && it.longitude.round(2) == locations[index].data.lon.round(2) }) {
+                    if (!locations[index].isCurrent) {
                         Box(
                             modifier = Modifier
                                 .width(30.dp)
@@ -289,15 +278,7 @@ fun CompactTopBarView(model: WeatherViewModel, controller: NavController){
                                     model.indexChange(0)
                                     scope.launch {
                                         model.remove(
-                                            SavedLocation(
-                                                model.locations[oldIndex].name,
-                                                model.locations[oldIndex].data.lat.round(
-                                                    2
-                                                ),
-                                                model.locations[oldIndex].data.lon.round(
-                                                    2
-                                                )
-                                            )
+                                            locations[oldIndex]
                                         )
                                     }
                                 }, contentAlignment = Alignment.Center
@@ -307,7 +288,7 @@ fun CompactTopBarView(model: WeatherViewModel, controller: NavController){
                         }
                     }
                 } else {
-                    if (!model.locations[index].isCurrent) {
+                    if (!locations[index].isCurrent) {
                         Box(
                             modifier = Modifier
                                 .width(30.dp)
@@ -315,20 +296,20 @@ fun CompactTopBarView(model: WeatherViewModel, controller: NavController){
 
                                 .clickable {
                                     if (!model.myLocations.any {
-                                            it.latitude.round(2) == model.locations[index].data.lat.round(
+                                            it.latitude.round(2) == locations[index].data.lat.round(
                                                 2
-                                            ) && it.longitude.round(2) == model.locations[index].data.lon.round(
+                                            ) && it.longitude.round(2) == locations[index].data.lon.round(
                                                 2
                                             )
                                         }) {
                                         scope.launch {
                                             model.saveLocation(
                                                 SavedLocation(
-                                                    model.locations[index].name,
-                                                    model.locations[index].data.lat.round(
+                                                    locations[index].name,
+                                                    locations[index].data.lat.round(
                                                         2
                                                     ),
-                                                    model.locations[index].data.lon.round(
+                                                    locations[index].data.lon.round(
                                                         2
                                                     )
                                                 )
@@ -375,6 +356,7 @@ fun CompactTopBarView(model: WeatherViewModel, controller: NavController){
 }
 @Composable
 fun MapTopBarView(model: WeatherViewModel, controller: NavController){
+    val locations by model.locations.observeAsState(initial = listOf<WeatherModel>())
 
     var dropExtended by remember {
         mutableStateOf(false)
@@ -408,7 +390,7 @@ fun MapTopBarView(model: WeatherViewModel, controller: NavController){
                 .fillMaxWidth(0.55f)) {
 
             Box() {
-                if (!(model.locations.isNotEmpty() && model.locations.size > index)) {
+                if (!(locations.isNotEmpty() && locations.size > index)) {
                     Text("N/A", style = MaterialTheme.typography.h4)
                 } else {
                     Row(
@@ -416,11 +398,11 @@ fun MapTopBarView(model: WeatherViewModel, controller: NavController){
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.clickable(onClick = { dropExtended = !dropExtended  })
                     ) {
-                        if (model.locations[index].isCurrent) {
+                        if (locations[index].isCurrent) {
                             Icon(FontAwesomeIcons.Solid.LocationArrow,modifier = Modifier.size(15.dp), contentDescription = "")
                         }
                         Text(
-                            model.locations[index].name,
+                            locations[index].name,
                             style = MaterialTheme.typography.h4
 
                         )
@@ -429,7 +411,7 @@ fun MapTopBarView(model: WeatherViewModel, controller: NavController){
                 DropdownMenu(expanded = dropExtended, onDismissRequest = { /*TODO*/ }) {
 
 
-                    model.locations.forEachIndexed { index, item ->
+                    locations.forEachIndexed { index, item ->
                         DropdownMenuItem(onClick = {
                             model.indexChange(index)
 

@@ -102,8 +102,7 @@ fun MainPageView(model: WeatherViewModel, controller: NavController) {
         false -> DeviceType.PHONE
     }
     val isLoading by model.loading.observeAsState(true)
-    Scaffold(
-    ) {
+
 
                 when (deviceType) {
                     DeviceType.PHONE -> NewMainView(model = model, controller = controller)
@@ -111,5 +110,5 @@ fun MainPageView(model: WeatherViewModel, controller: NavController) {
                 }
 
 
-    }
+
 }

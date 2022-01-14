@@ -18,6 +18,7 @@ import androidx.navigation.NavController
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.TileOverlay
+import npsprojects.darkweather.models.WeatherModel
 import npsprojects.darkweather.models.WeatherViewModel
 import java.util.ArrayList
 
@@ -26,6 +27,8 @@ fun FullMapView(model: WeatherViewModel,controller:NavController) {
     val map = rememberMapViewWithLifecycle()
     var mapType by rememberSaveable { mutableStateOf("none") }
     val index: Int by model.index.observeAsState(initial = 0)
+    val locations by model.locations.observeAsState(initial = listOf<WeatherModel>())
+
     val testCoordinates = LatLng(37.98384, 23.72753)
     var dropExtended by remember {
         mutableStateOf(false)
@@ -37,11 +40,11 @@ fun FullMapView(model: WeatherViewModel,controller:NavController) {
     }
     var zoom by rememberSaveable(map) { mutableStateOf(InitialZoom) }
     val overlays: MutableList<TileOverlay> by rememberSaveable { mutableStateOf(ArrayList<TileOverlay>()) }
-    LaunchedEffect(key1 = index + model.locations.size, block = {
-        if (model.locations.isNotEmpty() && model.locations.size > index) {
+    LaunchedEffect(key1 = index + locations.size, block = {
+        if (locations.isNotEmpty() && locations.size > index) {
             coordinates = LatLng(
-                model.locations[index].data.lat,
-                model.locations[index].data.lon
+                locations[index].data.lat,
+                locations[index].data.lon
             )
         }
 

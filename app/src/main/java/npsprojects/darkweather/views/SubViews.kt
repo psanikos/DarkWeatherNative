@@ -18,9 +18,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import npsprojects.darkweather.getWeatherIcon
+import npsprojects.darkweather.getWeatherImage
 import npsprojects.darkweather.models.Current
 
 import npsprojects.darkweather.models.WeatherViewModel
@@ -41,123 +42,125 @@ class ChartData constructor(
 
 
 
-@Composable
-fun HourlyView(model: WeatherViewModel) {
-    val cardColor = if (isSystemInDarkTheme()) Color(0xFF101010) else Color.White
-    val index: Int by model.index.observeAsState(initial = 0)
-    var data: List<Current> by  rememberSaveable {
-        mutableStateOf(listOf())
-    }
-    LaunchedEffect(key1 = index + model.locations.size, block = {
-        if (model.locations.isNotEmpty() && model.locations.size > index) {
-            data = model.locations[index].data.hourly
-        }
-    })
-
-        if(data.isNotEmpty()){
-//Text("Hourly",style = MaterialTheme.typography.h2.copy(fontSize = 14.sp,color = Color.Gray))
-
-        LazyRow(
-            modifier = Modifier
-                .clip(RoundedCornerShape(12.dp))
-                .background(color = if(isSystemInDarkTheme()) Color.DarkGray.copy(alpha = 0.6f) else frosted.copy(alpha = 0.6f))
-                .padding(horizontal = 10.dp, vertical = 15.dp)
-                .fillMaxWidth()
-
-
-        ) {
-
-            data.forEach {
-                item {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(2.dp)
-                    ) {
-                        if (DateTimeFormatter.ofPattern("HH:mm").format(
-                                LocalDateTime.ofInstant(
-                                    Instant.ofEpochMilli(1000 * it.dt),
-                                    ZoneId.systemDefault()
-                                )
-                            ) == "00:00"
-                        ) {
-                            Text(
-                                DateTimeFormatter.ofPattern("EEEE").format(
-                                    LocalDateTime.ofInstant(
-                                        Instant.ofEpochMilli(1000 * it.dt),
-                                        ZoneId.systemDefault()
-                                    )
-                                ),
-                                style = MaterialTheme.typography.body1.copy(fontWeight = FontWeight.Bold)
-                            )
-                        }
-
-                        Box(
-                            modifier = Modifier
-                                .height(120.dp)
-                                .width(70.dp)
-                                ,
-
-                            contentAlignment = Alignment.Center
-
-                        ) {
-                            Column(
-                                modifier = Modifier.fillMaxSize(),
-                                verticalArrangement = Arrangement.SpaceEvenly,
-                                horizontalAlignment = Alignment.CenterHorizontally,
-
-                                ) {
-
-                                Text(
-                                    DateTimeFormatter.ofPattern("HH:mm").format(
-                                        LocalDateTime.ofInstant(
-                                            Instant.ofEpochMilli(1000 * it.dt),
-                                            ZoneId.systemDefault()
-                                        )
-                                    ),
-                                    style = MaterialTheme.typography.body2.copy(color = Color.Gray,fontWeight = FontWeight.SemiBold)
-                                )
-
-                                Box() {
-
-                               Icon(
-                                   imageVector = getWeatherIcon(it.weather[0].id,it.weather[0].icon.contains("n")),
-                                   contentDescription = "",
-                                    modifier = Modifier.size(35.dp)
-                               )
-                                }
-                                Text(
-                                    "${it.temp.toInt()}°",
-                                    style = MaterialTheme.typography.body1.copy(
-                                       fontWeight = FontWeight.Bold
-                                        )
-                                    )
-
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(1.dp)
-                                ) {
-                                    Icon(
-                                        Icons.Rounded.Umbrella,
-                                        contentDescription = "",
-                                        modifier = Modifier
-                                            .size(18.dp),
-                                        tint = light_blue_800
-                                    )
-                                    Text(
-                                        "${(100 * (it.pop ?: 0.0)).roundToInt()}%",
-                                        style = MaterialTheme.typography.body2.copy(color = Color.Gray)
-                                    )
-                                }
-                            }
-                        }
-
-                    }
-                    }
-                }
-            }
-        }
-
-}
+//@Composable
+//fun HourlyView(model: WeatherViewModel) {
+//    val cardColor = if (isSystemInDarkTheme()) Color(0xFF101010) else Color.White
+//    val index: Int by model.index.observeAsState(initial = 0)
+//    var data: List<Current> by  rememberSaveable {
+//        mutableStateOf(listOf())
+//    }
+//    LaunchedEffect(key1 = index + model.locations.size, block = {
+//        if (model.locations.isNotEmpty() && model.locations.size > index) {
+//            data = model.locations[index].data.hourly
+//        }
+//    })
+//
+//        if(data.isNotEmpty()){
+////Text("Hourly",style = MaterialTheme.typography.h2.copy(fontSize = 14.sp,color = Color.Gray))
+//
+//        LazyRow(
+//            modifier = Modifier
+//                .clip(RoundedCornerShape(12.dp))
+//                .background(
+//                    color = if (isSystemInDarkTheme()) Color.DarkGray.copy(alpha = 0.6f) else frosted.copy(
+//                        alpha = 0.6f
+//                    )
+//                )
+//                .padding(horizontal = 10.dp, vertical = 15.dp)
+//                .fillMaxWidth()
+//
+//
+//        ) {
+//
+//            data.forEach {
+//                item {
+//                    Row(
+//                        verticalAlignment = Alignment.CenterVertically,
+//                        horizontalArrangement = Arrangement.spacedBy(2.dp)
+//                    ) {
+//                        if (DateTimeFormatter.ofPattern("HH:mm").format(
+//                                LocalDateTime.ofInstant(
+//                                    Instant.ofEpochMilli(1000 * it.dt),
+//                                    ZoneId.systemDefault()
+//                                )
+//                            ) == "00:00"
+//                        ) {
+//                            Text(
+//                                DateTimeFormatter.ofPattern("EEEE").format(
+//                                    LocalDateTime.ofInstant(
+//                                        Instant.ofEpochMilli(1000 * it.dt),
+//                                        ZoneId.systemDefault()
+//                                    )
+//                                ),
+//                                style = MaterialTheme.typography.body1.copy(fontWeight = FontWeight.Bold)
+//                            )
+//                        }
+//
+//                        Box(
+//                            modifier = Modifier
+//                                .height(120.dp)
+//                                .width(70.dp)
+//                                ,
+//
+//                            contentAlignment = Alignment.Center
+//
+//                        ) {
+//                            Column(
+//                                modifier = Modifier.fillMaxSize(),
+//                                verticalArrangement = Arrangement.SpaceEvenly,
+//                                horizontalAlignment = Alignment.CenterHorizontally,
+//
+//                                ) {
+//
+//                                Text(
+//                                    DateTimeFormatter.ofPattern("HH:mm").format(
+//                                        LocalDateTime.ofInstant(
+//                                            Instant.ofEpochMilli(1000 * it.dt),
+//                                            ZoneId.systemDefault()
+//                                        )
+//                                    ),
+//                                    style = MaterialTheme.typography.body2.copy(color = Color.Gray,fontWeight = FontWeight.SemiBold)
+//                                )
+//
+//                                Box() {
+//                            Image(painter = painterResource(id = getWeatherImage(it.weather[0].icon)),
+//                                   contentDescription = "",
+//                                    modifier = Modifier.size(35.dp)
+//                               )
+//                                }
+//                                Text(
+//                                    "${it.temp.toInt()}°",
+//                                    style = MaterialTheme.typography.body1.copy(
+//                                       fontWeight = FontWeight.Bold
+//                                        )
+//                                    )
+//
+//                                Row(
+//                                    verticalAlignment = Alignment.CenterVertically,
+//                                    horizontalArrangement = Arrangement.spacedBy(1.dp)
+//                                ) {
+//                                    Icon(
+//                                        Icons.Rounded.Umbrella,
+//                                        contentDescription = "",
+//                                        modifier = Modifier
+//                                            .size(18.dp),
+//                                        tint = light_blue_800
+//                                    )
+//                                    Text(
+//                                        "${(100 * (it.pop ?: 0.0)).roundToInt()}%",
+//                                        style = MaterialTheme.typography.body2.copy(color = Color.Gray)
+//                                    )
+//                                }
+//                            }
+//                        }
+//
+//                    }
+//                    }
+//                }
+//            }
+//        }
+//
+//}
 //
 //@Composable
 //fun WeatherMain(model: WeatherViewModel, index:Int){

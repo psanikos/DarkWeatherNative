@@ -12,12 +12,15 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronLeft
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -27,10 +30,7 @@ import kotlinx.coroutines.launch
 import npsprojects.darkweather.Coordinates
 import npsprojects.darkweather.R
 import npsprojects.darkweather.models.WeatherViewModel
-import npsprojects.darkweather.ui.theme.DarkWeatherTheme
-import npsprojects.darkweather.ui.theme.blue_grey_500
-import npsprojects.darkweather.ui.theme.red_500
-import npsprojects.darkweather.ui.theme.teal_500
+import npsprojects.darkweather.ui.theme.*
 
 @Composable
 fun SearchView(model: WeatherViewModel,onSelected:()->Unit) {
@@ -229,7 +229,8 @@ fun FullSearchView(model: WeatherViewModel,controller: NavController) {
     Scaffold(
         topBar = {
             TopAppBar(title = {
-                Text(stringResource(R.string.add_location), style = MaterialTheme.typography.h2)
+                Text(stringResource(R.string.add_location),
+                    style = MaterialTheme.typography.h2)
             },
                 navigationIcon = {
                     IconButton(onClick = {
@@ -240,69 +241,70 @@ fun FullSearchView(model: WeatherViewModel,controller: NavController) {
                     }
                 },
                 elevation = 0.dp,
-                backgroundColor = Color.Transparent,
-                modifier = Modifier.height(140.dp)
+                backgroundColor = grey_100,
+                modifier = Modifier.height(150.dp)
             )
         },
         backgroundColor = if(isSystemInDarkTheme()) Color(0xFF202020) else Color(0xFFEFEFEF)
     ) {
         Column(
             modifier = Modifier
-                .padding(horizontal = 0.dp, vertical = 20.dp)
+                .padding(horizontal = 15.dp, vertical = 20.dp)
                 .fillMaxSize(),
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
 
-            Box(contentAlignment = Alignment.CenterStart) {
-                BasicTextField(
-                    value = searchTerm,
-                    onValueChange = {
-                        searchTerm = it
-                    },
-                    keyboardActions = KeyboardActions(onSearch = {
+                Row(modifier =  Modifier
+                    .background(
+                        color = Color.Gray.copy(alpha = 0.1f),
+                        shape = RoundedCornerShape(16)
+                    )
+                    .height(40.dp)
+                    .fillMaxWidth()
 
-                        scope.launch(Dispatchers.IO) {
-                            val addresses =
-                                model.getCoordinatesFromLocation(
-                                    searchTerm
-                                )
-                            launch(Dispatchers.Main) {
-                                if (addresses.isNullOrEmpty()) {
-                                    showAlert = true
-                                } else {
-                                    searchedAddresses = addresses
+
+               ,horizontalArrangement = Arrangement.spacedBy(5.dp),
+                verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.Search, contentDescription = "",
+                    modifier = Modifier.size(30.dp), tint = Color.DarkGray)
+                    BasicTextField(
+                        value = searchTerm,
+                        onValueChange = {
+                            searchTerm = it
+                        },
+                        keyboardActions = KeyboardActions(onSearch = {
+
+                            scope.launch(Dispatchers.IO) {
+                                val addresses =
+                                    model.getCoordinatesFromLocation(
+                                        searchTerm
+                                    )
+                                launch(Dispatchers.Main) {
+                                    if (addresses.isNullOrEmpty()) {
+                                        showAlert = true
+                                    } else {
+                                        searchedAddresses = addresses
+                                    }
                                 }
                             }
-                        }
-                    }),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                    modifier = Modifier
-                        .padding(20.dp)
-                        .background(
-                            color = Color.Gray.copy(alpha = 0.1f),
-                            shape = RoundedCornerShape(20)
-                        )
-                        .height(50.dp)
-                        .fillMaxWidth()
-                        .padding(15.dp),
-//                decorationBox = {
-//                    if (searchTerm == "") Text(
-//                        text = "Search",
-//                        style = MaterialTheme.typography.body2
-//                    ) else null
+                        }),
+                        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
 //                },
-                    textStyle = MaterialTheme.typography.body1.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black)
+                        textStyle = MaterialTheme.typography
+                            .body1.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black),
+                        decorationBox = { innerTextField ->
+
+
+                                if (searchTerm.isEmpty()) {
+                                    Text("Search for location", style = MaterialTheme.typography.body2)
+                                }
+
+                                innerTextField()
+
+                        }
 
                     )
-
-                if (searchTerm == "") {
-                    Text(
-                        text = stringResource(R.string.searchText),
-                        style = MaterialTheme.typography.body2.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black),
-                        modifier = Modifier.padding(start = 30.dp)
-                    )
-                }
 
             }
             searchedAddresses.forEach {
@@ -311,9 +313,9 @@ fun FullSearchView(model: WeatherViewModel,controller: NavController) {
 
                     Row(
                         modifier = Modifier
-                            .padding(vertical = 5.dp, horizontal = 20.dp)
+                            .padding(vertical = 5.dp)
                             .fillMaxWidth()
-                            .height(50.dp)
+                            .height(40.dp)
                             .background(
                                 color = if (isSystemInDarkTheme()) Color(0xFF121212) else Color.White,
                                 shape = RoundedCornerShape(20)

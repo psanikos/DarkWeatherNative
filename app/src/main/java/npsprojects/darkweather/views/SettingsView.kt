@@ -18,18 +18,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import compose.icons.FontAwesomeIcons
+import compose.icons.WeatherIcons
+import compose.icons.fontawesomeicons.Solid
+import compose.icons.weathericons.Celsius
+import compose.icons.weathericons.Fahrenheit
 import npsprojects.darkweather.R
 import npsprojects.darkweather.WeatherError
 import npsprojects.darkweather.WeatherUnits
 import npsprojects.darkweather.models.WeatherViewModel
-import npsprojects.darkweather.ui.theme.green_200
-import npsprojects.darkweather.ui.theme.green_600
-import npsprojects.darkweather.ui.theme.light_blue_500
-import npsprojects.darkweather.ui.theme.orange_500
-
-
+import npsprojects.darkweather.ui.theme.*
 
 
 @SuppressLint("RestrictedApi")
@@ -44,20 +45,22 @@ fun SettingsView(model: WeatherViewModel, controller: NavController) {
 
     Scaffold(
       //  backgroundColor = if(isSystemInDarkTheme()) Color(0xFF303030) else Color(0xFFf0f0f7),
-         topBar = {
+        topBar = {
             TopAppBar(title = {
-                Text(stringResource(R.string.settings),style = MaterialTheme.typography.h2)
-            },navigationIcon = {
-                IconButton(onClick = {
-                    controller.popBackStack()
-                }) {
-                    Icon(Icons.Default.ChevronLeft,contentDescription = "",
-                        modifier = Modifier.size(40.dp))
-                }
+                Text(stringResource(R.string.settings),
+                    style = MaterialTheme.typography.h2)
             },
+                navigationIcon = {
+                    IconButton(onClick = {
+                        controller.popBackStack()
+                    }) {
+                        Icon(Icons.Default.ChevronLeft,contentDescription = "",
+                            modifier = Modifier.size(40.dp))
+                    }
+                },
                 elevation = 0.dp,
-                backgroundColor = Color.Transparent,
-                modifier = Modifier.height(140.dp)
+                backgroundColor = grey_100,
+                modifier = Modifier.height(150.dp)
             )
         }
     ) {
@@ -76,42 +79,37 @@ fun SettingsView(model: WeatherViewModel, controller: NavController) {
                     stringResource(R.string.Units),
                     style = MaterialTheme.typography.body1.copy(color = if (isSystemInDarkTheme()) Color.White else Color.Black)
                 )
-                Surface(
-                    modifier = Modifier
-                        .height(35.dp)
-                        .width(200.dp)
-                        .clip(RoundedCornerShape(12.dp)), color = Color.LightGray
-                ) {
-                    Row() {
 
-                        Box(modifier = Modifier
-                            .height(35.dp)
-                            .width(100.dp)
-                            .background(color = if (units == WeatherUnits.SI) Color.DarkGray else Color.LightGray)
-                            .clickable {
-                                units = WeatherUnits.SI
-                                model.saveUnit(inputUnit = units)
-                            }, contentAlignment = Alignment.Center) {
-                            Text(
-                                "Celsius",
-                                style = MaterialTheme.typography.button.copy(color = if (units == WeatherUnits.SI) Color.White else Color.Gray)
+                    Row( horizontalArrangement = Arrangement.spacedBy(10.dp),
+                        verticalAlignment = Alignment.CenterVertically) {
+
+                        IconButton(onClick = {
+                            units = WeatherUnits.SI
+                            model.saveUnit(inputUnit = units)
+                        }) {
+                            ColoredIcon(
+                                imageVector = WeatherIcons.Celsius,
+                                contentDescription = "",
+                                modifier = Modifier.size(40.dp),
+                                padding = 4.dp,
+                                tint = if (units == WeatherUnits.SI) teal_600 else Color.LightGray
                             )
                         }
-                        Box(modifier = Modifier
-                            .height(35.dp)
-                            .width(100.dp)
-                            .background(color = if (units == WeatherUnits.US) Color.DarkGray else Color.LightGray)
-                            .clickable {
-                                units = WeatherUnits.US
-                                model.saveUnit(inputUnit = units)
-                            }, contentAlignment = Alignment.Center) {
-                            Text(
-                                "Fahrenheit",
-                                style = MaterialTheme.typography.button.copy(color = if (units == WeatherUnits.US) Color.White else Color.Gray)
+                        IconButton(onClick = {
+                            units = WeatherUnits.US
+                            model.saveUnit(inputUnit = units)
+                        }) {
+                            ColoredIcon(
+                                imageVector = WeatherIcons.Fahrenheit,
+                                contentDescription = "",
+                                modifier = Modifier.size(40.dp),
+                                padding = 4.dp,
+                                tint = if (units == WeatherUnits.US) teal_600 else Color.LightGray
                             )
                         }
+
                     }
-                }
+
             }
 
 
