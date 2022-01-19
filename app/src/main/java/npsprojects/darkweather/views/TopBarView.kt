@@ -31,9 +31,7 @@ import npsprojects.darkweather.models.WeatherModel
 import npsprojects.darkweather.models.WeatherViewModel
 import npsprojects.darkweather.round
 import npsprojects.darkweather.timeAgo
-import npsprojects.darkweather.ui.theme.grey_100
-import npsprojects.darkweather.ui.theme.red_700
-import npsprojects.darkweather.ui.theme.teal_500
+import npsprojects.darkweather.ui.theme.*
 import java.time.Instant
 import java.util.*
 
@@ -47,13 +45,8 @@ fun TopBarView(model: WeatherViewModel, controller: NavController,color: Color){
     val scope = rememberCoroutineScope()
     val index:Int by model.index.observeAsState(initial = 0)
     Row(modifier = Modifier
-
-        .statusBarsPadding()
         .padding(horizontal = 15.dp)
-        .fillMaxWidth()
-
-
-        ,
+        .fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically) {
         Column(
@@ -65,7 +58,7 @@ fun TopBarView(model: WeatherViewModel, controller: NavController,color: Color){
 
             Box() {
                 if (!(locations.isNotEmpty() && locations.size > index)) {
-                    Text("N/A", style = MaterialTheme.typography.h4.copy(color = Color.White))
+                    Text("N/A", style = MaterialTheme.typography.subtitle1.copy(color = Color.White))
                 } else {
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(5.dp),
@@ -77,7 +70,7 @@ fun TopBarView(model: WeatherViewModel, controller: NavController,color: Color){
                         }
                         Text(
                             locations[index].name,
-                            style = MaterialTheme.typography.h4.copy(color = Color.White)
+                            style = MaterialTheme.typography.subtitle1.copy(color = Color.White)
 
                         )
                     }
@@ -113,7 +106,7 @@ fun TopBarView(model: WeatherViewModel, controller: NavController,color: Color){
 
             Text(  if (!(locations.isNotEmpty() && locations.size > index)) "No data" else
                 Date.from(Instant.ofEpochSecond(locations[index].data.current.dt)).ago(),
-                style =  MaterialTheme.typography.body2.copy(color = Color.White),modifier = Modifier.padding(start = 5.dp))
+                style =  MaterialTheme.typography.caption.copy(color = Color.White),modifier = Modifier.padding(start = 5.dp))
         }
         Row(horizontalArrangement = Arrangement.spacedBy(10.dp),verticalAlignment = Alignment.CenterVertically) {
             if (locations.isNotEmpty() && locations.size > index) {
@@ -354,6 +347,7 @@ fun CompactTopBarView(model: WeatherViewModel, controller: NavController){
         }
     }
 }
+
 @Composable
 fun MapTopBarView(model: WeatherViewModel, controller: NavController){
     val locations by model.locations.observeAsState(initial = listOf<WeatherModel>())
@@ -363,14 +357,13 @@ fun MapTopBarView(model: WeatherViewModel, controller: NavController){
     }
     val scope = rememberCoroutineScope()
     val index:Int by model.index.observeAsState(initial = 0)
+
     Row(modifier = Modifier
         .background(
-            color = if (isSystemInDarkTheme()) Color(0xFF353535).copy(alpha = 0.9f) else Color.White.copy(
-                alpha = 0.9f
-            )
+            color = if (isSystemInDarkTheme()) iceBlack else frosted
         )
         .statusBarsPadding()
-
+        .height(150.dp)
         .fillMaxWidth()
 
 
@@ -380,18 +373,18 @@ fun MapTopBarView(model: WeatherViewModel, controller: NavController){
         IconButton(onClick = {
             controller.popBackStack()
         }) {
-            Icon(FontAwesomeIcons.Solid.ArrowLeft,contentDescription = "",modifier = Modifier.size(20.dp))
+            Icon(FontAwesomeIcons.Solid.ArrowLeft,contentDescription = "",modifier = Modifier.size(25.dp))
         }
         Column(
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.SpaceEvenly,
             modifier = Modifier
                 .height(50.dp)
-                .fillMaxWidth(0.55f)) {
+                .fillMaxWidth(0.8f)) {
 
             Box() {
                 if (!(locations.isNotEmpty() && locations.size > index)) {
-                    Text("N/A", style = MaterialTheme.typography.h4)
+                    Text("N/A", style = MaterialTheme.typography.h2)
                 } else {
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(5.dp),
@@ -399,11 +392,11 @@ fun MapTopBarView(model: WeatherViewModel, controller: NavController){
                         modifier = Modifier.clickable(onClick = { dropExtended = !dropExtended  })
                     ) {
                         if (locations[index].isCurrent) {
-                            Icon(FontAwesomeIcons.Solid.LocationArrow,modifier = Modifier.size(15.dp), contentDescription = "")
+                            Icon(FontAwesomeIcons.Solid.LocationArrow,modifier = Modifier.size(25.dp), contentDescription = "")
                         }
                         Text(
                             locations[index].name,
-                            style = MaterialTheme.typography.h4
+                            style = MaterialTheme.typography.h2
 
                         )
                     }

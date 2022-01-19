@@ -24,6 +24,8 @@ import androidx.navigation.NavController
 import compose.icons.FontAwesomeIcons
 import compose.icons.WeatherIcons
 import compose.icons.fontawesomeicons.Solid
+import compose.icons.fontawesomeicons.solid.ArrowLeft
+import compose.icons.fontawesomeicons.solid.LocationArrow
 import compose.icons.weathericons.Celsius
 import compose.icons.weathericons.Fahrenheit
 import npsprojects.darkweather.R
@@ -54,12 +56,12 @@ fun SettingsView(model: WeatherViewModel, controller: NavController) {
                     IconButton(onClick = {
                         controller.popBackStack()
                     }) {
-                        Icon(Icons.Default.ChevronLeft,contentDescription = "",
-                            modifier = Modifier.size(40.dp))
+                        Icon(FontAwesomeIcons.Solid.ArrowLeft,contentDescription = "",
+                            modifier = Modifier.size(25.dp))
                     }
                 },
                 elevation = 0.dp,
-                backgroundColor = grey_100,
+                backgroundColor = if (isSystemInDarkTheme()) iceBlack else frosted,
                 modifier = Modifier.height(150.dp)
             )
         }

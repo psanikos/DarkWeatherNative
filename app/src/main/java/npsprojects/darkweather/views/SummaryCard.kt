@@ -2,6 +2,7 @@ package npsprojects.darkweather.views
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
@@ -24,6 +25,8 @@ import compose.icons.fontawesomeicons.solid.Umbrella
 import npsprojects.darkweather.getWeatherImage
 import npsprojects.darkweather.models.Current
 import npsprojects.darkweather.ui.theme.DarkWeatherTheme
+import npsprojects.darkweather.ui.theme.frosted
+import npsprojects.darkweather.ui.theme.iceBlack
 import kotlin.math.roundToInt
 
 //current: Current,daySummary:String
@@ -32,9 +35,13 @@ import kotlin.math.roundToInt
 fun SummaryCard(current: Current,dayDetails:String){
    Column(modifier = Modifier
        .fillMaxWidth()
-       .wrapContentHeight()
-       .background(color = Color.White, shape = RoundedCornerShape(16.dp))
-       .padding(16.dp)
+       .height(170.dp)
+       .background(
+           color = if (isSystemInDarkTheme()) iceBlack else frosted,
+           shape = RoundedCornerShape(16.dp)
+       )
+       .padding(12.dp)
+
    ) {
        Row(modifier = Modifier.fillMaxWidth(),
        horizontalArrangement = Arrangement.SpaceEvenly,
@@ -46,7 +53,8 @@ fun SummaryCard(current: Current,dayDetails:String){
            horizontalAlignment = Alignment.Start,
            verticalArrangement = Arrangement.spacedBy(5.dp)) {
             Text(current.weather.first().description, style = MaterialTheme.typography.caption)
-               Text(current.temp.roundToInt().toString() + "°", style = MaterialTheme.typography.h2.copy(fontWeight = FontWeight.Black))
+               Text(current.temp.roundToInt().toString() + "°", style = MaterialTheme.typography.h2.copy(fontWeight = FontWeight.Black,
+               color = if(isSystemInDarkTheme()) Color.White else Color.Black))
                Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
                    Icon(FontAwesomeIcons.Solid.Umbrella, contentDescription = "",
                    modifier = Modifier.size(15.dp), tint = Color.Gray)
@@ -54,7 +62,10 @@ fun SummaryCard(current: Current,dayDetails:String){
                }
 
            }
-           Divider(modifier = Modifier.width(1.dp).height(100.dp))
+           Divider(modifier = Modifier
+               .width(1.dp)
+               .height(100.dp)
+               .padding(2.dp))
            Column(modifier = Modifier.width(100.dp),
                horizontalAlignment = Alignment.Start,
                verticalArrangement = Arrangement.spacedBy(5.dp)) {
@@ -63,19 +74,19 @@ fun SummaryCard(current: Current,dayDetails:String){
                        modifier = Modifier.size(15.dp), tint = Color.Gray)
                    Text("Humidity", style = MaterialTheme.typography.caption.copy(color = Color.Gray))
                }
-               Text(current.humidity.toString() + "%", style = MaterialTheme.typography.h3)
+               Text(current.humidity.toString() + "%", style = MaterialTheme.typography.subtitle1.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black))
                 Divider()
                Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
                    Icon(FontAwesomeIcons.Solid.Child, contentDescription = "",
                        modifier = Modifier.size(15.dp), tint = Color.Gray)
                    Text("Feels like", style = MaterialTheme.typography.caption.copy(color = Color.Gray))
                }
-               Text(current.feels_like.roundToInt().toString() + "°", style = MaterialTheme.typography.h3)
+               Text(current.feels_like.roundToInt().toString() + "°", style = MaterialTheme.typography.subtitle1.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black))
            }
 
        }
-       Text(dayDetails, style = MaterialTheme.typography.caption,
-       modifier = Modifier.padding(start = 10.dp))
+       Text(dayDetails, style = MaterialTheme.typography.caption.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black),
+       modifier = Modifier.padding(10.dp))
 
    }
 

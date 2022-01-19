@@ -2,6 +2,7 @@ package npsprojects.darkweather.views
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -50,8 +51,8 @@ fun AirQuality(aqi:Int){
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .height(180.dp)
-            .background(color = Color.White, shape = RoundedCornerShape(16.dp))
+            .height(190.dp)
+            .background(color = if (isSystemInDarkTheme()) iceBlack else frosted, shape = RoundedCornerShape(16.dp))
             .padding(16.dp),
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.SpaceBetween
@@ -71,8 +72,8 @@ fun AirQuality(aqi:Int){
                     Text("Air Quality", style = MaterialTheme.typography.caption.copy(color = Color.Gray))
 
                 }
-                Text("$aqi", style = MaterialTheme.typography.h2)
-                Text(name, style = MaterialTheme.typography.body1)
+                Text("$aqi", style = MaterialTheme.typography.h3.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black))
+                Text(name, style = MaterialTheme.typography.body1.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black))
             }
             Box(
                 modifier = Modifier
@@ -86,7 +87,7 @@ fun AirQuality(aqi:Int){
                     .size(20.dp).background(color = color, shape = CircleShape))
             }
         }
-        Divider()
+        Divider(modifier = Modifier.fillMaxWidth(0.7f).padding(5.dp))
         Text(summary, style = MaterialTheme.typography.caption.copy(color = Color.Gray))
 
     }

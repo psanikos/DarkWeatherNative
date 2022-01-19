@@ -27,19 +27,19 @@ fun Modifier.cardModifier() = this
     .fillMaxWidth()
     .height(300.dp)
 fun Modifier.frosted(isDark:Boolean=false) = this.background(Brush.linearGradient(colors = if(isDark) listOf(
-    iceBlack.copy(alpha = 0.7f),
-    Color.Black.copy(alpha = 0.4f),
-    Color.DarkGray.copy(alpha = 0.5f),
-    Color.Black.copy(alpha = 0.6f),
-    iceBlack.copy(alpha = 0.4f)
+    iceBlack.copy(alpha = 0.8f),
+    Color.Black.copy(alpha = 0.5f),
+    Color.DarkGray.copy(alpha = 0.7f),
+    Color.Black.copy(alpha = 0.8f),
+    iceBlack.copy(alpha = 0.5f)
 )
 else
     listOf(
-        npsprojects.darkweather.ui.theme.frosted.copy(alpha = 0.7f),
-        Color.White.copy(alpha = 0.4f),
-        Color.LightGray.copy(alpha = 0.5f),
-        Color.White.copy(alpha = 0.6f),
-        npsprojects.darkweather.ui.theme.frosted.copy(alpha = 0.4f)
+        npsprojects.darkweather.ui.theme.frosted.copy(alpha = 0.8f),
+        Color.White.copy(alpha = 0.5f),
+        Color.LightGray.copy(alpha = 0.7f),
+        Color.White.copy(alpha = 0.8f),
+        npsprojects.darkweather.ui.theme.frosted.copy(alpha = 0.5f)
     )
 ))
 

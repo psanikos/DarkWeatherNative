@@ -24,6 +24,10 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import compose.icons.FontAwesomeIcons
+import compose.icons.fontawesomeicons.Solid
+import compose.icons.fontawesomeicons.solid.ArrowLeft
+import compose.icons.fontawesomeicons.solid.LocationArrow
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -236,12 +240,13 @@ fun FullSearchView(model: WeatherViewModel,controller: NavController) {
                     IconButton(onClick = {
                         controller.popBackStack()
                     }) {
-                        Icon(Icons.Default.ChevronLeft,contentDescription = "",
-                            modifier = Modifier.size(40.dp))
+                        Icon(
+                            FontAwesomeIcons.Solid.ArrowLeft,contentDescription = "",
+                            modifier = Modifier.size(25.dp))
                     }
                 },
                 elevation = 0.dp,
-                backgroundColor = grey_100,
+                backgroundColor = if (isSystemInDarkTheme()) iceBlack else frosted,
                 modifier = Modifier.height(150.dp)
             )
         },

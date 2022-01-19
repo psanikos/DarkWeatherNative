@@ -12,24 +12,28 @@ import npsprojects.darkweather.R
 private val appFont = FontFamily(
     fonts = listOf(
         Font(
-            resId = R.font.latobold,
+            resId = R.font.montserratbold,
             weight = FontWeight.Bold
 
         ),
         Font(
-            resId = R.font.latoblack,
+            resId = R.font.montserratblack,
             weight = FontWeight.Black
         ),
         Font(
-            resId = R.font.latolight,
+            resId = R.font.montserratregular,
             weight = FontWeight.Light
         ),
         Font(
-            resId = R.font.latoregular,
+            resId = R.font.montserratsemibold,
+            weight = FontWeight.SemiBold
+        ),
+        Font(
+            resId = R.font.montserratmedium,
             weight = FontWeight.Medium
         ),
         Font(
-            resId = R.font.latothin,
+            resId = R.font.montserratthin,
             weight = FontWeight.Thin
         ))
 )
@@ -38,51 +42,49 @@ private val appFont = FontFamily(
 val Typography = Typography(
     body1 = TextStyle(
         fontFamily = appFont,
-        fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        letterSpacing = 0.5.sp
+        fontWeight = FontWeight.Medium,
+        fontSize = 16.sp
     ),
     body2 = TextStyle(
         fontFamily = appFont,
-        fontWeight = FontWeight.Medium,
-        fontSize = 14.sp,
-        letterSpacing = 0.5.sp
+        fontWeight = FontWeight.Light,
+        fontSize = 14.sp
     ),
     h1 = TextStyle(
         fontFamily = appFont,
         fontWeight = FontWeight.Black,
-        fontSize = 60.sp,
-        letterSpacing = 0.sp
+        fontSize = 60.sp
     ),
     h2 = TextStyle(
         fontFamily = appFont,
         fontWeight = FontWeight.Black,
-        fontSize = 32.sp,
-        letterSpacing = 0.5.sp
+        fontSize = 32.sp
     ),
     h3 = TextStyle(
         fontFamily = appFont,
         fontWeight = FontWeight.Bold    ,
-        fontSize = 24.sp,
-        letterSpacing = 0.5.sp
+        fontSize = 24.sp
     ),
     h4 = TextStyle(
         fontFamily = appFont,
-        fontWeight = FontWeight.Medium,
-        fontSize = 18.sp,
-        letterSpacing = 0.5.sp
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 18.sp
     ),
 
     button = TextStyle(
         fontFamily = appFont,
-        fontWeight = FontWeight.Bold,
+        fontWeight = FontWeight.SemiBold,
         fontSize = 14.sp
     ),
     caption = TextStyle(
         fontFamily = appFont,
         fontWeight = FontWeight.Medium,
-        fontSize = 11.sp,
-        letterSpacing = 0.sp
+        fontSize = 11.sp
+    ),
+    subtitle1 = TextStyle(
+        fontFamily = appFont,
+        fontWeight = FontWeight.SemiBold    ,
+        fontSize = 16.sp
     )
 
 )

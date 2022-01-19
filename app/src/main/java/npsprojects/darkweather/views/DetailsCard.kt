@@ -2,6 +2,7 @@ package npsprojects.darkweather.views
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyVerticalGrid
@@ -31,6 +32,8 @@ import compose.icons.weathericons.Sunset
 import npsprojects.darkweather.models.Current
 import npsprojects.darkweather.models.Daily
 import npsprojects.darkweather.ui.theme.DarkWeatherTheme
+import npsprojects.darkweather.ui.theme.frosted
+import npsprojects.darkweather.ui.theme.iceBlack
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -40,9 +43,9 @@ import kotlin.math.roundToInt
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DetailsCard(current: Current,daily: Daily,inSi:Boolean){
-    Box(modifier = Modifier.fillMaxWidth().height(150.dp)
-        .background(color = Color.White, shape = RoundedCornerShape(16.dp))
-        .padding(16.dp), contentAlignment = Alignment.Center) {
+    Box(modifier = Modifier.fillMaxWidth().height(170.dp)
+        .background(color = if (isSystemInDarkTheme()) iceBlack else frosted, shape = RoundedCornerShape(16.dp))
+        .padding(12.dp), contentAlignment = Alignment.Center) {
         LazyVerticalGrid(cells = GridCells.Fixed(3), content = {
             item {
                 DetailsItem(icon = FontAwesomeIcons.Solid.ArrowAltCircleUp, "High", value = daily.temp.max.roundToInt().toString() + "°",null)
@@ -84,8 +87,9 @@ fun DetailsCard(current: Current,daily: Daily,inSi:Boolean){
 @Composable
 fun DetailsItem(icon:ImageVector,title:String,value:String,secondValue:Double?){
     Column(modifier = Modifier
-        .height(60.dp)
-        .fillMaxWidth(),
+        .height(70.dp)
+        .fillMaxWidth()
+        .padding(5.dp),
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
@@ -96,7 +100,7 @@ fun DetailsItem(icon:ImageVector,title:String,value:String,secondValue:Double?){
             Text(title, style = MaterialTheme.typography.caption.copy(color = Color.Gray))
 
         }
-        Text(value, style = MaterialTheme.typography.h3)
+        Text(value, style = MaterialTheme.typography.subtitle1.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black))
     }
 }
 

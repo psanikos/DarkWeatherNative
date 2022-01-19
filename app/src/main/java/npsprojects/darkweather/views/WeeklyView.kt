@@ -2,6 +2,7 @@ package npsprojects.darkweather.views
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
@@ -20,6 +21,8 @@ import androidx.compose.ui.unit.dp
 import npsprojects.darkweather.getWeatherImage
 import npsprojects.darkweather.models.Daily
 import npsprojects.darkweather.ui.theme.DarkWeatherTheme
+import npsprojects.darkweather.ui.theme.frosted
+import npsprojects.darkweather.ui.theme.iceBlack
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -32,7 +35,7 @@ fun WeeklyView(days:List<Daily>,inSi:Boolean){
     Box(modifier = Modifier
         .fillMaxWidth()
         .wrapContentHeight()
-        .background(color = Color.White, shape = RoundedCornerShape(16.dp))
+        .background(color = if (isSystemInDarkTheme()) iceBlack else frosted, shape = RoundedCornerShape(16.dp))
         .padding(16.dp)){
 
       Column() {
@@ -49,7 +52,7 @@ fun WeeklyView(days:List<Daily>,inSi:Boolean){
 fun WeeklyItem(day:Daily,inSi: Boolean) {
     Row(
         modifier = Modifier
-            .height(45.dp)
+            .height(50.dp)
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
@@ -59,19 +62,18 @@ fun WeeklyItem(day:Daily,inSi: Boolean) {
                 Instant.ofEpochMilli(1000 * day.dt),
                 ZoneId.systemDefault()
             )
-        ), style = MaterialTheme.typography.caption.copy(color = Color.Gray))
-        Image(painter = painterResource(id = getWeatherImage("02n")), contentDescription = "",
+        ), style = MaterialTheme.typography.caption.copy(color = Color.Gray), modifier = Modifier.width(90.dp))
+        Image(painter = painterResource(id = getWeatherImage(day.weather.first().icon ?: "02n")), contentDescription = "",
             modifier = Modifier.size(40.dp))
         Row(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
-            verticalAlignment = Alignment.CenterVertically
+            verticalAlignment = Alignment.CenterVertically,
+             modifier = Modifier.width(150.dp)
         ) {
 
-            Text(day.temp.max.roundToInt().toString() + "°", style = MaterialTheme.typography.body1)
+            Text(day.temp.max.roundToInt().toString() + "°", style = MaterialTheme.typography.body1.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black))
             Text(day.temp.min.roundToInt().toString() + "°", style = MaterialTheme.typography.body2.copy(color = Color.Gray))
-            Divider(modifier = Modifier
-                .width(1.dp)
-                .height(25.dp))
+
             Row(
                 horizontalArrangement = Arrangement.spacedBy(5.dp),
                 verticalAlignment = Alignment.CenterVertically
@@ -89,7 +91,7 @@ fun WeeklyItem(day:Daily,inSi: Boolean) {
 
                 Text(
                     text = "${day.wind_speed.roundToInt()} " + if (inSi) "km/h" else "mph" ,
-                    style = MaterialTheme.typography.caption
+                    style = MaterialTheme.typography.caption.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black)
                 )
             }
         }

@@ -26,9 +26,7 @@ import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.solid.Umbrella
 import npsprojects.darkweather.getWeatherImage
 import npsprojects.darkweather.models.Current
-import npsprojects.darkweather.ui.theme.DarkWeatherTheme
-import npsprojects.darkweather.ui.theme.indigo_100
-import npsprojects.darkweather.ui.theme.indigo_500
+import npsprojects.darkweather.ui.theme.*
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -43,7 +41,8 @@ fun HourView(hourly:List<Current>,inSi:Boolean){
        }
    }, modifier = Modifier
        .fillMaxWidth()
-       .height(160.dp).clip(RoundedCornerShape(16.dp)), horizontalArrangement = Arrangement.spacedBy(0.dp),
+       .height(170.dp)
+       .clip(RoundedCornerShape(16.dp)), horizontalArrangement = Arrangement.spacedBy(0.dp),
    verticalAlignment = Alignment.CenterVertically)
 
 }
@@ -52,7 +51,8 @@ fun HourView(hourly:List<Current>,inSi:Boolean){
 fun HourItem(isFirst:Boolean,hour:Current,inSi: Boolean){
     Column(modifier = Modifier
         .fillMaxHeight()
-        .width(90.dp).background(color = if(isFirst) Color.White else indigo_500),
+        .width(90.dp)
+        .background(color = if (isFirst) if (isSystemInDarkTheme()) iceBlack else frosted else indigo_500),
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -62,14 +62,14 @@ fun HourItem(isFirst:Boolean,hour:Current,inSi: Boolean){
                                     Instant.ofEpochMilli(1000 * hour.dt),
                                     ZoneId.systemDefault()
                                 )), style = MaterialTheme.typography.caption.copy(color = if(isFirst) Color.Gray else Color.LightGray))
-        Text(hour.temp.roundToInt().toString() + "°", style = MaterialTheme.typography.h3.copy(color = if(isFirst) Color.Black else Color.White))
+        Text(hour.temp.roundToInt().toString() + "°", style = MaterialTheme.typography.subtitle1.copy(color = if(isFirst && !isSystemInDarkTheme()) Color.Black else Color.White))
         Image(painter = painterResource(id = getWeatherImage(hour.weather.first().icon)), contentDescription ="",
         modifier = Modifier.size(30.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
             Icon(
                 FontAwesomeIcons.Solid.Umbrella, contentDescription = "",
-                modifier = Modifier.size(15.dp), tint = if(isFirst) Color.Gray else Color.LightGray)
-            Text(((hour.pop ?: 0.0)*100).roundToInt().toString() + "%", style = MaterialTheme.typography.caption.copy(color = if(isFirst) Color.Gray else Color.LightGray))
+                modifier = Modifier.size(15.dp), tint = if(isFirst && !isSystemInDarkTheme()) Color.Gray else Color.LightGray)
+            Text(((hour.pop ?: 0.0)*100).roundToInt().toString() + "%", style = MaterialTheme.typography.caption.copy(color = if(isFirst && !isSystemInDarkTheme()) Color.Gray else Color.LightGray))
         }
         Row(
                         horizontalArrangement = Arrangement.spacedBy(5.dp),
@@ -83,13 +83,13 @@ fun HourItem(isFirst:Boolean,hour:Current,inSi: Boolean){
                             modifier = Modifier
                                 .size(15.dp)
                                 .rotate(22.0F),
-                            tint = if(isFirst) Color.Gray else Color.LightGray,
+                            tint = if(isFirst && !isSystemInDarkTheme()) Color.Gray else Color.LightGray,
 
                             )
 
                         Text(
                             text = "${hour.wind_speed.roundToInt()} " + if (inSi) "km/h" else "mph" ,
-                            style = MaterialTheme.typography.caption.copy(color = if(isFirst) Color.Gray else Color.LightGray)
+                            style = MaterialTheme.typography.caption.copy(color = if(isFirst && !isSystemInDarkTheme()) Color.Gray else Color.LightGray)
                         )
                     }
 

@@ -113,17 +113,40 @@ val error by model.error.observeAsState()
             Toast.makeText(context,"Please check your internet connection and location access",Toast.LENGTH_LONG).show()
         }
     })
-    Scaffold(
+    Box(modifier = Modifier.fillMaxSize()) {
+        Image(
+            painter = painterResource(id = backImage), contentDescription = "",
+            modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Crop
+        )
+        Scaffold(
+            floatingActionButton = {
+                FloatingActionButton(onClick = {
+                    controller.navigate("Map")
+                }, modifier = Modifier.navigationBarsPadding()) {
+                    Icon(
+                        FontAwesomeIcons.Solid.Map,
+                        contentDescription = "map",
+                        modifier = Modifier.size(20.dp),
+                        tint = if (isSystemInDarkTheme()) Color.Black else Color.White
+                    )
+                }
+            },
+            topBar = {
+                TopAppBar(
+                    backgroundColor = Color.Transparent,
 
-        floatingActionButton = { FloatingActionButton(onClick = {
-            controller.navigate("Map")
-        },modifier = Modifier.navigationBarsPadding()) {
-            Icon(FontAwesomeIcons.Solid.Map,contentDescription = "map",modifier = Modifier.size(20.dp),tint = if(isSystemInDarkTheme()) Color.Black else Color.White)
-        }},
-
-       // backgroundColor = color.copy(alpha = 0.7f)
-    ) {
-
+                    elevation = 0.dp
+                ) {
+                    TopBarView(
+                        model = model,
+                        controller = controller,
+                        color = Color.Transparent
+                    )
+                }
+            },
+             backgroundColor = Color.Transparent,
+            modifier = Modifier.statusBarsPadding()
+        ) {
 
             SwipeRefresh(
                 state = rememberSwipeRefreshState(isRefreshing),
@@ -132,169 +155,63 @@ val error by model.error.observeAsState()
                 when (locations.size) {
                     0 -> LoadingAnimationScreen()
 
-                   else -> Box(
-                        modifier = Modifier.fillMaxSize()
+                    else -> Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(state = ScrollState(0)),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(40.dp)
                     ) {
-                        Image(
-                            painter = painterResource(id = backImage), contentDescription = "",
-                            modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Crop
-                        )
-                        Column(
+                        Spacer(modifier = Modifier.height(300.dp))
+                        Box(
                             modifier = Modifier
-                                .statusBarsPadding()
-                                .padding(top = 50.dp)
-                                .fillMaxSize()
-                                .verticalScroll(state = ScrollState(0)),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(40.dp)
+                                .fillMaxWidth()
+                                .wrapContentHeight()
+                                .frosted(isSystemInDarkTheme()),
+                            contentAlignment = Alignment.Center
                         ) {
-                            Spacer(modifier = Modifier.height(300.dp))
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .wrapContentHeight()
-                                    .frosted(isSystemInDarkTheme()),
-                                contentAlignment = Alignment.Center
+                            Column(
+                                modifier = Modifier.padding(15.dp),
+                                horizontalAlignment = Alignment.Start,
+                                verticalArrangement = Arrangement.spacedBy(10.dp)
                             ) {
-                                Column(
-                                    modifier = Modifier.padding(15.dp),
-                                    horizontalAlignment = Alignment.Start,
-                                    verticalArrangement = Arrangement.spacedBy(10.dp)
-                                ) {
-                                    SummaryCard(current = locations[index].data.current, dayDetails =locations[index].data.daily.first().weather.first().description )
-                                    HourView(hourly =locations[index].data.hourly, inSi = model.units == WeatherUnits.SI )
-                                    DetailsCard(current = locations[index].data.current, daily = locations[index].data.daily.first(), inSi = model.units == WeatherUnits.SI )
-                                    if(locations[index].airQuality != null) {
-                                        AirQuality(
-                                            aqi = locations[index].airQuality?.list?.first()?.main?.aqi
-                                                ?: 1
-                                        )
-                                    }
-                                    MoonView(phase = locations[index].data.daily.first().moon_phase,
-                                        moonrise =locations[index].data.daily.first().moonrise,
-                                        moonset = locations[index].data.daily.first().moonset )
-                                    WeeklyView(days=locations[index].data.daily,inSi=model.units == WeatherUnits.SI)
-                                    Spacer(modifier = Modifier.height(40.dp))
+                                SummaryCard(
+                                    current = locations[index].data.current,
+                                    dayDetails = locations[index].data.daily.first().weather.first().description
+                                )
+                                HourView(
+                                    hourly = locations[index].data.hourly,
+                                    inSi = model.units == WeatherUnits.SI
+                                )
+                                DetailsCard(
+                                    current = locations[index].data.current,
+                                    daily = locations[index].data.daily.first(),
+                                    inSi = model.units == WeatherUnits.SI
+                                )
+                                if (locations[index].airQuality != null) {
+                                    AirQuality(
+                                        aqi = locations[index].airQuality?.list?.first()?.main?.aqi
+                                            ?: 1
+                                    )
                                 }
+                                MoonView(
+                                    phase = locations[index].data.daily.first().moon_phase,
+                                    moonrise = locations[index].data.daily.first().moonrise,
+                                    moonset = locations[index].data.daily.first().moonset
+                                )
+                                WeeklyView(
+                                    days = locations[index].data.daily,
+                                    inSi = model.units == WeatherUnits.SI
+                                )
+                                Spacer(modifier = Modifier.height(40.dp))
                             }
-                            //            MainCard(model = model, controller = controller)
-                            //
-                            //
-                            //
-                            //        if (!model.locations.isEmpty() && !model.locations[index].data.alerts.isNullOrEmpty()) {
-                            //            model.locations[index].data.alerts?.let {
-                            //                if (it.isNotEmpty()) {
-                            //
-                            //                        Box(
-                            //                            modifier = Modifier
-                            //
-                            //                                .fillMaxWidth()
-                            //                                .wrapContentHeight()
-                            //                                .background(
-                            //                                    color = Color.Yellow.copy(alpha = 0.15f),
-                            //                                    shape = RoundedCornerShape(12)
-                            //                                )
-                            //                                .padding(10.dp)
-                            //                        ) {
-                            //                            Column(
-                            //                                modifier = Modifier.fillMaxWidth(),
-                            //                                horizontalAlignment = Alignment.CenterHorizontally,
-                            //                                verticalArrangement = Arrangement.spacedBy(8.dp)
-                            //                            ) {
-                            //                                Icon(
-                            //                                    Icons.Filled.Warning,
-                            //                                    contentDescription = "",
-                            //                                    tint = Color.Red,
-                            //                                    modifier = Modifier.size(40.dp)
-                            //                                )
-                            //                                Text(
-                            //                                    it[0].event ?: "Alert",
-                            //                                    style = MaterialTheme.typography.h3.copy(
-                            //                                        fontSize = 14.sp
-                            //                                    )
-                            //                                )
-                            //                                Text(
-                            //                                    it[0].description ?: "",
-                            //                                    style = MaterialTheme.typography.body2,
-                            //                                    maxLines = 3
-                            //                                )
-                            //                           Spacer(modifier = Modifier.height(5.dp))
-                            //                            }
-                            //                        }
-                            //                    }
-                            //                }
-                            //            }
-                            //
-                            //
-                            //            AirQualityView(model = model)
-                            //
-                            //
-                            //
-                            //            Column(
-                            //                modifier = Modifier
-                            //
-                            //                    .fillMaxSize(),
-                            //                horizontalAlignment = Alignment.CenterHorizontally,
-                            //                verticalArrangement = Arrangement.spacedBy(10.dp)
-                            //            ) {
-                            //
-                            //                    Row(
-                            //                        modifier = Modifier.fillMaxWidth(),
-                            //                        horizontalArrangement = Arrangement.SpaceBetween,
-                            //                        verticalAlignment = Alignment.CenterVertically
-                            //                    ) {
-                            //                        Text(
-                            //                            stringResource(id = R.string.today),
-                            //                            style = MaterialTheme.typography.h4.copy(
-                            //                                fontWeight = FontWeight.ExtraBold,
-                            //
-                            //                                )
-                            //                        )
-                            //                        DayDetailsView(model = model)
-                            //
-                            //                }
-                            //                HourlyView(model = model)
-                            //            }
-                            //
-                            //
-                            //
-                            //            UVView(model = model)
-                            //
-                            //
-                            //
-                            //            Column(
-                            //                modifier = Modifier
-                            //                    .fillMaxSize()
-                            //                  ,
-                            //                horizontalAlignment = Alignment.Start,
-                            //                verticalArrangement = Arrangement.spacedBy(10.dp)
-                            //            ) {
-                            //
-                            //
-                            //                    Text(
-                            //                        stringResource(id = R.string.weekly),
-                            //                        style = MaterialTheme.typography.h4.copy(
-                            //                            fontWeight = FontWeight.ExtraBold,
-                            //
-                            //                            )
-                            //                    )
-                            //
-                            //
-                            //                WeekView(model = model)
-                            //            }
-
-
                         }
 
-                        TopBarView(
-                            model = model,
-                            controller = controller,
-                            color = Color.Transparent
-                        )
-
                     }
+
                 }
             }
+        }
     }
 }
 

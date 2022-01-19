@@ -3,6 +3,7 @@ package npsprojects.darkweather.views
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -15,6 +16,7 @@ import androidx.compose.material.icons.filled.Air
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -25,6 +27,8 @@ import compose.icons.weathericons.MoonFirstQuarter
 import npsprojects.darkweather.moonDescription
 import npsprojects.darkweather.moonIcon
 import npsprojects.darkweather.ui.theme.DarkWeatherTheme
+import npsprojects.darkweather.ui.theme.frosted
+import npsprojects.darkweather.ui.theme.iceBlack
 import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -35,8 +39,8 @@ fun MoonView(phase:Double,moonrise:Long,moonset:Long){
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .height(150.dp)
-            .background(color = Color.White, shape = RoundedCornerShape(16.dp))
+            .height(160.dp)
+            .background(color = if (isSystemInDarkTheme()) iceBlack else frosted, shape = RoundedCornerShape(16.dp))
             .padding(16.dp),
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.SpaceBetween
@@ -56,13 +60,13 @@ fun MoonView(phase:Double,moonrise:Long,moonset:Long){
                     Text("Moon", style = MaterialTheme.typography.caption.copy(color = Color.Gray))
 
                 }
-                Text(stringResource(id = moonDescription(phase)), style = MaterialTheme.typography.h2)
+                Text(stringResource(id = moonDescription(phase)), style = MaterialTheme.typography.h3.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black))
 
             }
           Image(painter = painterResource(id = moonIcon(phase)), contentDescription = "",
           modifier = Modifier.size(70.dp))
         }
-        Divider()
+        Divider(modifier = Modifier.fillMaxWidth(0.7f).padding(vertical = 5.dp))
         Text("The moon rises at ${ DateTimeFormatter.ofPattern("HH:mm").format(
             LocalDateTime.ofInstant(
                 Instant.ofEpochMilli(1000 * moonrise),
