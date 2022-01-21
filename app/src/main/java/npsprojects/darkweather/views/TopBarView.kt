@@ -362,7 +362,7 @@ fun MapTopBarView(model: WeatherViewModel, controller: NavController){
         .background(
             color = if (isSystemInDarkTheme()) iceBlack else frosted
         )
-        .statusBarsPadding()
+
         .height(150.dp)
         .fillMaxWidth()
 

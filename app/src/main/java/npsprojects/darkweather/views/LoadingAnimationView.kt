@@ -42,7 +42,7 @@ fun LoadingAnimationScreen(){
       animationSpec = infiniteRepeatable(animation = tween(durationMillis = 1400, easing = LinearEasing), repeatMode = RepeatMode.Restart))
 
     var showRefresh by remember {
-        mutableStateOf(true)
+        mutableStateOf(false)
           }
     val scope = rememberCoroutineScope()
 LaunchedEffect(key1 = "Animation", block = {
@@ -60,7 +60,7 @@ LaunchedEffect(key1 = "Animation", block = {
             modifier = Modifier
                 .fillMaxSize(),verticalArrangement = Arrangement.spacedBy(10.dp),
         horizontalAlignment = Alignment.CenterHorizontally) {
-            Spacer(modifier = Modifier.height(100.dp))
+            Spacer(modifier = Modifier.height(60.dp))
        AnimatedVisibility(visible = showRefresh ) {
            Column(
 

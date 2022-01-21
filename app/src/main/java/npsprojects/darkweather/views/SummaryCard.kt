@@ -58,7 +58,7 @@ fun SummaryCard(current: Current,dayDetails:String){
                Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
                    Icon(FontAwesomeIcons.Solid.Umbrella, contentDescription = "",
                    modifier = Modifier.size(15.dp), tint = Color.Gray)
-                   Text(((current.pop?.times(100)) ?: 0.0).roundToInt().toString() + "%", style = MaterialTheme.typography.caption)
+                   Text(((current.pop?.times(100)) ?: 0.0).roundToInt().toString() + "%", style = MaterialTheme.typography.caption.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black))
                }
 
            }

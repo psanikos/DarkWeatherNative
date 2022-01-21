@@ -114,10 +114,12 @@ val error by model.error.observeAsState()
         }
     })
     Box(modifier = Modifier.fillMaxSize()) {
-        Image(
-            painter = painterResource(id = backImage), contentDescription = "",
-            modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Crop
-        )
+       AnimatedVisibility(visible = locations.isNotEmpty()) {
+           Image(
+               painter = painterResource(id = backImage), contentDescription = "",
+               modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Crop
+           )
+       }
         Scaffold(
             floatingActionButton = {
                 FloatingActionButton(onClick = {
@@ -137,11 +139,13 @@ val error by model.error.observeAsState()
 
                     elevation = 0.dp
                 ) {
-                    TopBarView(
-                        model = model,
-                        controller = controller,
-                        color = Color.Transparent
-                    )
+                  AnimatedVisibility(visible = locations.isNotEmpty() ) {
+                      TopBarView(
+                          model = model,
+                          controller = controller,
+                          color = Color.Transparent
+                      )
+                  }
                 }
             },
              backgroundColor = Color.Transparent,
