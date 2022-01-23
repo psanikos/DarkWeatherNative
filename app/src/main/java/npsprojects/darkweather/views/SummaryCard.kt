@@ -46,14 +46,14 @@ fun SummaryCard(current: Current,dayDetails:String){
        Row(modifier = Modifier.fillMaxWidth(),
        horizontalArrangement = Arrangement.SpaceEvenly,
        verticalAlignment = Alignment.Top) {
-           Image(painter = painterResource(id = getWeatherImage(current.weather.first().icon)),
+           Image(painter = painterResource(id = getWeatherImage(current.weather.first().icon!!)),
                contentDescription ="",
            modifier = Modifier.size(100.dp))
            Column(modifier = Modifier.width(100.dp),
            horizontalAlignment = Alignment.Start,
            verticalArrangement = Arrangement.spacedBy(5.dp)) {
-            Text(current.weather.first().description, style = MaterialTheme.typography.labelMedium.copy(if(isSystemInDarkTheme()) Color.White else Color.Black))
-               Text(current.temp.roundToInt().toString() + "°", style = androidx.compose.material3.MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Black,
+            Text(current.weather.first().description!!, style = MaterialTheme.typography.labelMedium.copy(if(isSystemInDarkTheme()) Color.White else Color.Black))
+               Text(current.temp!!.roundToInt().toString() + "°", style = androidx.compose.material3.MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Black,
                    color = if(isSystemInDarkTheme()) Color.White else Color.Black))
                Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
                    Icon(FontAwesomeIcons.Solid.Umbrella, contentDescription = "",
@@ -81,7 +81,7 @@ fun SummaryCard(current: Current,dayDetails:String){
                        modifier = Modifier.size(15.dp), tint = Color.Gray)
                    Text("Feels like", style = MaterialTheme.typography.labelMedium.copy(color = Color.Gray))
                }
-               Text(current.feels_like.roundToInt().toString() + "°", style = MaterialTheme.typography.displayLarge.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black))
+               Text(current.feels_like!!.roundToInt().toString() + "°", style = MaterialTheme.typography.displayLarge.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black))
            }
 
        }

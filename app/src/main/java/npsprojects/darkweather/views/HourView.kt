@@ -59,11 +59,11 @@ fun HourItem(isFirst:Boolean,hour:Current,inSi: Boolean){
         Text(
             DateTimeFormatter.ofPattern("HH:mm").format(
                                 LocalDateTime.ofInstant(
-                                    Instant.ofEpochMilli(1000 * hour.dt),
+                                    Instant.ofEpochMilli(1000 * hour.dt!!),
                                     ZoneId.systemDefault()
                                 )), style = MaterialTheme.typography.labelMedium.copy(color = if(isFirst) Color.Gray else Color.LightGray))
-        Text(hour.temp.roundToInt().toString() + "°", style = MaterialTheme.typography.bodyLarge.copy(color = if(isFirst && !isSystemInDarkTheme()) Color.Black else Color.White))
-        Image(painter = painterResource(id = getWeatherImage(hour.weather.first().icon)), contentDescription ="",
+        Text(hour.temp!!.roundToInt().toString() + "°", style = MaterialTheme.typography.bodyLarge.copy(color = if(isFirst && !isSystemInDarkTheme()) Color.Black else Color.White))
+        Image(painter = painterResource(id = getWeatherImage(hour.weather.first().icon!!)), contentDescription ="",
         modifier = Modifier.size(30.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
             Icon(
@@ -88,7 +88,7 @@ fun HourItem(isFirst:Boolean,hour:Current,inSi: Boolean){
                             )
 
                         Text(
-                            text = "${hour.wind_speed.roundToInt()} " + if (inSi) "km/h" else "mph" ,
+                            text = "${hour.wind_speed!!.roundToInt()} " + if (inSi) "km/h" else "mph" ,
                             style = MaterialTheme.typography.labelMedium.copy(color = if(isFirst && !isSystemInDarkTheme()) Color.Gray else Color.LightGray)
                         )
                     }

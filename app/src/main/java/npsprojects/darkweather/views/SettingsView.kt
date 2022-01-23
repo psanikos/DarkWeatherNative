@@ -20,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.google.accompanist.insets.statusBarsPadding
 import compose.icons.FontAwesomeIcons
 import compose.icons.WeatherIcons
 import compose.icons.fontawesomeicons.Solid
@@ -48,7 +49,7 @@ fun SettingsView(model: WeatherViewModel, controller: NavController) {
     Scaffold(
 
         topBar = {
-            LargeTopAppBar(
+            MediumTopAppBar(
                 title = {
                     Text(stringResource(R.string.settings),
                         style = androidx.compose.material3.MaterialTheme.typography.headlineLarge)
@@ -62,12 +63,13 @@ fun SettingsView(model: WeatherViewModel, controller: NavController) {
                             modifier = Modifier.size(25.dp))
                     }
                 },
-                colors = TopAppBarDefaults.largeTopAppBarColors(
-                    titleContentColor = MaterialTheme.colorScheme.tertiary
-                )
+                colors = TopAppBarDefaults.mediumTopAppBarColors(
+                    titleContentColor = MaterialTheme.colorScheme.primary
+                ),
+                modifier = Modifier.statusBarsPadding()
             )
 
-        }
+        },
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),

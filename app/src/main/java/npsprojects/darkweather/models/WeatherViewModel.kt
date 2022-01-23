@@ -24,22 +24,18 @@ import androidx.lifecycle.viewModelScope
 import com.google.android.gms.common.util.CollectionUtils.listOf
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.google.gson.Gson
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import okhttp3.*
 import okio.IOException
 import java.util.*
 import java.util.concurrent.TimeUnit
 import kotlin.math.round
-import com.google.gson.annotations.SerializedName
-import kotlinx.coroutines.Dispatchers
 import npsprojects.darkweather.*
 
 import npsprojects.darkweather.MyApp.context
-import npsprojects.darkweather.services.DataFetcher
 import npsprojects.darkweather.services.LocationHelper
+import npsprojects.darkweather.services.WeatherDataApi
+import java.lang.Exception
 
 
 enum class Lang {
@@ -115,6 +111,7 @@ private fun getLang(){
         hasInit = true
 
     }
+
     private fun isInit() {
         val context = MyApp.context
 
@@ -142,6 +139,7 @@ private fun getLang(){
             units = WeatherUnits.SI
         }
     }
+
     fun saveUnit(inputUnit: WeatherUnits) {
         val context = MyApp.context
         val unit =
@@ -156,6 +154,7 @@ private fun getLang(){
         units = inputUnit
 
     }
+
     fun saveLocation(address: SavedLocation) {
         val context = MyApp.context
         val pref: SharedPreferences = context
@@ -181,13 +180,13 @@ private fun getLang(){
         myLocations = getSavedLocations()
     }
 
-    fun saveWidgetLocation(address: SavedLocation) {
+    private fun saveWidgetLocation(address: SavedLocation) {
         val context = MyApp.context
         val pref: SharedPreferences = context
             .getSharedPreferences("MyPref", 0)
 
         with(pref.edit()) {
-            putStringSet("widgetLocation", setOf(address.name,address.latitude.toString(),address.longitude.toString()))
+            putString("widgetLocation", "${address.name},${address.latitude},${address.longitude}")
             apply()
         }
         Log.i("Widget","Saved widget location")
@@ -313,6 +312,7 @@ private fun getLang(){
 
 
     }
+
     fun askContinueWithout() {
         error.value = WeatherError.NONE
     }
@@ -362,6 +362,7 @@ private fun getLang(){
             completion(false)
         }
     }
+
     private fun getUserLocation(completion: (Location?) -> Unit) {
         val context = MyApp.context
         val permissionFineLocation = android.Manifest.permission.ACCESS_FINE_LOCATION
@@ -410,6 +411,7 @@ private fun getLang(){
 
 
     }
+
     private fun getLocationWeather(location:Location) {
         val context = MyApp.context
 
@@ -419,21 +421,37 @@ private fun getLang(){
             longitude = location.longitude
         ) { item ->
             val oldList = locations.value?.toMutableList() ?: mutableListOf()
-            getLocationData(location = Coordinates(location.latitude,location.longitude),name = item,isCurrent = true){ weather->
 
-                saveWidgetLocation(SavedLocation(name = item, longitude = location.longitude, latitude = location.latitude))
+            viewModelScope.launch {
+                val weather = getLocationData(
+                    location = Coordinates(location.latitude, location.longitude),
+                    name = item,
+                    isCurrent = true
+                )
+                saveWidgetLocation(
+                    SavedLocation(
+                        name = item,
+                        longitude = location.longitude,
+                        latitude = location.latitude
+                    )
+                )
                 weather?.let {
-                    oldList.add(0,it)
-                    if(locations.value?.firstOrNull { it.data.lat.round(3) == weather.data.lat.round(3) && it.data.lon.round(3) == weather.data.lon.round(3)} == null) {
-                       viewModelScope.launch {
-                           launch(Dispatchers.Main){
-                               locations.value = oldList.toList()
-                           }
-                       }
+                    oldList.add(0, it)
+                    if (locations.value?.firstOrNull {
+                            it.data.lat!!.round(3) == weather.data.lat!!.round(
+                                3
+                            ) && it.data.lon!!.round(3) == weather.data.lon!!.round(3)
+                        } == null) {
+                        viewModelScope.launch {
+                            launch(Dispatchers.Main) {
+                                locations.value = oldList.toList()
+                            }
+                        }
                     }
                 }
             }
         }
+
 
     }
    //-------------------------------------------------
@@ -461,6 +479,7 @@ private fun getLang(){
         println("Not online or empty")
         return mutableListOf()
 }
+
     private fun getNameFromCoordinates(context: Context, latitude: Double, longitude: Double, completion: (String) -> Unit) {
         val addresses: List<Address>
         val myContext = MyApp.context
@@ -480,7 +499,8 @@ private fun getLang(){
 //            addresses[0].getAddressLine(0) // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
 
             if (addresses.isNotEmpty()) {
-                val city: String? = addresses[0].subLocality ?: addresses[0].locality  ?: addresses[0].countryName
+                Log.d("Addresses ", addresses.toString())
+                val city: String? =  addresses[0].subAdminArea ?: addresses[0].locality  ?: addresses[0].subLocality ?: addresses[0].countryName
 //        val state: String = addresses[0].getAdminArea()
 //        val country: String = addresses[0].getCountryName()
 //        val postalCode: String = addresses[0].getPostalCode()
@@ -504,6 +524,7 @@ private fun getLang(){
       myLocations = locations
         completion()
     }
+
     fun getCoordinatesWeather(location:Coordinates) {
         val context = MyApp.context
 
@@ -515,13 +536,14 @@ private fun getLang(){
             val currentLocationName = item
             val oldList = locations.value?.toMutableList() ?: mutableListOf()
 
-            getLocationData(location = location,isCurrent = false,name = currentLocationName){ weather->
+            viewModelScope.launch {
+               val weather = getLocationData(location = location,isCurrent = false,name = currentLocationName)
                 weather?.let {
                     if (
                         locations.value?.firstOrNull {
-                            it.data.lat.round(3) == weather.data.lat.round(3) && it.data.lon.round(
+                            it.data.lat!!.round(3) == weather.data.lat!!.round(3) && it.data.lon!!.round(
                                 3
-                            ) == weather.data.lon.round(3)
+                            ) == weather.data.lon!!.round(3)
                         } == null
                     ) {
                         oldList.add(weather)
@@ -532,66 +554,67 @@ private fun getLang(){
                         }
                     }
                 }
+
             }
+
         }
 
     }
     //-----------------------------------------------
 
 
-    private fun getAirDataFromCoordinates(lat:Double, lon:Double, completion:(AirQuality?)->Unit){
-    DataFetcher.getFromUrl(url = airApiCallString(lat = lat, lon = lon)) {
-        if (it != null) {
-            println("DATAAA $it")
-            val gson = Gson()
-
-            val out =
-                gson.fromJson<AirQuality>(it.toString(), AirQuality::class.java)
-
-            completion(out)
-        } else {
-
-            completion(null)
-        }
-    }
-
-}
-    private fun getLocationData(location:Coordinates,isCurrent: Boolean,name:String,completion: (WeatherModel?) -> Unit) {
+    private suspend fun getLocationData(location:Coordinates, isCurrent: Boolean, name:String): WeatherModel? {
         val unit =
-            if (units == WeatherUnits.AUTO) "auto" else if (units == WeatherUnits.SI) "si" else "us"
+            if (units == WeatherUnits.AUTO) "metric" else if (units == WeatherUnits.SI) "metric" else "imperial"
             val locale = context.resources.configuration.locales
             val language: String = if(locale.isEmpty) "en" else locale[0].language
         println("LAN " + language)
             val searchLanguage = if (language == "el")  "el" else if (language == "fr") "fr" else "en"
-            DataFetcher.getFromUrl(url = getOpenWeatherUrl(location,units,searchLanguage)) { it ->
-                if (it != null) {
-                    println("DATAAA $it")
-                    val gson = Gson()
 
-                    val currentLocationData = try {
-                        gson.fromJson<OpenWeather>(it.toString(), OpenWeather::class.java)
-                    } catch (e: IOException) {
-                        null
-                    }
+        return withContext(Dispatchers.IO) {
 
-                    if (currentLocationData != null) {
-                        getAirDataFromCoordinates(
-                            lat = location.latitude,
-                            lon = location.longitude
-                        ) { air->
-                            val current = WeatherModel(
-                                name = name,
-                                data = currentLocationData,
-                                isCurrent = isCurrent,
-                                airQuality = air
-                            )
-                            completion(current)
-                        }
-                    }
-                } else {
-                    completion(null)
+            val air = async {
+
+                try {
+                    Log.i("retrofit","air")
+                    WeatherDataApi.retrofitService.airData(location.latitude, location.longitude,
+                        appid = openWeatherKey)
+                } catch (e: Exception) {
+                    Log.i("retrofit","air fail")
+                    null
                 }
             }
+
+
+            val data = async {
+                try {
+                    Log.i("retrofit","data ${location.latitude}")
+                    WeatherDataApi.retrofitService.oneCallWeather(
+                        lat = location.latitude, lon = location.longitude,
+                        unit = unit, lang = searchLanguage,
+                        appid = openWeatherKey
+                    )
+
+                } catch (e: Exception) {
+                    Log.i("retrofit",e.localizedMessage ?: "error")
+                    null
+                }
+            }
+            if(data.await() != null) {
+                Log.i("retrofit","data got")
+                return@withContext WeatherModel(
+                    name = name,
+                    data = data.await()!!,
+                    isCurrent = isCurrent,
+                    airQuality = air.await()
+                )
+            }
+            else {
+                Log.i("retrofit","data null")
+                return@withContext null
+            }
+        }
+
         }
 
 }

@@ -54,7 +54,7 @@ fun TopBarView(model: WeatherViewModel, controller: NavController,color: Color){
 
                 Box() {
                     if (!(locations.isNotEmpty() && locations.size > index)) {
-                        Text("N/A", style = MaterialTheme.typography.displayLarge.copy(color = Color.White))
+                        Text("N/A", style = MaterialTheme.typography.displayLarge)
                     } else {
                         Row(
                             horizontalArrangement = Arrangement.spacedBy(5.dp),
@@ -63,11 +63,11 @@ fun TopBarView(model: WeatherViewModel, controller: NavController,color: Color){
                         ) {
                             if (locations[index].isCurrent) {
                                 Icon(FontAwesomeIcons.Solid.LocationArrow,modifier = Modifier.size(15.dp), contentDescription = "",
-                                tint = Color.White)
+                               )
                             }
                             Text(
                                 locations[index].name,
-                                style = MaterialTheme.typography.displayMedium.copy(color = Color.White)
+                                style = MaterialTheme.typography.displayMedium
 
                             )
                         }
@@ -102,8 +102,8 @@ fun TopBarView(model: WeatherViewModel, controller: NavController,color: Color){
                 }
 
                 Text(  if (!(locations.isNotEmpty() && locations.size > index)) "No data" else
-                    Date.from(Instant.ofEpochSecond(locations[index].data.current.dt)).ago(),
-                    style =  MaterialTheme.typography.labelSmall.copy(color = Color.White),modifier = Modifier.padding(start = 5.dp))
+                    Date.from(Instant.ofEpochSecond(locations[index].data.current!!.dt!!)).ago(),
+                    style =  MaterialTheme.typography.labelSmall,modifier = Modifier.padding(start = 5.dp))
             }
         },
         actions = {
@@ -112,7 +112,7 @@ fun TopBarView(model: WeatherViewModel, controller: NavController,color: Color){
 
                         if (!locations[index].isCurrent) {
                             TextButton(onClick = {
-                                if (model.myLocations.any { it.latitude.round(2) == locations[index].data.lat.round(2) && it.longitude.round(2) == locations[index].data.lon.round(2) }) {
+                                if (model.myLocations.any { it.latitude.round(2) == locations[index].data.lat!!.round(2) && it.longitude.round(2) == locations[index].data.lon!!.round(2) }) {
                                     val oldIndex = index
                                     model.indexChange(0)
                                     scope.launch {
@@ -126,10 +126,10 @@ fun TopBarView(model: WeatherViewModel, controller: NavController,color: Color){
                                         model.saveLocation(
                                             SavedLocation(
                                                 locations[index].name,
-                                                locations[index].data.lat.round(
+                                                locations[index].data.lat!!.round(
                                                     2
                                                 ),
-                                                locations[index].data.lon.round(
+                                                locations[index].data.lon!!.round(
                                                     2
                                                 )
                                             )
@@ -138,9 +138,9 @@ fun TopBarView(model: WeatherViewModel, controller: NavController,color: Color){
                                     }
                                 }) {
 
-                                ColoredIcon(  if (model.myLocations.any { it.latitude.round(2) == locations[index].data.lat.round(2) && it.longitude.round(2) == locations[index].data.lon.round(2) })
+                                ColoredIcon(  if (model.myLocations.any { it.latitude.round(2) == locations[index].data.lat!!.round(2) && it.longitude.round(2) == locations[index].data.lon!!.round(2) })
                                     Icons.Default.Favorite else Icons.Default.FavoriteBorder, contentDescription = "",
-                                    modifier = Modifier.size(25.dp), padding = 6.dp,tint = MaterialTheme.colorScheme.tertiaryContainer)
+                                    modifier = Modifier.size(30.dp), padding = 6.dp,tint = MaterialTheme.colorScheme.primary)
                             }
 
                         }
@@ -152,7 +152,7 @@ fun TopBarView(model: WeatherViewModel, controller: NavController,color: Color){
                     Box() {
 
                         ColoredIcon(imageVector =  FontAwesomeIcons.Solid.Search, contentDescription = "",
-                             modifier = Modifier.size(25.dp), padding = 6.dp, tint = MaterialTheme.colorScheme.tertiaryContainer)
+                             modifier = Modifier.size(30.dp), padding = 6.dp, tint = MaterialTheme.colorScheme.primary)
                     }
                 }
                 TextButton(onClick = {
@@ -160,7 +160,7 @@ fun TopBarView(model: WeatherViewModel, controller: NavController,color: Color){
                 }) {
 
                     ColoredIcon(imageVector =  FontAwesomeIcons.Solid.EllipsisV, contentDescription = "",
-                         modifier = Modifier.size(25.dp), padding = 6.dp, tint = MaterialTheme.colorScheme.tertiaryContainer)
+                         modifier = Modifier.size(30.dp), padding = 6.dp, tint = MaterialTheme.colorScheme.primary)
 
 
                 }
@@ -169,9 +169,10 @@ fun TopBarView(model: WeatherViewModel, controller: NavController,color: Color){
         },
         colors = TopAppBarDefaults.mediumTopAppBarColors(
             titleContentColor = MaterialTheme.colorScheme.tertiary,
-            containerColor = Color.Transparent
+            //containerColor = Color.Transparent
         ),
-        modifier = Modifier.height(100.dp)
+        modifier = Modifier.statusBarsPadding()
+
 
     )
 

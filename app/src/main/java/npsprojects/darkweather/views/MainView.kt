@@ -72,7 +72,6 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
-import coil.annotation.ExperimentalCoilApi
 
 sealed class Screen(val route: String, @StringRes val resourceId: Int, val icon: ImageVector) {
     object Main : Screen("main", R.string.home,icon = Icons.Outlined.Cloud)
@@ -81,7 +80,7 @@ sealed class Screen(val route: String, @StringRes val resourceId: Int, val icon:
     object Settings : Screen("settings", R.string.settings,icon = Icons.Outlined.Settings)
 }
 
-@ExperimentalCoilApi
+
 @ExperimentalAnimationApi
 @OptIn(ExperimentalFoundationApi::class, androidx.compose.material3.ExperimentalMaterial3Api::class,
     androidx.compose.material.ExperimentalMaterialApi::class

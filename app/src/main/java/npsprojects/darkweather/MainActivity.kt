@@ -19,7 +19,6 @@ import androidx.core.view.WindowCompat
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import coil.annotation.ExperimentalCoilApi
 import com.google.accompanist.insets.ProvideWindowInsets
 import com.google.android.gms.ads.*
 import com.google.android.gms.ads.interstitial.InterstitialAd
@@ -42,7 +41,7 @@ object MyApp {
         activity = act
     }
 }
-@ExperimentalCoilApi
+
 @ExperimentalFoundationApi
 @ExperimentalAnimationApi
 @ExperimentalMaterialApi
@@ -142,7 +141,7 @@ class MainActivity : ComponentActivity() {
 }
 
 
-@ExperimentalCoilApi
+
 @ExperimentalFoundationApi
 @ExperimentalMaterialApi
 @ExperimentalAnimationApi

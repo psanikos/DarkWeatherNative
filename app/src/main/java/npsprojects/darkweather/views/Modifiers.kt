@@ -7,7 +7,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.LocalContentAlpha
 import androidx.compose.material.LocalContentColor
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,6 +21,13 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import npsprojects.darkweather.ui.theme.iceBlack
 
+fun Modifier.materialYouFrosted() = composed { this.background(Brush.linearGradient(colors =listOf(
+    MaterialTheme.colorScheme.background.copy(alpha = 0.9f),
+    MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.9f),
+    MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
+    MaterialTheme.colorScheme.background.copy(alpha = 0.8f),
+    MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.9f)
+))) }
 
 fun Modifier.cardModifier() = this
     .padding(12.dp)

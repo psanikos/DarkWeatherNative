@@ -52,7 +52,6 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalDensity
-import coil.annotation.ExperimentalCoilApi
 import com.google.accompanist.insets.navigationBarsPadding
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
@@ -65,11 +64,12 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.ArrayList
 
-@ExperimentalCoilApi
+
 @ExperimentalAnimationApi
 @ExperimentalMaterialApi
 @Composable
 fun NewMapViewBig(model: WeatherViewModel, controller: NavController) {
+
 //    val map = rememberMapViewWithLifecycle()
 //    var mapType by rememberSaveable { mutableStateOf("none") }
 //    val index: Int by model.index.observeAsState(initial = 0)

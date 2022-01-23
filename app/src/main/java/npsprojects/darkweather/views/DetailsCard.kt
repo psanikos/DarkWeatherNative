@@ -48,24 +48,24 @@ fun DetailsCard(current: Current,daily: Daily,inSi:Boolean){
         .padding(12.dp), contentAlignment = Alignment.Center) {
         LazyVerticalGrid(cells = GridCells.Fixed(3), content = {
             item {
-                DetailsItem(icon = FontAwesomeIcons.Solid.ArrowAltCircleUp, "High", value = daily.temp.max.roundToInt().toString() + "°",null)
+                DetailsItem(icon = FontAwesomeIcons.Solid.ArrowAltCircleUp, "High", value = daily.temp!!.max!!.roundToInt().toString() + "°",null)
             }
             item {
-                DetailsItem(icon = FontAwesomeIcons.Solid.ArrowAltCircleDown, "Low",value = daily.temp.min.roundToInt().toString() + "°",null)
+                DetailsItem(icon = FontAwesomeIcons.Solid.ArrowAltCircleDown, "Low",value = daily.temp!!.min!!.roundToInt().toString() + "°",null)
 
             }
             item {
-                DetailsItem(icon = FontAwesomeIcons.Solid.Sun, "UV level", value = current.uvi.roundToInt().toString(),null)
+                DetailsItem(icon = FontAwesomeIcons.Solid.Sun, "UV level", value = current.uvi!!.roundToInt().toString(),null)
 
             }
             item {
-                DetailsItem(icon = Icons.Default.Navigation, "Air speed", value = current.wind_speed.roundToInt().toString() + if (inSi) "km/h" else "mph", secondValue = current.wind_deg.toDouble())
+                DetailsItem(icon = Icons.Default.Navigation, "Air speed", value = current.wind_speed!!.roundToInt().toString() + if (inSi) "km/h" else "mph", secondValue = current.wind_deg!!.toDouble())
 
             }
             item {
                 DetailsItem(icon = WeatherIcons.Sunrise, "Sunrise", value = DateTimeFormatter.ofPattern("HH:mm").format(
                                 LocalDateTime.ofInstant(
-                                    Instant.ofEpochMilli(1000 * daily.sunrise),
+                                    Instant.ofEpochMilli(1000 * daily.sunrise!!),
                                     ZoneId.systemDefault()
                                 )
                             ),null)
@@ -74,7 +74,7 @@ fun DetailsCard(current: Current,daily: Daily,inSi:Boolean){
             item {
                 DetailsItem(icon = WeatherIcons.Sunset, "Sunset",DateTimeFormatter.ofPattern("HH:mm").format(
                     LocalDateTime.ofInstant(
-                        Instant.ofEpochMilli(1000 * daily.sunset),
+                        Instant.ofEpochMilli(1000 * daily.sunset!!),
                         ZoneId.systemDefault()
                     )
                 ),null)

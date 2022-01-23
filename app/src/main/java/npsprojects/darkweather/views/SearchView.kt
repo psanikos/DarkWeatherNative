@@ -26,6 +26,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.google.accompanist.insets.statusBarsPadding
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.solid.ArrowLeft
@@ -230,7 +231,7 @@ fun FullSearchView(model: WeatherViewModel,controller: NavController) {
     var showAlert: Boolean by remember { mutableStateOf(false) }
     Scaffold(
         topBar = {
-            LargeTopAppBar(
+            MediumTopAppBar(
                 title = {
                     Text(stringResource(R.string.add_location),
                         style = androidx.compose.material3.MaterialTheme.typography.headlineLarge
@@ -245,10 +246,13 @@ fun FullSearchView(model: WeatherViewModel,controller: NavController) {
                             modifier = Modifier.size(25.dp))
                     }
                 },
-                colors = TopAppBarDefaults.largeTopAppBarColors(
-                    titleContentColor = MaterialTheme.colorScheme.tertiary
+                colors = TopAppBarDefaults.mediumTopAppBarColors(
+                    titleContentColor = MaterialTheme.colorScheme.primary
                 )
+                ,
+                modifier = Modifier.statusBarsPadding()
             )
+
 
         },
     ) {
@@ -261,7 +265,7 @@ fun FullSearchView(model: WeatherViewModel,controller: NavController) {
         ) {
                 Row(modifier = Modifier
                     .background(
-                        color = MaterialTheme.colorScheme.tertiaryContainer,
+                        color = MaterialTheme.colorScheme.secondaryContainer,
                         shape = RoundedCornerShape(40)
                     )
                     .height(40.dp)
@@ -272,8 +276,8 @@ fun FullSearchView(model: WeatherViewModel,controller: NavController) {
                 verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Default.Search, contentDescription = "",
                     modifier = Modifier
-                        .size(25.dp)
-                        .padding(start = 5.dp), tint = Color.DarkGray)
+                        .size(30.dp)
+                        .padding(start = 15.dp), tint = MaterialTheme.colorScheme.onPrimaryContainer)
                     BasicTextField(
                         value = searchTerm,
                         onValueChange = {
@@ -298,7 +302,7 @@ fun FullSearchView(model: WeatherViewModel,controller: NavController) {
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
 //                },
                         textStyle = MaterialTheme.typography
-                            .bodyMedium.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black),
+                            .bodyMedium.copy(color = MaterialTheme.colorScheme.onPrimaryContainer),
                         decorationBox = { innerTextField ->
 
 
@@ -323,7 +327,7 @@ fun FullSearchView(model: WeatherViewModel,controller: NavController) {
                             .fillMaxWidth()
                             .height(40.dp)
                             .background(
-                                color = MaterialTheme.colorScheme.onPrimary,
+                                color = MaterialTheme.colorScheme.surface,
                                 shape = RoundedCornerShape(20)
                             )
                             .clickable {

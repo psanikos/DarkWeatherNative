@@ -16,8 +16,7 @@ import androidx.compose.ui.res.stringResource
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.TileOverlay
 import compose.icons.AllIcons
-import compose.icons.WeatherIcons
-import compose.icons.weathericons.*
+
 import npsprojects.darkweather.views.InitialZoom
 import npsprojects.darkweather.views.rememberMapViewWithLifecycle
 import java.io.IOException
@@ -88,10 +87,35 @@ fun getWeatherBack(input: String): Int {
         else ->  R.drawable.dayphone
     }
 }
+
+fun getWeatherBackIcon(input: String): Int {
+    return when (input) {
+        "01d" -> R.drawable.clearday
+        "01n" -> R.drawable.clearnight
+        "09d","10d" -> R.drawable.rainny
+        "09n","10n" -> R.drawable.rainny
+        "13d" -> R.drawable.daycloudy
+        "13n" -> R.drawable.nightcloudy
+
+        "50d" -> R.drawable.daycloudy
+        "50n" -> R.drawable.nightcloudy
+
+        "04d","03d" -> R.drawable.daycloudy
+        "04n","03n" -> R.drawable.nightcloudy
+        "02d" -> R.drawable.daycloudy
+        "02n" -> R.drawable.nightcloudy
+
+        "11d" -> R.drawable.rainny
+        "11n" -> R.drawable.rainny
+
+        else ->  R.drawable.clearday
+    }
+}
+
 fun getWeatherImage(input: String): Int {
     return when (input) {
         "01d" -> R.drawable.sun
-        "01n" -> R.drawable.clearnight
+        "01n" -> R.drawable.moonclear
         "09d" -> R.drawable.lightrainday
         "09n" -> R.drawable.lightrainnight
         "10d","10n" -> R.drawable.rain

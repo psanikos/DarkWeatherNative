@@ -59,7 +59,7 @@ fun WeeklyItem(day:Daily,inSi: Boolean) {
     ) {
         Text(    DateTimeFormatter.ofPattern("EEE").format(
             LocalDateTime.ofInstant(
-                Instant.ofEpochMilli(1000 * day.dt),
+                Instant.ofEpochMilli(1000 * day.dt!!),
                 ZoneId.systemDefault()
             )
         ), style = MaterialTheme.typography.labelMedium.copy(color = Color.Gray), modifier = Modifier.width(90.dp))
@@ -71,8 +71,8 @@ fun WeeklyItem(day:Daily,inSi: Boolean) {
              modifier = Modifier.width(150.dp)
         ) {
 
-            Text(day.temp.max.roundToInt().toString() + "°", style = MaterialTheme.typography.bodyLarge.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black))
-            Text(day.temp.min.roundToInt().toString() + "°", style = MaterialTheme.typography.bodyMedium.copy(color = Color.Gray))
+            Text(day.temp!!.max!!.roundToInt().toString() + "°", style = MaterialTheme.typography.bodyLarge.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black))
+            Text(day.temp!!.min!!.roundToInt().toString() + "°", style = MaterialTheme.typography.bodyMedium.copy(color = Color.Gray))
 
             Row(
                 horizontalArrangement = Arrangement.spacedBy(5.dp),
@@ -84,13 +84,13 @@ fun WeeklyItem(day:Daily,inSi: Boolean) {
                     contentDescription = "",
                     modifier = Modifier
                         .size(15.dp)
-                        .rotate(day.wind_deg.toFloat()),
+                        .rotate(day.wind_deg!!.toFloat()),
                     tint = Color.Gray,
 
                     )
 
                 Text(
-                    text = "${day.wind_speed.roundToInt()} " + if (inSi) "km/h" else "mph" ,
+                    text = "${day.wind_speed!!.roundToInt()} " + if (inSi) "km/h" else "mph" ,
                     style = MaterialTheme.typography.labelMedium.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black)
                 )
             }

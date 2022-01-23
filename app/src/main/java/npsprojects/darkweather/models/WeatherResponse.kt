@@ -2,10 +2,11 @@ package npsprojects.darkweather.models
 
 import android.annotation.SuppressLint
 import android.os.Parcelable
+import android.util.Log
 
 import androidx.compose.ui.graphics.Color
 import com.google.android.gms.common.util.CollectionUtils
-import com.google.gson.annotations.SerializedName
+import com.squareup.moshi.Json
 import kotlinx.parcelize.Parcelize
 import npsprojects.darkweather.Coordinates
 import npsprojects.darkweather.R
@@ -14,105 +15,98 @@ import npsprojects.darkweather.round
 import java.util.*
 
 
-fun getOpenWeatherUrl(locale:Coordinates,units:WeatherUnits,lang:String):String{
-    val unit =  if(units == WeatherUnits.SI || units == WeatherUnits.AUTO)  "metric" else "imperial"
-   return  "https://api.openweathermap.org/data/2.5/onecall?lat=${locale.latitude}&lon=${locale.longitude}&exclude=minutely&units=${unit}&lang=$lang&appid=e1e45feaea76d66517c25291f2633d9a"
-}
-fun getOpenWeatherUrlLite(locale:Coordinates,units:WeatherUnits,lang:String):String{
-    val unit =  if(units == WeatherUnits.SI || units == WeatherUnits.AUTO)  "metric" else "imperial"
-    return  "https://api.openweathermap.org/data/2.5/weather?lat=${locale.latitude}&lon=${locale.longitude}&units=${unit}&lang=$lang&appid=e1e45feaea76d66517c25291f2633d9a"
-}
 
-@Parcelize
+
+
 data class OpenWeather (
-    val lat: Double,
-    val lon: Double,
-    val timezone: String,
-    val timezoneOffset: Long,
-    val current: Current,
+    val lat: Double? = null,
+    val lon: Double? = null,
+    val timezone: String? = null,
+    val timezoneOffset: Long? = null,
+    val current: Current? = null,
     val hourly: List<Current>,
     val daily: List<Daily>,
     val alerts: List<Alert>? = null
-) : Parcelable
+)
 
-@Parcelize
+
 data class Alert (
-    val sender_name:String,
-    val event: String?,
-    val start:Int,
-    val end: Int?,
-   val description: String?
-):Parcelable
+    val sender_name:String? = null,
+    val event: String? = null,
+    val start:Int? = null,
+    val end: Int? = null,
+   val description: String? = null
+)
 
-@Parcelize
+
 data class Current (
-    val dt: Long,
+    val dt: Long? = null,
     val sunrise: Long? = null,
     val sunset: Long? = null,
-    val temp: Double,
-    val feels_like: Double,
-    val pressure: Long,
-    val humidity: Long,
-    val dew_point: Double,
-    val uvi: Double,
-    val clouds: Long,
-    val visibility: Long,
-    val wind_speed: Double,
-    val wind_deg: Long,
-    val wind_gust: Double,
+    val temp: Double? = null,
+    val feels_like: Double? = null,
+    val pressure: Long? = null,
+    val humidity: Long? = null,
+    val dew_point: Double? = null,
+    val uvi: Double? = null,
+    val clouds: Long? = null,
+    val visibility: Long? = null,
+    val wind_speed: Double? = null,
+    val wind_deg: Long? = null,
+    val wind_gust: Double? = null,
     val weather: List<Weather>,
     val pop: Double? = null
-):Parcelable
+)
 
-@Parcelize
+
 data class Weather (
-    val id: Int,
-    val main: String,
-    val description: String,
-    val icon: String
-):Parcelable
+    val id: Int? = null,
+    val main: String? = null,
+    val description: String? = null,
+    val icon: String? = null
+)
 
 
-@Parcelize
+
 data class Daily (
-    val dt: Long,
-    val sunrise: Long,
-    val sunset: Long,
-    val moonrise: Long,
-    val moonset: Long,
-    val moon_phase: Double,
-    val temp: Temp,
-    val feels_like: FeelsLike,
-    val pressure: Long,
-    val humidity: Long,
-    val dewPoint: Double,
-    val wind_speed: Double,
-    val wind_deg: Long,
-    val wind_gust: Double,
+    val dt: Long? = null,
+    val sunrise: Long? = null,
+    val sunset: Long? = null,
+    val moonrise: Long? = null,
+    val moonset: Long? = null,
+    val moon_phase: Double? = null,
+    val temp: Temp? = null,
+    val feels_like: FeelsLike? = null,
+    val pressure: Long? = null,
+    val humidity: Long? = null,
+    val dewPoint: Double? = null,
+    val wind_speed: Double? = null,
+    val wind_deg: Long? = null,
+    val wind_gust: Double? = null,
     val weather: List<Weather>,
-    val clouds: Long,
-    val pop: Double,
-    val uvi: Double,
+    val clouds: Long? = null,
+    val pop: Double? = null,
+    val uvi: Double? = null,
     val rain: Double? = null
-):Parcelable
+)
 
-@Parcelize
+
 data class FeelsLike (
-    val day: Double,
-    val night: Double,
-    val eve: Double,
-    val morn: Double
-):Parcelable
+    val day: Double? = null,
+    val night: Double? = null,
+    val eve: Double? = null,
+    val morn: Double? = null
+)
 
-@Parcelize
+
 data class Temp (
-    val day: Double,
-    val min: Double,
-    val max: Double,
-    val night: Double,
-    val eve: Double,
-    val morn: Double
-):Parcelable
+    val day: Double? = null,
+    val min: Double? = null,
+    val max: Double? = null,
+    val night: Double? = null,
+    val eve: Double? = null,
+    val morn: Double? = null
+)
 
 
 
@@ -134,42 +128,42 @@ class SavedLocation constructor(
 }
 
 data class AirQuality(
-//    @SerializedName("coord")
+//    @field:Json(name ="coord")
 //    val coord: List<Int>? = listOf(),
-    @SerializedName("list")
+    @field:Json(name ="list")
     val list: List<DetailsList>? = CollectionUtils.listOf()
 )
 
 data class DetailsList(
-//    @SerializedName("components")
+//    @field:Json(name ="components")
 //    val components: Components? = Components(),
-//    @SerializedName("dt")
+//    @field:Json(name ="dt")
 //    val dt: Int? = 0,
-    @SerializedName("main")
+    @field:Json(name ="main")
     val main: Main? = Main()
 )
 
 data class Components(
-    @SerializedName("co")
+    @field:Json(name ="co")
     val co: Double? = 0.0,
-    @SerializedName("nh3")
+    @field:Json(name ="nh3")
     val nh3: Double? = 0.0,
-    @SerializedName("no")
+    @field:Json(name ="no")
     val no: Double? = 0.0,
-    @SerializedName("no2")
+    @field:Json(name ="no2")
     val no2: Double? = 0.0,
-    @SerializedName("o3")
+    @field:Json(name ="o3")
     val o3: Double? = 0.0,
-    @SerializedName("pm10")
+    @field:Json(name ="pm10")
     val pm10: Double? = 0.0,
-    @SerializedName("pm2_5")
+    @field:Json(name ="pm2_5")
     val pm25: Double? = 0.0,
-    @SerializedName("so2")
+    @field:Json(name ="so2")
     val so2: Double? = 0.0
 )
 
 data class Main(
-    @SerializedName("aqi")
+    @field:Json(name ="aqi")
     val aqi: Int? = 0
 )
 

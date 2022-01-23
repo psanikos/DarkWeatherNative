@@ -58,8 +58,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-import coil.annotation.ExperimentalCoilApi
-import coil.compose.rememberImagePainter
+
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.navigationBarsHeight
 import com.google.accompanist.insets.navigationBarsPadding
@@ -92,7 +91,7 @@ import java.util.*
 @OptIn(ExperimentalMaterialApi::class, androidx.compose.material3.ExperimentalMaterial3Api::class)
 @ExperimentalAnimationApi
 
-@ExperimentalCoilApi
+
 @Composable
 fun NewMainView(model: WeatherViewModel, controller: NavController) {
     val index: Int by model.index.observeAsState(initial = 0)
@@ -108,117 +107,135 @@ fun NewMainView(model: WeatherViewModel, controller: NavController) {
     var backImage by remember {
         mutableStateOf(R.drawable.nightphone)
     }
-val error by model.error.observeAsState()
-    LaunchedEffect(key1 = "$index ${locations.size}", block ={
-        backImage = getWeatherBack(if (locations.isNotEmpty()) locations[index].data.current.weather[0].icon else "01d")
-    } )
+    val error by model.error.observeAsState()
+    LaunchedEffect(key1 = "$index ${locations.size}", block = {
+        backImage =
+            getWeatherBack((if (locations.isNotEmpty()) locations[index].data.current!!.weather[0].icon else "01d")!!)
+    })
     val context = LocalContext.current
-    LaunchedEffect(key1 =error, block = {
-        if(error != WeatherError.NONE){
-            Toast.makeText(context,"Please check your internet connection and location access",Toast.LENGTH_LONG).show()
+    LaunchedEffect(key1 = error, block = {
+        if (error != WeatherError.NONE) {
+            Toast.makeText(
+                context,
+                "Please check your internet connection and location access",
+                Toast.LENGTH_LONG
+            ).show()
         }
     })
-    Box(modifier = Modifier.fillMaxSize()) {
-       AnimatedVisibility(visible = locations.isNotEmpty()) {
-           Image(
-               painter = painterResource(id = backImage), contentDescription = "",
-               modifier = Modifier.fillMaxSize(), contentScale = ContentScale.Crop
-           )
-       }
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.TopCenter
+    ) {
+
+
         Scaffold(
             floatingActionButton = {
-                        ExtendedFloatingActionButton(
+                ExtendedFloatingActionButton(
                     text = { Text("Map", style = MaterialTheme.typography.labelMedium) },
                     onClick = {
-                    controller.navigate("Map")
-                }, modifier = Modifier.navigationBarsPadding(),
-                icon = {    Icon(
-                    FontAwesomeIcons.Solid.Map,
-                    contentDescription = "map",
-                    modifier = Modifier.size(20.dp),
-                )})
+                        controller.navigate("Map")
+                    }, modifier = Modifier.navigationBarsPadding(),
+                    icon = {
+                        Icon(
+                            FontAwesomeIcons.Solid.Map,
+                            contentDescription = "map",
+                            modifier = Modifier.size(20.dp),
+                        )
+                    })
             },
             topBar = {
 
-                  AnimatedVisibility(visible = locations.isNotEmpty() ) {
-                      TopBarView(
-                          model = model,
-                          controller = controller,
-                          color = Color.Transparent
-                      )
-                  }
+                AnimatedVisibility(visible = locations.isNotEmpty()) {
+                    TopBarView(
+                        model = model,
+                        controller = controller,
+                        color = Color.Transparent
+                    )
+                }
 
             },
 
-            modifier = Modifier.statusBarsPadding(),
-            containerColor = Color.Transparent
-        ) {
 
-            SwipeRefresh(
-                state = rememberSwipeRefreshState(isRefreshing),
-                onRefresh = { model.initActions() }
+            containerColor = MaterialTheme.colorScheme.surface
+
             ) {
-                when (locations.size) {
-                    0 -> LoadingAnimationScreen()
+            Box(contentAlignment = Alignment.TopCenter) {
+            AnimatedVisibility(visible = locations.isNotEmpty()) {
+                Image(
+                    painter = painterResource(id = if(locations.isNotEmpty())
+                    getWeatherBackIcon(locations[index].data.current!!.weather.first().icon!!) else R.drawable.clearday),
+                    contentDescription = "",
+                    modifier = Modifier.size(500.dp)
 
-                    else -> Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .verticalScroll(state = ScrollState(0)),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(40.dp)
-                    ) {
-                        Spacer(modifier = Modifier.height(300.dp))
-                        Box(
+                    , contentScale = ContentScale.Fit
+                )
+            }
+                SwipeRefresh(
+                    state = rememberSwipeRefreshState(isRefreshing),
+                    onRefresh = { model.initActions() }
+                ) {
+                    when (locations.size) {
+                        0 -> LoadingAnimationScreen()
+
+                        else -> Column(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .wrapContentHeight()
-                                .frosted(isSystemInDarkTheme()),
-                            contentAlignment = Alignment.Center
+                                .fillMaxSize()
+                                .verticalScroll(state = ScrollState(0)),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(40.dp)
                         ) {
-                            Column(
-                                modifier = Modifier.padding(15.dp),
-                                horizontalAlignment = Alignment.Start,
-                                verticalArrangement = Arrangement.spacedBy(10.dp)
+                            Spacer(modifier = Modifier.height(300.dp))
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .wrapContentHeight()
+                                    .materialYouFrosted(),
+                                contentAlignment = Alignment.Center
                             ) {
-                                SummaryCard(
-                                    current = locations[index].data.current,
-                                    dayDetails = locations[index].data.daily.first().weather.first().description
-                                )
-                                HourView(
-                                    hourly = locations[index].data.hourly,
-                                    inSi = model.units == WeatherUnits.SI
-                                )
-                                DetailsCard(
-                                    current = locations[index].data.current,
-                                    daily = locations[index].data.daily.first(),
-                                    inSi = model.units == WeatherUnits.SI
-                                )
-                                if (locations[index].airQuality != null) {
-                                    AirQuality(
-                                        aqi = locations[index].airQuality?.list?.first()?.main?.aqi
-                                            ?: 1
+                                Column(
+                                    modifier = Modifier.padding(15.dp),
+                                    horizontalAlignment = Alignment.Start,
+                                    verticalArrangement = Arrangement.spacedBy(10.dp)
+                                ) {
+                                    SummaryCard(
+                                        current = locations[index].data.current!!,
+                                        dayDetails = locations[index].data.daily.first().weather.first().description!!
                                     )
+                                    HourView(
+                                        hourly = locations[index].data.hourly,
+                                        inSi = model.units == WeatherUnits.SI
+                                    )
+                                    DetailsCard(
+                                        current = locations[index].data.current!!,
+                                        daily = locations[index].data.daily.first(),
+                                        inSi = model.units == WeatherUnits.SI
+                                    )
+                                    if (locations[index].airQuality != null) {
+                                        AirQuality(
+                                            aqi = locations[index].airQuality?.list?.first()?.main?.aqi
+                                                ?: 1
+                                        )
+                                    }
+                                    MoonView(
+                                        phase = locations[index].data.daily.first().moon_phase!!,
+                                        moonrise = locations[index].data.daily.first().moonrise!!,
+                                        moonset = locations[index].data.daily.first().moonset!!
+                                    )
+                                    WeeklyView(
+                                        days = locations[index].data.daily,
+                                        inSi = model.units == WeatherUnits.SI
+                                    )
+                                    Spacer(modifier = Modifier.height(40.dp))
                                 }
-                                MoonView(
-                                    phase = locations[index].data.daily.first().moon_phase,
-                                    moonrise = locations[index].data.daily.first().moonrise,
-                                    moonset = locations[index].data.daily.first().moonset
-                                )
-                                WeeklyView(
-                                    days = locations[index].data.daily,
-                                    inSi = model.units == WeatherUnits.SI
-                                )
-                                Spacer(modifier = Modifier.height(40.dp))
                             }
+
                         }
 
                     }
-
                 }
+
             }
         }
     }
 }
-
 

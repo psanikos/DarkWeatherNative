@@ -71,8 +71,8 @@ fun CustomMapView(model: WeatherViewModel,controller:NavController) {
     LaunchedEffect(key1 = index + locations.size, block = {
         if (locations.isNotEmpty()) {
             coordinates = LatLng(
-                locations[index].data.lat,
-                locations[index].data.lon
+                locations[index].data.lat!!,
+                locations[index].data.lon!!
             )
         }
 
@@ -124,8 +124,8 @@ class CustomInfoWindowForGoogleMap(context: Context) : GoogleMap.InfoWindowAdapt
 }
 
 
-const val InitialZoom = 9f
-const val MinZoom = 5f
+const val InitialZoom = 4f
+const val MinZoom = 2f
 const val MaxZoom = 20f
 
 
@@ -210,7 +210,7 @@ fun MapViewContainer(
 //            )
                 it.animateCamera(CameraUpdateFactory.newLatLng(coordinates))
                 it.uiSettings.isScrollGesturesEnabled = false
-                it.uiSettings.isZoomGesturesEnabled = true
+                it.uiSettings.isZoomGesturesEnabled = false
                 val tile = it.addTileOverlay(
                     TileOverlayOptions()
                         .tileProvider(tileProvider).fadeIn(true)
@@ -218,7 +218,7 @@ fun MapViewContainer(
 
 
                 tile?.let { overlay ->
-                    overlay.transparency = 0.2f
+                    overlay.transparency = 0.1f
                     overlay.fadeIn = true
                     overlays.add(overlay)
                 }

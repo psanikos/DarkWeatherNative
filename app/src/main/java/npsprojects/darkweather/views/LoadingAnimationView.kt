@@ -15,6 +15,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.google.accompanist.insets.statusBarsPadding
 import compose.icons.FontAwesomeIcons
 import compose.icons.WeatherIcons
 import compose.icons.fontawesomeicons.Solid
@@ -53,7 +54,9 @@ LaunchedEffect(key1 = "Animation", block = {
   }
 })
     Box(modifier = Modifier
-        .fillMaxSize()
+        .statusBarsPadding()
+        .fillMaxWidth()
+        .fillMaxHeight(0.9f)
         .background(color = MaterialTheme.colorScheme.background),
     contentAlignment = Alignment.Center){
         Column(
