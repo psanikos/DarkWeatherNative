@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -37,7 +37,7 @@ fun SummaryCard(current: Current,dayDetails:String){
        .fillMaxWidth()
        .height(170.dp)
        .background(
-           color = if (isSystemInDarkTheme()) iceBlack else frosted,
+           color = androidx.compose.material3.MaterialTheme.colorScheme.background,
            shape = RoundedCornerShape(16.dp)
        )
        .padding(12.dp)
@@ -52,13 +52,13 @@ fun SummaryCard(current: Current,dayDetails:String){
            Column(modifier = Modifier.width(100.dp),
            horizontalAlignment = Alignment.Start,
            verticalArrangement = Arrangement.spacedBy(5.dp)) {
-            Text(current.weather.first().description, style = MaterialTheme.typography.caption)
-               Text(current.temp.roundToInt().toString() + "°", style = MaterialTheme.typography.h2.copy(fontWeight = FontWeight.Black,
-               color = if(isSystemInDarkTheme()) Color.White else Color.Black))
+            Text(current.weather.first().description, style = MaterialTheme.typography.labelMedium.copy(if(isSystemInDarkTheme()) Color.White else Color.Black))
+               Text(current.temp.roundToInt().toString() + "°", style = androidx.compose.material3.MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Black,
+                   color = if(isSystemInDarkTheme()) Color.White else Color.Black))
                Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
                    Icon(FontAwesomeIcons.Solid.Umbrella, contentDescription = "",
                    modifier = Modifier.size(15.dp), tint = Color.Gray)
-                   Text(((current.pop?.times(100)) ?: 0.0).roundToInt().toString() + "%", style = MaterialTheme.typography.caption.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black))
+                   Text(((current.pop?.times(100)) ?: 0.0).roundToInt().toString() + "%", style = MaterialTheme.typography.labelMedium.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black))
                }
 
            }
@@ -72,20 +72,20 @@ fun SummaryCard(current: Current,dayDetails:String){
                Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
                    Icon(FontAwesomeIcons.Solid.Tint, contentDescription = "",
                        modifier = Modifier.size(15.dp), tint = Color.Gray)
-                   Text("Humidity", style = MaterialTheme.typography.caption.copy(color = Color.Gray))
+                   Text("Humidity", style = MaterialTheme.typography.labelMedium.copy(color = Color.Gray))
                }
-               Text(current.humidity.toString() + "%", style = MaterialTheme.typography.subtitle1.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black))
+               Text(current.humidity.toString() + "%", style = MaterialTheme.typography.displayLarge.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black))
                 Divider()
                Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
                    Icon(FontAwesomeIcons.Solid.Child, contentDescription = "",
                        modifier = Modifier.size(15.dp), tint = Color.Gray)
-                   Text("Feels like", style = MaterialTheme.typography.caption.copy(color = Color.Gray))
+                   Text("Feels like", style = MaterialTheme.typography.labelMedium.copy(color = Color.Gray))
                }
-               Text(current.feels_like.roundToInt().toString() + "°", style = MaterialTheme.typography.subtitle1.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black))
+               Text(current.feels_like.roundToInt().toString() + "°", style = MaterialTheme.typography.displayLarge.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black))
            }
 
        }
-       Text(dayDetails, style = MaterialTheme.typography.caption.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black),
+       Text(dayDetails, style = MaterialTheme.typography.labelMedium.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black),
        modifier = Modifier.padding(10.dp))
 
    }

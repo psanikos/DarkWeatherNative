@@ -8,7 +8,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Air
@@ -52,7 +52,7 @@ fun AirQuality(aqi:Int){
         modifier = Modifier
             .fillMaxWidth()
             .height(190.dp)
-            .background(color = if (isSystemInDarkTheme()) iceBlack else frosted, shape = RoundedCornerShape(16.dp))
+            .background(color = MaterialTheme.colorScheme.background, shape = RoundedCornerShape(16.dp))
             .padding(16.dp),
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.SpaceBetween
@@ -69,11 +69,11 @@ fun AirQuality(aqi:Int){
                     Icon(
                         Icons.Default.Air, contentDescription = "",
                         modifier = Modifier.size(15.dp), tint = Color.Gray)
-                    Text("Air Quality", style = MaterialTheme.typography.caption.copy(color = Color.Gray))
+                    Text("Air Quality", style = MaterialTheme.typography.labelMedium.copy(color = Color.Gray))
 
                 }
-                Text("$aqi", style = MaterialTheme.typography.h3.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black))
-                Text(name, style = MaterialTheme.typography.body1.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black))
+                Text("$aqi", style =  androidx.compose.material3.MaterialTheme.typography.headlineMedium.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black))
+                Text(name, style = MaterialTheme.typography.bodyMedium.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black))
             }
             Box(
                 modifier = Modifier
@@ -88,7 +88,7 @@ fun AirQuality(aqi:Int){
             }
         }
         Divider(modifier = Modifier.fillMaxWidth(0.7f).padding(5.dp))
-        Text(summary, style = MaterialTheme.typography.caption.copy(color = Color.Gray))
+        Text(summary, style = MaterialTheme.typography.labelMedium.copy(color = Color.Gray))
 
     }
 

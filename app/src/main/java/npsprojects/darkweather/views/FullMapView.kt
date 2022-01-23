@@ -3,7 +3,7 @@ package npsprojects.darkweather.views
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
@@ -22,6 +22,7 @@ import npsprojects.darkweather.models.WeatherModel
 import npsprojects.darkweather.models.WeatherViewModel
 import java.util.ArrayList
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FullMapView(model: WeatherViewModel,controller:NavController) {
     val map = rememberMapViewWithLifecycle()
@@ -81,8 +82,7 @@ fun FullMapView(model: WeatherViewModel,controller:NavController) {
 
                   },
                   colors = ButtonDefaults.buttonColors(
-                      contentColor = Color.DarkGray,
-                      backgroundColor = if (mapType == "clouds_new") Color(0xFFFFFDD0) else Color.White
+                      contentColor = Color.DarkGray, containerColor  = if (mapType == "clouds_new") Color(0xFFFFFDD0) else Color.White
                   ),
                   contentPadding = PaddingValues(10.dp),
                   shape = CircleShape,
@@ -90,11 +90,6 @@ fun FullMapView(model: WeatherViewModel,controller:NavController) {
                       .width(50.dp)
                       .height(50.dp),
 
-                  elevation = ButtonDefaults.elevation(
-                      defaultElevation = 2.dp,
-                      pressedElevation = 4.dp,
-                      disabledElevation = 2.dp
-                  )
               ) {
           Box(modifier = Modifier.fillMaxSize(),contentAlignment = Alignment.Center) {
               Icon(
@@ -112,7 +107,7 @@ fun FullMapView(model: WeatherViewModel,controller:NavController) {
                   },
                   colors = ButtonDefaults.buttonColors(
                       contentColor = Color.DarkGray,
-                      backgroundColor = if (mapType == "precipitation_new") Color(0xFFFFFDD0) else Color.White
+                      containerColor = if (mapType == "precipitation_new") Color(0xFFFFFDD0) else Color.White
                   ),
                   contentPadding = PaddingValues(10.dp),
                   shape = CircleShape,
@@ -120,12 +115,7 @@ fun FullMapView(model: WeatherViewModel,controller:NavController) {
                       .width(50.dp)
                       .height(50.dp)
 
-                  ,
-                  elevation = ButtonDefaults.elevation(
-                      defaultElevation = 2.dp,
-                      pressedElevation = 4.dp,
-                      disabledElevation = 2.dp
-                  ),
+                 ,
 
                   ) {
                   Box(modifier = Modifier.fillMaxSize(),contentAlignment = Alignment.Center) {
@@ -145,18 +135,14 @@ fun FullMapView(model: WeatherViewModel,controller:NavController) {
                   },
                   colors = ButtonDefaults.buttonColors(
                       contentColor = Color.DarkGray,
-                      backgroundColor = if (mapType == "temp_new") Color(0xFFFFFDD0) else Color.White
+                      containerColor = if (mapType == "temp_new") Color(0xFFFFFDD0) else Color.White
                   ),
                   contentPadding = PaddingValues(10.dp),
                   shape = CircleShape,
                   modifier = Modifier
                       .width(50.dp)
                       .height(50.dp),
-                  elevation = ButtonDefaults.elevation(
-                      defaultElevation = 2.dp,
-                      pressedElevation = 4.dp,
-                      disabledElevation = 2.dp
-                  )
+
               ) {
                   Box(modifier = Modifier.fillMaxSize(),contentAlignment = Alignment.Center) {
                       Icon(
@@ -173,18 +159,14 @@ fun FullMapView(model: WeatherViewModel,controller:NavController) {
                   },
                   colors = ButtonDefaults.buttonColors(
                       contentColor = Color.DarkGray,
-                      backgroundColor = if (mapType == "wind_new") Color(0xFFFFFDD0) else Color.White
+                      containerColor = if (mapType == "wind_new") Color(0xFFFFFDD0) else Color.White
                   ),
                   contentPadding = PaddingValues(10.dp),
                   shape = CircleShape,
                   modifier = Modifier
                       .width(50.dp)
                       .height(50.dp),
-                  elevation = ButtonDefaults.elevation(
-                      defaultElevation = 2.dp,
-                      pressedElevation = 4.dp,
-                      disabledElevation = 2.dp
-                  )
+
               ) {
                   Box(modifier = Modifier.fillMaxSize(),contentAlignment = Alignment.Center) {
                       Icon(

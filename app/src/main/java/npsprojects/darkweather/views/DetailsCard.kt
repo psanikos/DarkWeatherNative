@@ -8,7 +8,7 @@ import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Navigation
@@ -44,7 +44,7 @@ import kotlin.math.roundToInt
 @Composable
 fun DetailsCard(current: Current,daily: Daily,inSi:Boolean){
     Box(modifier = Modifier.fillMaxWidth().height(170.dp)
-        .background(color = if (isSystemInDarkTheme()) iceBlack else frosted, shape = RoundedCornerShape(16.dp))
+        .background(color = MaterialTheme.colorScheme.background, shape = RoundedCornerShape(16.dp))
         .padding(12.dp), contentAlignment = Alignment.Center) {
         LazyVerticalGrid(cells = GridCells.Fixed(3), content = {
             item {
@@ -97,10 +97,10 @@ fun DetailsItem(icon:ImageVector,title:String,value:String,secondValue:Double?){
             Icon(
                 icon, contentDescription = "",
                 modifier = Modifier.size(15.dp).rotate((secondValue ?: 0.0).toFloat()), tint = Color.Gray)
-            Text(title, style = MaterialTheme.typography.caption.copy(color = Color.Gray))
+            Text(title, style = MaterialTheme.typography.labelMedium.copy(color = Color.Gray))
 
         }
-        Text(value, style = MaterialTheme.typography.subtitle1.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black))
+        Text(value, style = MaterialTheme.typography.displayLarge.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black))
     }
 }
 

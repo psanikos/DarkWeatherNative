@@ -17,10 +17,14 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.TopAppBar
+
+import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.*
 import androidx.compose.runtime.internal.enableLiveLiterals
 import androidx.compose.runtime.livedata.observeAsState
@@ -85,8 +89,9 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 
 
+@OptIn(ExperimentalMaterialApi::class, androidx.compose.material3.ExperimentalMaterial3Api::class)
 @ExperimentalAnimationApi
-@ExperimentalMaterialApi
+
 @ExperimentalCoilApi
 @Composable
 fun NewMainView(model: WeatherViewModel, controller: NavController) {
@@ -122,23 +127,19 @@ val error by model.error.observeAsState()
        }
         Scaffold(
             floatingActionButton = {
-                FloatingActionButton(onClick = {
+                        ExtendedFloatingActionButton(
+                    text = { Text("Map", style = MaterialTheme.typography.labelMedium) },
+                    onClick = {
                     controller.navigate("Map")
-                }, modifier = Modifier.navigationBarsPadding()) {
-                    Icon(
-                        FontAwesomeIcons.Solid.Map,
-                        contentDescription = "map",
-                        modifier = Modifier.size(20.dp),
-                        tint = if (isSystemInDarkTheme()) Color.Black else Color.White
-                    )
-                }
+                }, modifier = Modifier.navigationBarsPadding(),
+                icon = {    Icon(
+                    FontAwesomeIcons.Solid.Map,
+                    contentDescription = "map",
+                    modifier = Modifier.size(20.dp),
+                )})
             },
             topBar = {
-                TopAppBar(
-                    backgroundColor = Color.Transparent,
 
-                    elevation = 0.dp
-                ) {
                   AnimatedVisibility(visible = locations.isNotEmpty() ) {
                       TopBarView(
                           model = model,
@@ -146,10 +147,11 @@ val error by model.error.observeAsState()
                           color = Color.Transparent
                       )
                   }
-                }
+
             },
-             backgroundColor = Color.Transparent,
-            modifier = Modifier.statusBarsPadding()
+
+            modifier = Modifier.statusBarsPadding(),
+            containerColor = Color.Transparent
         ) {
 
             SwipeRefresh(

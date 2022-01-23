@@ -9,7 +9,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Air
@@ -40,7 +40,7 @@ fun MoonView(phase:Double,moonrise:Long,moonset:Long){
         modifier = Modifier
             .fillMaxWidth()
             .height(160.dp)
-            .background(color = if (isSystemInDarkTheme()) iceBlack else frosted, shape = RoundedCornerShape(16.dp))
+            .background(color = MaterialTheme.colorScheme.background, shape = RoundedCornerShape(16.dp))
             .padding(16.dp),
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.SpaceBetween
@@ -57,10 +57,10 @@ fun MoonView(phase:Double,moonrise:Long,moonset:Long){
                     Icon(
                         WeatherIcons.MoonFirstQuarter, contentDescription = "",
                         modifier = Modifier.size(15.dp), tint = Color.Gray)
-                    Text("Moon", style = MaterialTheme.typography.caption.copy(color = Color.Gray))
+                    Text("Moon", style = MaterialTheme.typography.labelMedium.copy(color = Color.Gray))
 
                 }
-                Text(stringResource(id = moonDescription(phase)), style = MaterialTheme.typography.h3.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black))
+                Text(stringResource(id = moonDescription(phase)), style =  androidx.compose.material3.MaterialTheme.typography.headlineMedium.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black))
 
             }
           Image(painter = painterResource(id = moonIcon(phase)), contentDescription = "",
@@ -75,7 +75,7 @@ fun MoonView(phase:Double,moonrise:Long,moonset:Long){
             LocalDateTime.ofInstant(
                 Instant.ofEpochMilli(1000 * moonset),
                 ZoneId.systemDefault()
-            ))}", style = MaterialTheme.typography.caption.copy(color = Color.Gray))
+            ))}", style = MaterialTheme.typography.labelMedium.copy(color = Color.Gray))
 
     }
 }

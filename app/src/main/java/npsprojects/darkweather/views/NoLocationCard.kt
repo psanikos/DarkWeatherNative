@@ -9,7 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.twotone.*
@@ -58,8 +58,8 @@ fun ErrorCard(model: WeatherViewModel){
  ) {
     Icon(icon, contentDescription = "",tint = blue_grey_500,
     modifier = Modifier.size(80.dp))
-     Text(text,style = MaterialTheme.typography.h2.copy(color = MaterialTheme.colors.primary))
-     Text(subText,style = MaterialTheme.typography.body2.copy(color = MaterialTheme.colors.secondary))
+     Text(text,style = MaterialTheme.typography.headlineMedium.copy(color = MaterialTheme.colorScheme.primary))
+     Text(subText,style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.secondary))
 
     IOSButton(icon = Icons.Default.Refresh, text = "Refresh", color = teal_600) {
         model.error.value = WeatherError.NONE
@@ -96,7 +96,7 @@ fun NoLocationCard(model: WeatherViewModel,onShowAlert:()->Unit){
                 )
                 Text(
                     "No location",
-                    style = MaterialTheme.typography.body1.copy(color = MaterialTheme.colors.primary)
+                    style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.primary)
                 )
             }
             IOSButton(icon = Icons.Default.Refresh, text = "Refresh", color = teal_600) {
@@ -141,13 +141,13 @@ fun NoLocationCard(model: WeatherViewModel,onShowAlert:()->Unit){
                 modifier = Modifier
                     .padding(start = 20.dp)
                     .fillMaxWidth(0.9f),
-                textStyle = MaterialTheme.typography.caption.copy(color = if (isSystemInDarkTheme()) Color.LightGray else Color.DarkGray),cursorBrush = Brush.horizontalGradient(colors = listOf(Color.Blue,Color.Gray))
+                textStyle = MaterialTheme.typography.labelMedium.copy(color = if (isSystemInDarkTheme()) Color.LightGray else Color.DarkGray),cursorBrush = Brush.horizontalGradient(colors = listOf(Color.Blue,Color.Gray))
 
             )
             if (searchTerm == "") {
                 Text(
                     stringResource(R.string.searchText),
-                    style = MaterialTheme.typography.caption,
+                    style = MaterialTheme.typography.labelMedium,
                     modifier = Modifier
                         .padding(start = 20.dp)
                 )
@@ -184,14 +184,14 @@ fun NoLocationCard(model: WeatherViewModel,onShowAlert:()->Unit){
                     ) {
                         Text(
                             it.locality ?: it.featureName,
-                            style = MaterialTheme.typography.body2,
+                            style = MaterialTheme.typography.bodySmall,
                             modifier = Modifier.padding(
                                 horizontal = 16.dp,
                                 vertical = 8.dp
                             )
                         )
 
-                        Text(it.countryName ?: "",   style = MaterialTheme.typography.caption,
+                        Text(it.countryName ?: "",   style = MaterialTheme.typography.labelMedium,
                             modifier = Modifier.padding( horizontal = 20.dp,vertical = 8.dp))
 
                 }

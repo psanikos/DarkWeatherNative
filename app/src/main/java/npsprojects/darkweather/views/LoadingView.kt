@@ -7,7 +7,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.twotone.Warning
@@ -78,7 +78,7 @@ fun LoadingView(model: WeatherViewModel) {
                             tint = yellow_500
                         )
                           Text(stringResource(id = R.string.LocationDenied),
-                              style = MaterialTheme.typography.h4.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black),textAlign = TextAlign.Center)
+                              style = MaterialTheme.typography.displayLarge.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black),textAlign = TextAlign.Center)
 
 
                     }
@@ -103,7 +103,7 @@ fun LoadingView(model: WeatherViewModel) {
                                 contentDescription = "",
                                 tint = orange_500
                             )
-                            Text(stringResource(id = R.string.NoLocationNoAccess),style = MaterialTheme.typography.h4.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black),textAlign = TextAlign.Center)
+                            Text(stringResource(id = R.string.NoLocationNoAccess),style = MaterialTheme.typography.displayLarge.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black),textAlign = TextAlign.Center)
 
 
                         }
@@ -123,7 +123,7 @@ fun LoadingView(model: WeatherViewModel) {
                         contentDescription = "",
                         tint = red_500
                     )
-                   Text(stringResource(id = R.string.NoInternet),style = MaterialTheme.typography.h4.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black),textAlign = TextAlign.Center)
+                   Text(stringResource(id = R.string.NoInternet),style = MaterialTheme.typography.displayLarge.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black),textAlign = TextAlign.Center)
 
 
                 }

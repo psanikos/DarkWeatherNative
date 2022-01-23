@@ -10,6 +10,7 @@ import android.location.Location
 import android.os.Build
 import android.provider.Settings
 import android.text.TextUtils
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -74,7 +75,7 @@ class WeatherViewModel : ViewModel() {
         initActions()
     }
 
-fun getLang(){
+private fun getLang(){
     val locale = Locale.getDefault().displayLanguage
     lang = when(locale.lowercase()){
         "french" -> Lang.FR
@@ -179,6 +180,19 @@ fun getLang(){
 
         myLocations = getSavedLocations()
     }
+
+    fun saveWidgetLocation(address: SavedLocation) {
+        val context = MyApp.context
+        val pref: SharedPreferences = context
+            .getSharedPreferences("MyPref", 0)
+
+        with(pref.edit()) {
+            putStringSet("widgetLocation", setOf(address.name,address.latitude.toString(),address.longitude.toString()))
+            apply()
+        }
+        Log.i("Widget","Saved widget location")
+    }
+
     private fun getSavedLocations():MutableList<SavedLocation> {
         val context = MyApp.context
 
@@ -331,6 +345,7 @@ fun getLang(){
                             error.value = WeatherError.NOGPS
                         }
                         locale?.let {
+
                             getLocationWeather(location = locale)
                         }
 
@@ -405,6 +420,8 @@ fun getLang(){
         ) { item ->
             val oldList = locations.value?.toMutableList() ?: mutableListOf()
             getLocationData(location = Coordinates(location.latitude,location.longitude),name = item,isCurrent = true){ weather->
+
+                saveWidgetLocation(SavedLocation(name = item, longitude = location.longitude, latitude = location.latitude))
                 weather?.let {
                     oldList.add(0,it)
                     if(locations.value?.firstOrNull { it.data.lat.round(3) == weather.data.lat.round(3) && it.data.lon.round(3) == weather.data.lon.round(3)} == null) {

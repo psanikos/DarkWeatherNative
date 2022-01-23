@@ -6,7 +6,7 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -54,7 +54,7 @@ LaunchedEffect(key1 = "Animation", block = {
 })
     Box(modifier = Modifier
         .fillMaxSize()
-        .background(color = grey_100),
+        .background(color = MaterialTheme.colorScheme.background),
     contentAlignment = Alignment.Center){
         Column(
             modifier = Modifier
@@ -69,7 +69,7 @@ LaunchedEffect(key1 = "Animation", block = {
            ) {
                Text(
                    "Please pull to refresh.",
-                   style = MaterialTheme.typography.body1.copy(color = Color.Gray)
+                   style = MaterialTheme.typography.bodySmall.copy(color = MaterialTheme.colorScheme.tertiaryContainer)
                )
                ColoredIcon(
                    imageVector = FontAwesomeIcons.Solid.ArrowAltCircleDown,
@@ -105,7 +105,7 @@ LaunchedEffect(key1 = "Animation", block = {
                 }
                 Text(
                     "LOOKING OUTSIDE FOR YOU...",
-                    style = MaterialTheme.typography.body1.copy(color = Color.Gray)
+                    style = MaterialTheme.typography.bodyMedium.copy(color = MaterialTheme.colorScheme.tertiary)
                 )
             }
 

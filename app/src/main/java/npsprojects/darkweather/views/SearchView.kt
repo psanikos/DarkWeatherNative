@@ -9,10 +9,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
+import androidx.compose.material.TextField
+import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ChevronLeft
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -89,17 +91,17 @@ fun SearchView(model: WeatherViewModel,onSelected:()->Unit) {
 //                decorationBox = {
 //                    if (searchTerm == "") Text(
 //                        text = "Search",
-//                        style = MaterialTheme.typography.body2
+//                        style = MaterialTheme.typography.bodySmall
 //                    ) else null
 //                },
-                    textStyle = MaterialTheme.typography.body1.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black),
+                    textStyle = MaterialTheme.typography.bodyMedium.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black),
 
                     )
 
                 if (searchTerm == "") {
                     Text(
                         text = "Search",
-                        style = MaterialTheme.typography.body2.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black),
+                        style = MaterialTheme.typography.bodySmall.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black),
                         modifier = Modifier.padding(start = 30.dp)
                     )
                 }
@@ -139,7 +141,7 @@ fun SearchView(model: WeatherViewModel,onSelected:()->Unit) {
                     ) {
                         Text(
                             it.locality ?: it.featureName,
-                            style = MaterialTheme.typography.body1,
+                            style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier.padding(
                                 horizontal = 8.dp,
                                 vertical = 8.dp
@@ -148,7 +150,7 @@ fun SearchView(model: WeatherViewModel,onSelected:()->Unit) {
 
                         Text(
                             it.countryName ?: "",
-                            style = MaterialTheme.typography.body2,
+                            style = MaterialTheme.typography.bodySmall,
                             modifier = Modifier.padding(
                                 horizontal = 10.dp,
                                 vertical = 8.dp
@@ -170,11 +172,11 @@ fun SearchView(model: WeatherViewModel,onSelected:()->Unit) {
 
                 // below line is use to display title of our dialog
                 // box and we are setting text color to white.
-                title = { Text(text = stringResource(id = R.string.NoResults), style = MaterialTheme.typography.h4) },
+                title = { Text(text = stringResource(id = R.string.NoResults), style = MaterialTheme.typography.displayLarge) },
 
                 // below line is use to display
                 // description to our alert dialog.
-                text = { Text(stringResource(id = R.string.ChangeSearch), style = MaterialTheme.typography.body2) },
+                text = { Text(stringResource(id = R.string.ChangeSearch), style = MaterialTheme.typography.bodySmall) },
 
                 // in below line we are displaying
                 // our confirm button.
@@ -190,7 +192,7 @@ fun SearchView(model: WeatherViewModel,onSelected:()->Unit) {
                     ) {
                         // in this line we are adding
                         // text for our confirm button.
-                        Text("OK", style = MaterialTheme.typography.button.copy(color = teal_500))
+                        Text("OK", style = MaterialTheme.typography.displayMedium.copy(color = teal_500))
                     }
                 },
                 // in below line we are displaying
@@ -206,14 +208,9 @@ fun SearchView(model: WeatherViewModel,onSelected:()->Unit) {
                         }
                     ) {
                         // adding text to our button.
-                        Text(stringResource(id = R.string.Back), style = MaterialTheme.typography.button.copy(color = red_500))
+                        Text(stringResource(id = R.string.Back), style = MaterialTheme.typography.displayMedium.copy(color = red_500))
                     }
-                },
-                // below line is use to add background color to our alert dialog
-                backgroundColor = if(isSystemInDarkTheme()) Color.DarkGray else Color.White,
-
-                // below line is use to add content color for our alert dialog.
-                contentColor = if(isSystemInDarkTheme()) Color.White else Color.Black
+                }
             )
         }
 
@@ -222,6 +219,7 @@ fun SearchView(model: WeatherViewModel,onSelected:()->Unit) {
 }
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FullSearchView(model: WeatherViewModel,controller: NavController) {
     var searchTerm by remember {
@@ -232,10 +230,12 @@ fun FullSearchView(model: WeatherViewModel,controller: NavController) {
     var showAlert: Boolean by remember { mutableStateOf(false) }
     Scaffold(
         topBar = {
-            TopAppBar(title = {
-                Text(stringResource(R.string.add_location),
-                    style = MaterialTheme.typography.h2)
-            },
+            LargeTopAppBar(
+                title = {
+                    Text(stringResource(R.string.add_location),
+                        style = androidx.compose.material3.MaterialTheme.typography.headlineLarge
+                      )
+                },
                 navigationIcon = {
                     IconButton(onClick = {
                         controller.popBackStack()
@@ -245,12 +245,12 @@ fun FullSearchView(model: WeatherViewModel,controller: NavController) {
                             modifier = Modifier.size(25.dp))
                     }
                 },
-                elevation = 0.dp,
-                backgroundColor = if (isSystemInDarkTheme()) iceBlack else frosted,
-                modifier = Modifier.height(150.dp)
+                colors = TopAppBarDefaults.largeTopAppBarColors(
+                    titleContentColor = MaterialTheme.colorScheme.tertiary
+                )
             )
+
         },
-        backgroundColor = if(isSystemInDarkTheme()) Color(0xFF202020) else Color(0xFFEFEFEF)
     ) {
         Column(
             modifier = Modifier
@@ -259,11 +259,10 @@ fun FullSearchView(model: WeatherViewModel,controller: NavController) {
             horizontalAlignment = Alignment.Start,
             verticalArrangement = Arrangement.spacedBy(10.dp)
         ) {
-
-                Row(modifier =  Modifier
+                Row(modifier = Modifier
                     .background(
-                        color = Color.Gray.copy(alpha = 0.1f),
-                        shape = RoundedCornerShape(16)
+                        color = MaterialTheme.colorScheme.tertiaryContainer,
+                        shape = RoundedCornerShape(40)
                     )
                     .height(40.dp)
                     .fillMaxWidth()
@@ -272,7 +271,9 @@ fun FullSearchView(model: WeatherViewModel,controller: NavController) {
                ,horizontalArrangement = Arrangement.spacedBy(5.dp),
                 verticalAlignment = Alignment.CenterVertically) {
                     Icon(Icons.Default.Search, contentDescription = "",
-                    modifier = Modifier.size(30.dp), tint = Color.DarkGray)
+                    modifier = Modifier
+                        .size(25.dp)
+                        .padding(start = 5.dp), tint = Color.DarkGray)
                     BasicTextField(
                         value = searchTerm,
                         onValueChange = {
@@ -297,12 +298,12 @@ fun FullSearchView(model: WeatherViewModel,controller: NavController) {
                         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
 //                },
                         textStyle = MaterialTheme.typography
-                            .body1.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black),
+                            .bodyMedium.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black),
                         decorationBox = { innerTextField ->
 
 
                                 if (searchTerm.isEmpty()) {
-                                    Text("Search for location", style = MaterialTheme.typography.body2)
+                                    Text("Search for location", style = MaterialTheme.typography.bodySmall)
                                 }
 
                                 innerTextField()
@@ -322,7 +323,7 @@ fun FullSearchView(model: WeatherViewModel,controller: NavController) {
                             .fillMaxWidth()
                             .height(40.dp)
                             .background(
-                                color = if (isSystemInDarkTheme()) Color(0xFF121212) else Color.White,
+                                color = MaterialTheme.colorScheme.onPrimary,
                                 shape = RoundedCornerShape(20)
                             )
                             .clickable {
@@ -345,7 +346,7 @@ fun FullSearchView(model: WeatherViewModel,controller: NavController) {
                     ) {
                         Text(
                             it.locality ?: it.featureName,
-                            style = MaterialTheme.typography.body1,
+                            style = MaterialTheme.typography.bodyMedium,
                             modifier = Modifier.padding(
                                 horizontal = 8.dp,
                                 vertical = 8.dp
@@ -354,7 +355,7 @@ fun FullSearchView(model: WeatherViewModel,controller: NavController) {
 
                         Text(
                             it.countryName ?: "",
-                            style = MaterialTheme.typography.body2,
+                            style = MaterialTheme.typography.bodySmall,
                             modifier = Modifier.padding(
                                 horizontal = 10.dp,
                                 vertical = 8.dp
@@ -370,57 +371,48 @@ fun FullSearchView(model: WeatherViewModel,controller: NavController) {
         if (showAlert) {
             // below line is use to
             // display a alert dialog.
-            AlertDialog(
+                AlertDialog(
                 // on dialog dismiss we are setting
                 // our dialog value to false.
                 onDismissRequest = { showAlert = false },
 
                 // below line is use to display title of our dialog
                 // box and we are setting text color to white.
-                title = { Text(text = stringResource(id = R.string.NoResults), style = MaterialTheme.typography.h4) },
+                title = { Text(text = stringResource(id = R.string.NoResults), style = MaterialTheme.typography.displayLarge) },
 
                 // below line is use to display
                 // description to our alert dialog.
-                text = { Text(stringResource(id = R.string.ChangeSearch), style = MaterialTheme.typography.body2) },
+                text = { Text(stringResource(id = R.string.ChangeSearch), style = MaterialTheme.typography.bodySmall) },
 
                 // in below line we are displaying
                 // our confirm button.
                 confirmButton = {
                     // below line we are adding on click
                     // listener for our confirm button.
-                    TextButton(
-                        onClick = {
-                            showAlert = false
-                            searchTerm = ""
+                    TextButton(onClick = {
+                        showAlert = false
+                        searchTerm = ""
+                    }) {
+                        Text("OK", style = MaterialTheme.typography.displayMedium)
 
-                        }
-                    ) {
-                        // in this line we are adding
-                        // text for our confirm button.
-                        Text("OK", style = MaterialTheme.typography.button.copy(color = teal_500))
                     }
+
                 },
                 // in below line we are displaying
                 // our dismiss button.
                 dismissButton = {
-                    // in below line we are displaying
-                    // our text button
-                    TextButton(
-                        // adding on click listener for this button
-                        onClick = {
-                            showAlert = false
-
-                        }
+                    TextButton(onClick = {
+                        showAlert = false
+                    },
                     ) {
-                        // adding text to our button.
-                        Text(stringResource(id = R.string.Back), style = MaterialTheme.typography.button.copy(color = red_500))
-                    }
-                },
-                // below line is use to add background color to our alert dialog
-                backgroundColor = if(isSystemInDarkTheme()) Color.DarkGray else Color.White,
+                        Text(stringResource(id = R.string.Back), style = MaterialTheme.typography.displayMedium)
 
-                // below line is use to add content color for our alert dialog.
-                contentColor = if(isSystemInDarkTheme()) Color.White else Color.Black
+                    }
+
+                }, icon = {
+                    Icon(Icons.Default.Warning,contentDescription = null)
+                    }
+
             )
         }
     }

@@ -18,7 +18,10 @@ fun getOpenWeatherUrl(locale:Coordinates,units:WeatherUnits,lang:String):String{
     val unit =  if(units == WeatherUnits.SI || units == WeatherUnits.AUTO)  "metric" else "imperial"
    return  "https://api.openweathermap.org/data/2.5/onecall?lat=${locale.latitude}&lon=${locale.longitude}&exclude=minutely&units=${unit}&lang=$lang&appid=e1e45feaea76d66517c25291f2633d9a"
 }
-
+fun getOpenWeatherUrlLite(locale:Coordinates,units:WeatherUnits,lang:String):String{
+    val unit =  if(units == WeatherUnits.SI || units == WeatherUnits.AUTO)  "metric" else "imperial"
+    return  "https://api.openweathermap.org/data/2.5/weather?lat=${locale.latitude}&lon=${locale.longitude}&units=${unit}&lang=$lang&appid=e1e45feaea76d66517c25291f2633d9a"
+}
 
 @Parcelize
 data class OpenWeather (

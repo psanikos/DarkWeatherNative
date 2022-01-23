@@ -8,7 +8,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Navigation
@@ -52,7 +52,7 @@ fun HourItem(isFirst:Boolean,hour:Current,inSi: Boolean){
     Column(modifier = Modifier
         .fillMaxHeight()
         .width(90.dp)
-        .background(color = if (isFirst) if (isSystemInDarkTheme()) iceBlack else frosted else indigo_500),
+        .background(color = if (isFirst) MaterialTheme.colorScheme.background else indigo_500),
         verticalArrangement = Arrangement.SpaceEvenly,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -61,15 +61,15 @@ fun HourItem(isFirst:Boolean,hour:Current,inSi: Boolean){
                                 LocalDateTime.ofInstant(
                                     Instant.ofEpochMilli(1000 * hour.dt),
                                     ZoneId.systemDefault()
-                                )), style = MaterialTheme.typography.caption.copy(color = if(isFirst) Color.Gray else Color.LightGray))
-        Text(hour.temp.roundToInt().toString() + "°", style = MaterialTheme.typography.subtitle1.copy(color = if(isFirst && !isSystemInDarkTheme()) Color.Black else Color.White))
+                                )), style = MaterialTheme.typography.labelMedium.copy(color = if(isFirst) Color.Gray else Color.LightGray))
+        Text(hour.temp.roundToInt().toString() + "°", style = MaterialTheme.typography.bodyLarge.copy(color = if(isFirst && !isSystemInDarkTheme()) Color.Black else Color.White))
         Image(painter = painterResource(id = getWeatherImage(hour.weather.first().icon)), contentDescription ="",
         modifier = Modifier.size(30.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
             Icon(
                 FontAwesomeIcons.Solid.Umbrella, contentDescription = "",
                 modifier = Modifier.size(15.dp), tint = if(isFirst && !isSystemInDarkTheme()) Color.Gray else Color.LightGray)
-            Text(((hour.pop ?: 0.0)*100).roundToInt().toString() + "%", style = MaterialTheme.typography.caption.copy(color = if(isFirst && !isSystemInDarkTheme()) Color.Gray else Color.LightGray))
+            Text(((hour.pop ?: 0.0)*100).roundToInt().toString() + "%", style = MaterialTheme.typography.labelMedium.copy(color = if(isFirst && !isSystemInDarkTheme()) Color.Gray else Color.LightGray))
         }
         Row(
                         horizontalArrangement = Arrangement.spacedBy(5.dp),
@@ -89,7 +89,7 @@ fun HourItem(isFirst:Boolean,hour:Current,inSi: Boolean){
 
                         Text(
                             text = "${hour.wind_speed.roundToInt()} " + if (inSi) "km/h" else "mph" ,
-                            style = MaterialTheme.typography.caption.copy(color = if(isFirst && !isSystemInDarkTheme()) Color.Gray else Color.LightGray)
+                            style = MaterialTheme.typography.labelMedium.copy(color = if(isFirst && !isSystemInDarkTheme()) Color.Gray else Color.LightGray)
                         )
                     }
 

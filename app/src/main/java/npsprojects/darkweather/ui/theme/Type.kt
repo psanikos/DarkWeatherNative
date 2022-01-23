@@ -39,52 +39,76 @@ private val appFont = FontFamily(
 )
 
 // Set of Material typography styles to start with
-val Typography = Typography(
-    body1 = TextStyle(
+val Typography = androidx.compose.material3.Typography(
+    bodyMedium = TextStyle(
         fontFamily = appFont,
         fontWeight = FontWeight.Medium,
-        fontSize = 16.sp
-    ),
-    body2 = TextStyle(
-        fontFamily = appFont,
-        fontWeight = FontWeight.Light,
         fontSize = 14.sp
     ),
-    h1 = TextStyle(
+    bodySmall = TextStyle(
+        fontFamily = appFont,
+        fontWeight = FontWeight.Normal,
+        fontSize = 12.sp
+    ),
+    displayLarge = TextStyle(
+        fontFamily = appFont,
+        fontWeight = FontWeight.SemiBold    ,
+        fontSize = 18.sp),
+    displayMedium = TextStyle(
+        fontFamily = appFont,
+        fontWeight = FontWeight.SemiBold  ,
+        fontSize = 16.sp),
+    displaySmall = TextStyle(
+        fontFamily = appFont,
+        fontWeight = FontWeight.SemiBold    ,
+        fontSize = 14.sp),
+    titleLarge = TextStyle(
+        fontFamily = appFont,
+        fontWeight = FontWeight.Bold   ,
+        fontSize = 20.sp),
+    titleMedium = TextStyle(
+        fontFamily = appFont,
+        fontWeight = FontWeight.Bold   ,
+        fontSize = 18.sp),
+    titleSmall = TextStyle(
+        fontFamily = appFont,
+        fontWeight = FontWeight.Bold   ,
+        fontSize = 16.sp),
+    labelLarge = TextStyle(
         fontFamily = appFont,
         fontWeight = FontWeight.Black,
-        fontSize = 60.sp
+        fontSize = 40.sp
     ),
-    h2 = TextStyle(
+    labelMedium = TextStyle(
+        fontFamily = appFont,
+        fontWeight = FontWeight.Normal,
+        fontSize = 12.sp
+    ),
+    labelSmall = TextStyle(
+        fontFamily = appFont,
+        fontWeight = FontWeight.Normal,
+        fontSize = 11.sp
+    ),
+    headlineLarge = TextStyle(
         fontFamily = appFont,
         fontWeight = FontWeight.Black,
-        fontSize = 32.sp
+        fontSize = 30.sp
     ),
-    h3 = TextStyle(
+    headlineMedium = TextStyle(
         fontFamily = appFont,
-        fontWeight = FontWeight.Bold    ,
+        fontWeight = FontWeight.Black,
+        fontSize = 26.sp
+    ),
+    headlineSmall = TextStyle(
+        fontFamily = appFont,
+        fontWeight = FontWeight.Black,
         fontSize = 24.sp
     ),
-    h4 = TextStyle(
+    bodyLarge = TextStyle(
         fontFamily = appFont,
-        fontWeight = FontWeight.SemiBold,
+        fontWeight = FontWeight.Medium,
         fontSize = 18.sp
     ),
 
-    button = TextStyle(
-        fontFamily = appFont,
-        fontWeight = FontWeight.SemiBold,
-        fontSize = 14.sp
-    ),
-    caption = TextStyle(
-        fontFamily = appFont,
-        fontWeight = FontWeight.Medium,
-        fontSize = 11.sp
-    ),
-    subtitle1 = TextStyle(
-        fontFamily = appFont,
-        fontWeight = FontWeight.SemiBold    ,
-        fontSize = 16.sp
-    )
 
 )

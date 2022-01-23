@@ -6,11 +6,10 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ChevronLeft
-import androidx.compose.material.icons.rounded.ArrowBackIosNew
 import androidx.compose.material.icons.twotone.Warning
+import androidx.compose.material3.*
+
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,6 +34,7 @@ import npsprojects.darkweather.models.WeatherViewModel
 import npsprojects.darkweather.ui.theme.*
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("RestrictedApi")
 @Composable
 fun SettingsView(model: WeatherViewModel, controller: NavController) {
@@ -46,12 +46,14 @@ fun SettingsView(model: WeatherViewModel, controller: NavController) {
 
 
     Scaffold(
-      //  backgroundColor = if(isSystemInDarkTheme()) Color(0xFF303030) else Color(0xFFf0f0f7),
+
         topBar = {
-            TopAppBar(title = {
-                Text(stringResource(R.string.settings),
-                    style = MaterialTheme.typography.h2)
-            },
+            LargeTopAppBar(
+                title = {
+                    Text(stringResource(R.string.settings),
+                        style = androidx.compose.material3.MaterialTheme.typography.headlineLarge)
+
+                },
                 navigationIcon = {
                     IconButton(onClick = {
                         controller.popBackStack()
@@ -60,10 +62,11 @@ fun SettingsView(model: WeatherViewModel, controller: NavController) {
                             modifier = Modifier.size(25.dp))
                     }
                 },
-                elevation = 0.dp,
-                backgroundColor = if (isSystemInDarkTheme()) iceBlack else frosted,
-                modifier = Modifier.height(150.dp)
+                colors = TopAppBarDefaults.largeTopAppBarColors(
+                    titleContentColor = MaterialTheme.colorScheme.tertiary
+                )
             )
+
         }
     ) {
         Column(
@@ -79,7 +82,7 @@ fun SettingsView(model: WeatherViewModel, controller: NavController) {
             ) {
                 Text(
                     stringResource(R.string.Units),
-                    style = MaterialTheme.typography.body1.copy(color = if (isSystemInDarkTheme()) Color.White else Color.Black)
+                    style = MaterialTheme.typography.bodyMedium.copy(color = if (isSystemInDarkTheme()) Color.White else Color.Black)
                 )
 
                     Row( horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -127,14 +130,9 @@ fun SettingsView(model: WeatherViewModel, controller: NavController) {
                             .clip(RoundedCornerShape(20.dp))
                             .fillMaxWidth()
                             .height(200.dp)
-                            .background(
-                                Brush.verticalGradient(
-                                    colors = listOf(
-                                        Color.Black.copy(alpha = 0.2f),
-                                        Color.Black.copy(alpha = 0.1f)
-                                    )
-                                )
-                            )
+                            .background(MaterialTheme.colorScheme.secondaryContainer,
+                            shape = RoundedCornerShape(8.dp))
+
                     ) {
                         Column(
                             Modifier
@@ -150,7 +148,7 @@ fun SettingsView(model: WeatherViewModel, controller: NavController) {
                             )
                             Text(
                                 stringResource(id = R.string.LocationDenied)
-                                ,style = MaterialTheme.typography.body2.copy(
+                                ,style = MaterialTheme.typography.bodySmall.copy(
                                     color = Color.White,
 
                                     ),
@@ -162,10 +160,10 @@ fun SettingsView(model: WeatherViewModel, controller: NavController) {
                                 onClick = {
                                     model.askPermission(){}
                                 }, colors = ButtonDefaults.buttonColors(
-                                    contentColor = green_200, backgroundColor = green_600
+                                    contentColor = green_200,
                                 ),shape = RoundedCornerShape(12.dp)
                             ) {
-                                Text(stringResource(id = R.string.AllowAccess), style = MaterialTheme.typography.button)
+                                Text(stringResource(id = R.string.AllowAccess), style = MaterialTheme.typography.bodyMedium)
                             }
                         }
                     }

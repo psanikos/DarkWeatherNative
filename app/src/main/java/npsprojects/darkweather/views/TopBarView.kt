@@ -6,7 +6,9 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.*
@@ -44,229 +46,73 @@ fun TopBarView(model: WeatherViewModel, controller: NavController,color: Color){
     }
     val scope = rememberCoroutineScope()
     val index:Int by model.index.observeAsState(initial = 0)
-    Row(modifier = Modifier
-        .padding(horizontal = 15.dp)
-        .fillMaxWidth(),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically) {
-        Column(
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.SpaceEvenly,
-            modifier = Modifier
-                .height(50.dp)
-                .fillMaxWidth(0.55f)) {
+    SmallTopAppBar(
+        title = {
+            Column(
+                horizontalAlignment = Alignment.Start,
+                verticalArrangement = Arrangement.Bottom) {
 
-            Box() {
-                if (!(locations.isNotEmpty() && locations.size > index)) {
-                    Text("N/A", style = MaterialTheme.typography.subtitle1.copy(color = Color.White))
-                } else {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(5.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.clickable(onClick = { dropExtended = !dropExtended  })
-                    ) {
-                        if (locations[index].isCurrent) {
-                            Icon(FontAwesomeIcons.Solid.LocationArrow,modifier = Modifier.size(15.dp), contentDescription = "", tint = Color.White)
-                        }
-                        Text(
-                            locations[index].name,
-                            style = MaterialTheme.typography.subtitle1.copy(color = Color.White)
-
-                        )
-                    }
-                }
-                DropdownMenu(expanded = dropExtended, onDismissRequest = { /*TODO*/ }) {
-
-
-                    locations.forEachIndexed { index, item ->
-                        DropdownMenuItem(onClick = {
-                            model.indexChange(index)
-
-                            dropExtended = false
-                        },
-                            modifier = Modifier.width(160.dp)) {
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(5.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                if (item.isCurrent) {
-                                    Icon(FontAwesomeIcons.Solid.LocationArrow,modifier = Modifier.size(15.dp), contentDescription = "",
-                                    )
-                                }
-                                Text(
-                                    item.name,
-                                    style = MaterialTheme.typography.body2
-                                )
+                Box() {
+                    if (!(locations.isNotEmpty() && locations.size > index)) {
+                        Text("N/A", style = MaterialTheme.typography.displayLarge.copy(color = Color.White))
+                    } else {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(5.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.clickable(onClick = { dropExtended = !dropExtended  })
+                        ) {
+                            if (locations[index].isCurrent) {
+                                Icon(FontAwesomeIcons.Solid.LocationArrow,modifier = Modifier.size(15.dp), contentDescription = "",
+                                tint = Color.White)
                             }
+                            Text(
+                                locations[index].name,
+                                style = MaterialTheme.typography.displayMedium.copy(color = Color.White)
+
+                            )
                         }
                     }
+                    DropdownMenu(expanded = dropExtended, onDismissRequest = { /*TODO*/ }) {
 
-                }
-            }
 
-            Text(  if (!(locations.isNotEmpty() && locations.size > index)) "No data" else
-                Date.from(Instant.ofEpochSecond(locations[index].data.current.dt)).ago(),
-                style =  MaterialTheme.typography.caption.copy(color = Color.White),modifier = Modifier.padding(start = 5.dp))
-        }
-        Row(horizontalArrangement = Arrangement.spacedBy(10.dp),verticalAlignment = Alignment.CenterVertically) {
-            if (locations.isNotEmpty() && locations.size > index) {
-                if (model.myLocations.any { it.latitude.round(2) == locations[index].data.lat.round(2) && it.longitude.round(2) == locations[index].data.lon.round(2) }) {
-                    if (!locations[index].isCurrent) {
-                        Box(
-                            modifier = Modifier
-                                .clickable {
-                                    val oldIndex = index
-                                    model.indexChange(0)
-                                    scope.launch {
-                                        model.remove(
-                                         locations[oldIndex]
+                        locations.forEachIndexed { index, item ->
+                            DropdownMenuItem(onClick = {
+                                model.indexChange(index)
+
+                                dropExtended = false
+                            },
+                                modifier = Modifier.width(160.dp)) {
+                                Row(
+                                    horizontalArrangement = Arrangement.spacedBy(5.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    if (item.isCurrent) {
+                                        Icon(FontAwesomeIcons.Solid.LocationArrow,modifier = Modifier.size(15.dp), contentDescription = "",
                                         )
                                     }
-                                }, contentAlignment = Alignment.Center
-                        ) {
-
-                            Icon(Icons.Default.Favorite, contentDescription = "",tint = Color.Red,
-                            modifier = Modifier.size(30.dp))
-                        }
-                    }
-                } else {
-                    if (!locations[index].isCurrent) {
-                        Box(
-                            modifier = Modifier
-
-                                .clickable {
-                                    if (!model.myLocations.any { it.latitude.round(2) == locations[index].data.lat.round(2) && it.longitude.round(2) == locations[index].data.lon.round(2) }) {
-                                        scope.launch {
-                                            model.saveLocation(
-                                                SavedLocation(
-                                                    locations[index].name,
-                                                    locations[index].data.lat.round(
-                                                        2
-                                                    ),
-                                                    locations[index].data.lon.round(
-                                                        2
-                                                    )
-                                                )
-                                            )
-                                        }
-                                    }
-                                }, contentAlignment = Alignment.Center
-                        ) {
-                                Icon(
-                                    Icons.Default.FavoriteBorder,
-                                    contentDescription = "",
-                                    tint = Color.Gray,
-                                    modifier = Modifier.size(30.dp)
-                                )
-                            }
-
-                    }
-                }
-            }
-            IconButton(onClick = {
-                controller.navigate("Search")
-            }) {
-                Box() {
-
-                   ColoredIcon(imageVector =  FontAwesomeIcons.Solid.Search, contentDescription = "",
-                   tint = grey_100, modifier = Modifier.size(30.dp), padding = 6.dp)
-                }
-            }
-            IconButton(onClick = {
-                controller.navigate("Settings")
-            }) {
-
-                    ColoredIcon(imageVector =  FontAwesomeIcons.Solid.EllipsisV, contentDescription = "",
-                        tint = grey_100, modifier = Modifier.size(30.dp), padding = 6.dp)
-
-
-            }
-        }
-    }
-}
-@Composable
-fun CompactTopBarView(model: WeatherViewModel, controller: NavController){
-    val locations by model.locations.observeAsState(initial = listOf<WeatherModel>())
-
-    var dropExtended by remember {
-        mutableStateOf(false)
-    }
-    val scope = rememberCoroutineScope()
-    val index:Int by model.index.observeAsState(initial = 0)
-    Row(modifier = Modifier
-        .padding(top = 20.dp)
-        .padding(horizontal = 20.dp)
-        .fillMaxWidth()
-        .height(60.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically) {
-        Column(
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.SpaceEvenly,
-            modifier = Modifier
-                .height(50.dp)
-                .fillMaxWidth(0.75f)) {
-
-            Box() {
-                if (locations.isEmpty()) {
-                    Text("N/A", style = MaterialTheme.typography.h3)
-                } else {
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(5.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.clickable(onClick = { dropExtended = !dropExtended  })
-                    ) {
-                        if (locations[index].isCurrent) {
-                            Icon(FontAwesomeIcons.Solid.LocationArrow,modifier = Modifier.size(15.dp), contentDescription = "")
-                        }
-                        Text(
-                            locations[index].name,
-                            style = MaterialTheme.typography.h3
-                        )
-                    }
-                }
-                DropdownMenu(expanded = dropExtended, onDismissRequest = { /*TODO*/ }) {
-
-
-                    locations.forEachIndexed { index, item ->
-                        DropdownMenuItem(onClick = {
-                            model.indexChange(index)
-
-                            dropExtended = false
-                        },
-                            modifier = Modifier.width(200.dp)) {
-                            Row(
-                                horizontalArrangement = Arrangement.spacedBy(5.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                if (item.isCurrent) {
-                                    Icon(FontAwesomeIcons.Solid.LocationArrow,modifier = Modifier.size(15.dp), contentDescription = "")
+                                    Text(
+                                        item.name,
+                                        style = MaterialTheme.typography.bodyMedium
+                                    )
                                 }
-                                Text(
-                                    item.name,
-                                    style = MaterialTheme.typography.body1
-                                )
                             }
                         }
+
                     }
-
                 }
+
+                Text(  if (!(locations.isNotEmpty() && locations.size > index)) "No data" else
+                    Date.from(Instant.ofEpochSecond(locations[index].data.current.dt)).ago(),
+                    style =  MaterialTheme.typography.labelSmall.copy(color = Color.White),modifier = Modifier.padding(start = 5.dp))
             }
+        },
+        actions = {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                if (locations.isNotEmpty() && locations.size > index) {
 
-            Text(if(  !(locations.isNotEmpty() && locations.size > index)) "No data" else
-                Date.from(Instant.ofEpochSecond(locations[index].data.current.dt)).timeAgo(),
-                style =  MaterialTheme.typography.body2.copy(color = Color.Gray),modifier = Modifier.padding(start = 5.dp))
-        }
-        Row(horizontalArrangement = Arrangement.spacedBy(10.dp),verticalAlignment = Alignment.CenterVertically) {
-            if(locations.isNotEmpty() && locations.size > index) {
-                if (model.myLocations.any {  it.latitude.round(2) == locations[index].data.lat.round(2) && it.longitude.round(2) == locations[index].data.lon.round(2) }) {
-                    if (!locations[index].isCurrent) {
-                        Box(
-                            modifier = Modifier
-                                .width(30.dp)
-                                .height(30.dp)
-
-                                .clickable {
+                        if (!locations[index].isCurrent) {
+                            TextButton(onClick = {
+                                if (model.myLocations.any { it.latitude.round(2) == locations[index].data.lat.round(2) && it.longitude.round(2) == locations[index].data.lon.round(2) }) {
                                     val oldIndex = index
                                     model.indexChange(0)
                                     scope.launch {
@@ -274,78 +120,61 @@ fun CompactTopBarView(model: WeatherViewModel, controller: NavController){
                                             locations[oldIndex]
                                         )
                                     }
-                                }, contentAlignment = Alignment.Center
-                        ) {
-                            Icon(Icons.Default.Favorite, contentDescription = "",tint = Color.Red,
-                                modifier = Modifier.size(30.dp))
-                        }
-                    }
-                } else {
-                    if (!locations[index].isCurrent) {
-                        Box(
-                            modifier = Modifier
-                                .width(30.dp)
-                                .height(30.dp)
-
-                                .clickable {
-                                    if (!model.myLocations.any {
-                                            it.latitude.round(2) == locations[index].data.lat.round(
-                                                2
-                                            ) && it.longitude.round(2) == locations[index].data.lon.round(
-                                                2
-                                            )
-                                        }) {
-                                        scope.launch {
-                                            model.saveLocation(
-                                                SavedLocation(
-                                                    locations[index].name,
-                                                    locations[index].data.lat.round(
-                                                        2
-                                                    ),
-                                                    locations[index].data.lon.round(
-                                                        2
-                                                    )
+                                }
+                                    else {
+                                    scope.launch {
+                                        model.saveLocation(
+                                            SavedLocation(
+                                                locations[index].name,
+                                                locations[index].data.lat.round(
+                                                    2
+                                                ),
+                                                locations[index].data.lon.round(
+                                                    2
                                                 )
                                             )
-                                        }
+                                        )
                                     }
-                                }, contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                Icons.Default.FavoriteBorder,
-                                contentDescription = "",
-                                tint = Color.Gray,
-                                modifier = Modifier.size(30.dp)
-                            )
+                                    }
+                                }) {
+
+                                ColoredIcon(  if (model.myLocations.any { it.latitude.round(2) == locations[index].data.lat.round(2) && it.longitude.round(2) == locations[index].data.lon.round(2) })
+                                    Icons.Default.Favorite else Icons.Default.FavoriteBorder, contentDescription = "",
+                                    modifier = Modifier.size(25.dp), padding = 6.dp,tint = MaterialTheme.colorScheme.tertiaryContainer)
+                            }
+
                         }
+
+                }
+               TextButton(onClick = {
+                    controller.navigate("Search")
+                }) {
+                    Box() {
+
+                        ColoredIcon(imageVector =  FontAwesomeIcons.Solid.Search, contentDescription = "",
+                             modifier = Modifier.size(25.dp), padding = 6.dp, tint = MaterialTheme.colorScheme.tertiaryContainer)
                     }
                 }
-            }
+                TextButton(onClick = {
+                    controller.navigate("Settings")
+                }) {
 
-            IconButton(onClick = {
-                controller.navigate("Search")
-            }) {
-                Box() {
+                    ColoredIcon(imageVector =  FontAwesomeIcons.Solid.EllipsisV, contentDescription = "",
+                         modifier = Modifier.size(25.dp), padding = 6.dp, tint = MaterialTheme.colorScheme.tertiaryContainer)
 
-                    Icon(
-                        FontAwesomeIcons.Solid.Search, contentDescription = "",
-                        modifier = Modifier.size(20.dp)
-                    )
+
                 }
             }
-            IconButton(onClick = {
-                controller.navigate("Settings")
-            }) {
-                Box() {
 
-                    Icon(
-                        FontAwesomeIcons.Solid.EllipsisV, contentDescription = "",
-                        modifier = Modifier.size(20.dp)
-                    )
-                }
-            }
-        }
-    }
+        },
+        colors = TopAppBarDefaults.mediumTopAppBarColors(
+            titleContentColor = MaterialTheme.colorScheme.tertiary,
+            containerColor = Color.Transparent
+        ),
+        modifier = Modifier.height(100.dp)
+
+    )
+
 }
 
 @Composable
@@ -384,7 +213,7 @@ fun MapTopBarView(model: WeatherViewModel, controller: NavController){
 
             Box() {
                 if (!(locations.isNotEmpty() && locations.size > index)) {
-                    Text("N/A", style = MaterialTheme.typography.h2)
+                    Text("N/A", style = androidx.compose.material3.MaterialTheme.typography.headlineLarge)
                 } else {
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(5.dp),
@@ -396,7 +225,7 @@ fun MapTopBarView(model: WeatherViewModel, controller: NavController){
                         }
                         Text(
                             locations[index].name,
-                            style = MaterialTheme.typography.h2
+                            style = androidx.compose.material3.MaterialTheme.typography.headlineLarge
 
                         )
                     }
@@ -420,7 +249,7 @@ fun MapTopBarView(model: WeatherViewModel, controller: NavController){
                                 }
                                 Text(
                                     item.name,
-                                    style = MaterialTheme.typography.body2
+                                    style = MaterialTheme.typography.bodySmall
                                 )
                             }
                         }

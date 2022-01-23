@@ -6,7 +6,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Navigation
@@ -35,7 +35,7 @@ fun WeeklyView(days:List<Daily>,inSi:Boolean){
     Box(modifier = Modifier
         .fillMaxWidth()
         .wrapContentHeight()
-        .background(color = if (isSystemInDarkTheme()) iceBlack else frosted, shape = RoundedCornerShape(16.dp))
+        .background(color = MaterialTheme.colorScheme.background, shape = RoundedCornerShape(16.dp))
         .padding(16.dp)){
 
       Column() {
@@ -62,7 +62,7 @@ fun WeeklyItem(day:Daily,inSi: Boolean) {
                 Instant.ofEpochMilli(1000 * day.dt),
                 ZoneId.systemDefault()
             )
-        ), style = MaterialTheme.typography.caption.copy(color = Color.Gray), modifier = Modifier.width(90.dp))
+        ), style = MaterialTheme.typography.labelMedium.copy(color = Color.Gray), modifier = Modifier.width(90.dp))
         Image(painter = painterResource(id = getWeatherImage(day.weather.first().icon ?: "02n")), contentDescription = "",
             modifier = Modifier.size(40.dp))
         Row(
@@ -71,8 +71,8 @@ fun WeeklyItem(day:Daily,inSi: Boolean) {
              modifier = Modifier.width(150.dp)
         ) {
 
-            Text(day.temp.max.roundToInt().toString() + "°", style = MaterialTheme.typography.body1.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black))
-            Text(day.temp.min.roundToInt().toString() + "°", style = MaterialTheme.typography.body2.copy(color = Color.Gray))
+            Text(day.temp.max.roundToInt().toString() + "°", style = MaterialTheme.typography.bodyLarge.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black))
+            Text(day.temp.min.roundToInt().toString() + "°", style = MaterialTheme.typography.bodyMedium.copy(color = Color.Gray))
 
             Row(
                 horizontalArrangement = Arrangement.spacedBy(5.dp),
@@ -91,7 +91,7 @@ fun WeeklyItem(day:Daily,inSi: Boolean) {
 
                 Text(
                     text = "${day.wind_speed.roundToInt()} " + if (inSi) "km/h" else "mph" ,
-                    style = MaterialTheme.typography.caption.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black)
+                    style = MaterialTheme.typography.labelMedium.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black)
                 )
             }
         }

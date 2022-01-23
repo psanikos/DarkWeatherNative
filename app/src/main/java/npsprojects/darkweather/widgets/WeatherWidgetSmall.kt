@@ -1,23 +1,23 @@
 package npsprojects.darkweather.widgets
 import android.appwidget.AppWidgetManager
 import android.content.Context
-import android.os.Build
+import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
+import android.util.Range
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Divider
-import androidx.compose.material.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.Modifier
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
+import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.glance.*
 import androidx.glance.action.ActionParameters
 import androidx.glance.action.actionStartActivity
@@ -26,214 +26,312 @@ import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.appwidget.SizeMode
 import androidx.glance.appwidget.action.ActionCallback
+import androidx.glance.appwidget.action.actionRunCallback
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.state.updateAppWidgetState
 import androidx.glance.appwidget.unit.ColorProvider
+
 import androidx.glance.layout.*
-import androidx.glance.state.GlanceState
 import androidx.glance.state.GlanceStateDefinition
 import androidx.glance.state.PreferencesGlanceStateDefinition
 import androidx.glance.text.*
+import androidx.glance.unit.ColorProvider
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import coil.annotation.ExperimentalCoilApi
+import com.google.gson.Gson
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import npsprojects.darkweather.Coordinates
 import npsprojects.darkweather.MainActivity
+import npsprojects.darkweather.MyApp.context
+import npsprojects.darkweather.WeatherUnits
 import npsprojects.darkweather.getWeatherImage
-import npsprojects.darkweather.ui.theme.frosted
-import npsprojects.darkweather.ui.theme.iceBlack
-import java.util.prefs.Preferences
+import npsprojects.darkweather.models.*
+import npsprojects.darkweather.services.DataFetcher
+import npsprojects.darkweather.ui.theme.*
+import java.io.IOException
+import java.util.*
+import kotlin.math.log
+import kotlin.math.roundToInt
+
+
+// val checked = prefs[booleanPreferencesKey(keyOfCheckedState)] ?: false
+//GlanceModifier.clickable(actionRunCallback<UpdateAction>())
+//  .clickable(actionStartActivity<MainActivity>())
 
 @OptIn(ExperimentalFoundationApi::class,
     androidx.compose.animation.ExperimentalAnimationApi::class,
     androidx.compose.material.ExperimentalMaterialApi::class
 )
+
+private val curTemp = intPreferencesKey("curTemp")
+private val minTemp = intPreferencesKey("minTemp")
+private val maxTemp = intPreferencesKey("maxTemp")
+private val feelsTemp = intPreferencesKey("feelsTemp")
+private val curImage= stringPreferencesKey("curImage")
+private val curDescription = stringPreferencesKey("curDescription")
+
+enum class WidgetSize{
+    SMALL,SMALL_WIDE,BIG
+}
+
 class WeatherWidgetSmall : GlanceAppWidget() {
     override var stateDefinition: GlanceStateDefinition<*> = PreferencesGlanceStateDefinition
 
-    override val sizeMode: SizeMode
-        get() = super.sizeMode
-
+    override val sizeMode: SizeMode = SizeMode.Exact
 
     @OptIn(ExperimentalCoilApi::class)
     @Composable
     override fun Content() {
-        //  val prefs = currentState<Preferences>()
-        // val checked = prefs[booleanPreferencesKey(keyOfCheckedState)] ?: false
-//GlanceModifier.clickable(actionRunCallback<UpdateAction>())
+       val prefs = currentState<Preferences>()
         val context = LocalContext.current
         val size = LocalSize.current
         val id = LocalGlanceId.current
-        val color =
-            ColorProvider(day = frosted.copy(alpha = 0.7f), night = iceBlack.copy(alpha = 0.7f))
-        val textColor = ColorProvider(day = Color.Black, night = Color.White)
-        val secondaryTextColor = ColorProvider(day = Color.DarkGray, night = Color.LightGray)
-        fun getData() {
 
+        val color =
+            ColorProvider(day = MaterialTheme.colorScheme.tertiaryContainer, night = MaterialTheme.colorScheme.tertiaryContainer)
+        val textColor = ColorProvider(day = MaterialTheme.colorScheme.tertiary, night = MaterialTheme.colorScheme.tertiary)
+        val secondaryTextColor = ColorProvider(day = MaterialTheme.colorScheme.secondary, night = MaterialTheme.colorScheme.secondary)
+
+        val sizeClass:WidgetSize = when(size.height.value.toInt()){
+            in 0 .. 100 -> if(size.width.value < 120f) WidgetSize.SMALL else WidgetSize.SMALL_WIDE
+            else -> WidgetSize.BIG
         }
+
         Row(
             modifier = GlanceModifier
-                .fillMaxSize()
+                .fillMaxWidth().wrapContentHeight()
                 .background(color)
-                .padding(5.dp)
-                .clickable(actionStartActivity<MainActivity>()),
+                .cornerRadius(30.dp)
+
+                .clickable(actionRunCallback<UpdateAction>())
+              ,
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(
                 modifier = GlanceModifier
+                    .padding(5.dp)
                     .wrapContentSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Image(
-                    provider = ImageProvider(getWeatherImage("01d")),
-                    contentDescription = "",
-                    modifier = GlanceModifier.size(if (size.width > 100.dp) 70.dp else 50.dp)
-                )
-                if (size.width < 140.dp) {
 
+                Image(
+                    provider = ImageProvider(getWeatherImage(prefs[curImage] ?: "01d")),
+                    contentDescription = "",
+                    modifier = GlanceModifier.size( if (sizeClass == WidgetSize.BIG) 90.dp else if (sizeClass == WidgetSize.SMALL_WIDE) 60.dp else 50.dp )
+                )
+                if (sizeClass == WidgetSize.SMALL) {
                     Text(
-                        text = "21°",
+                        text = ((prefs[curTemp] ?: 0).toString() + "°"),
                         style = TextStyle(
                             fontWeight = FontWeight.Bold,
-                            fontSize = if (size.width > 100.dp) 26.sp else 22.sp,
+                            fontSize = 18.sp,
                             color = textColor
                         ),
                     )
+                    Spacer(modifier = GlanceModifier.height(5.dp))
+                }
 
-                    if (size.height > 70.dp) {
+                if (sizeClass == WidgetSize.BIG) {
+
+                    Text(
+                        text = ((prefs[curTemp] ?:0).toString() + "°"),
+                        style = TextStyle(
+                            fontWeight = FontWeight.Bold,
+                            fontSize = if (size.height > 80.dp) 28.sp else 18.sp,
+                            color = textColor
+                        ),
+                    )
+                    Spacer(modifier = GlanceModifier.height(5.dp))
+                    if (size.width > 140.dp) {
                         Text(
-                            text = "Partly cloudy",
+                            text = (prefs[curDescription] ?: "N/A").toString(),
                             style = TextStyle(
                                 fontWeight = FontWeight.Normal,
                                 fontSize = 10.sp,
                                 color = secondaryTextColor
                             ),
                         )
+                        Spacer(modifier = GlanceModifier.height(10.dp))
 
-                        Row(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = GlanceModifier.padding(top = 8.dp)
-                        ) {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = GlanceModifier.padding(horizontal = 5.dp)
-                            ) {
-                                Text(
-                                    text = "16:00",
-                                    style = TextStyle(
-                                        fontWeight = FontWeight.Normal,
-                                        fontSize = 9.sp,
-                                        color = secondaryTextColor
-                                    ),
-                                )
-                                Image(
-                                    provider = ImageProvider(getWeatherImage("01d")),
-                                    contentDescription = "",
-                                    modifier = GlanceModifier.size(20.dp)
-                                )
-
-                                Text(
-                                    text = "21°",
-                                    style = TextStyle(
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 12.sp,
-                                        color = textColor
-                                    ),
-                                )
-
-                            }
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = GlanceModifier.padding(horizontal = 10.dp)
-                            ) {
-                                Text(
-                                    text = "19:00",
-                                    style = TextStyle(
-                                        fontWeight = FontWeight.Normal,
-                                        fontSize = 9.sp,
-                                        color = secondaryTextColor
-                                    ),
-                                )
-                                Image(
-                                    provider = ImageProvider(getWeatherImage("01d")),
-                                    contentDescription = "",
-                                    modifier = GlanceModifier.size(20.dp)
-                                )
-
-                                Text(
-                                    text = "21°",
-                                    style = TextStyle(
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 12.sp,
-                                        color = textColor
-                                    ),
-                                )
-
-
-                            }
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = GlanceModifier.padding(horizontal = 5.dp)
-                            ) {
-                                Text(
-                                    text = "22:00",
-                                    style = TextStyle(
-                                        fontWeight = FontWeight.Normal,
-                                        fontSize = 9.sp,
-                                        color = secondaryTextColor
-                                    ),
-                                )
-                                Image(
-                                    provider = ImageProvider(getWeatherImage("01d")),
-                                    contentDescription = "",
-                                    modifier = GlanceModifier.size(20.dp)
-                                )
-
-                                Text(
-                                    text = "21°",
-                                    style = TextStyle(
-                                        fontWeight = FontWeight.Bold,
-                                        fontSize = 12.sp,
-                                        color = textColor
-                                    ),
-                                )
-
-                            }
-                        }
+//                        Row(
+//                            horizontalAlignment = Alignment.CenterHorizontally,
+//                            verticalAlignment = Alignment.CenterVertically,
+//                            modifier = GlanceModifier.padding(top = 8.dp)
+//                        ) {
+//                            Column(
+//                                horizontalAlignment = Alignment.CenterHorizontally,
+//                                verticalAlignment = Alignment.CenterVertically,
+//                                modifier = GlanceModifier.padding(horizontal = 5.dp)
+//                            ) {
+//                                Text(
+//                                    text = "Min",
+//                                    style = TextStyle(
+//                                        fontWeight = FontWeight.Normal,
+//                                        fontSize = 9.sp,
+//                                        color = secondaryTextColor
+//                                    ),
+//                                )
+//
+//                                Text(
+//                                    text = ((prefs[minTemp] ?:0).toString() + "°"),
+//                                    style = TextStyle(
+//                                        fontWeight = FontWeight.Bold,
+//                                        fontSize = 12.sp,
+//                                        color = ColorProvider(day = light_blue_800, night = light_blue_500)
+//                                    ),
+//                                )
+//
+//                            }
+//                            Column(
+//                                horizontalAlignment = Alignment.CenterHorizontally,
+//                                verticalAlignment = Alignment.CenterVertically,
+//                                modifier = GlanceModifier.padding(horizontal = 10.dp)
+//                            ) {
+//                                Text(
+//                                    text = "Max",
+//                                    style = TextStyle(
+//                                        fontWeight = FontWeight.Normal,
+//                                        fontSize = 9.sp,
+//                                        color = secondaryTextColor
+//                                    ),
+//                                )
+//
+//                                Text(
+//                                    text = ((prefs[maxTemp] ?:0).toString() + "°"),
+//                                    style = TextStyle(
+//                                        fontWeight = FontWeight.Bold,
+//                                        fontSize = 12.sp,
+//                                        color = ColorProvider(day = pink_800, night = pink_500)
+//                                    ),
+//                                )
+//
+//
+//                            }
+//                            Column(
+//                                horizontalAlignment = Alignment.CenterHorizontally,
+//                                verticalAlignment = Alignment.CenterVertically,
+//                                modifier = GlanceModifier.padding(horizontal = 5.dp)
+//                            ) {
+//                                Text(
+//                                    text = "Feels",
+//                                    style = TextStyle(
+//                                        fontWeight = FontWeight.Normal,
+//                                        fontSize = 9.sp,
+//                                        color = secondaryTextColor
+//                                    ),
+//                                )
+//
+//                                Text(
+//                                    text = ((prefs[feelsTemp] ?: 1).toString() + "°"),
+//                                    style = TextStyle(
+//                                        fontWeight = FontWeight.Bold,
+//                                        fontSize = 12.sp,
+//                                        color = ColorProvider(day = teal_800, night = teal_500)
+//                                    ),
+//                                )
+//
+//                            }
+//                        }
                     }
                 }
             }
-            if (size.width > 150.dp) {
+            if (sizeClass == WidgetSize.SMALL_WIDE) {
                 Column(
                     modifier = GlanceModifier
-                        .fillMaxSize()
-                        .padding(end = 16.dp),
+                        .fillMaxWidth()
+                        .padding(end = 16.dp, top = 2.dp, bottom = 2.dp),
                     horizontalAlignment = Alignment.End,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "21°",
+                        text = ((prefs[curTemp] ?:0).toString() + "°"),
                         style = TextStyle(
                             fontWeight = FontWeight.Bold,
-                            fontSize = if (size.width > 100.dp) 26.sp else 22.sp,
+                            fontSize = 20.sp,
                             color = textColor,
                             textAlign = TextAlign.End
                         ),
                     )
                     Text(
-                        text = "Partly cloudy",
+                        text = (prefs[curDescription] ?: "N/A").toString(),
                         style = TextStyle(
                             fontWeight = FontWeight.Normal,
                             fontSize = 10.sp,
                             color = secondaryTextColor
                         ),
                     )
+                }
+            }
+        }
 
+    }
+
+    companion object DataService{
+        fun getData(mContext:Context, completion: (WidgetModel?) -> Unit){
+            var units = WeatherUnits.AUTO
+            var lang = Lang.EN
+
+            val locale = Locale.getDefault().displayLanguage
+            lang = when(locale.lowercase()){
+                "french" -> Lang.FR
+                "greek" -> Lang.EL
+                else -> Lang.EN
+            }
+            val pref: SharedPreferences = mContext
+                .getSharedPreferences("MyPref", 0) // 0 - for private mode
+
+            val savedUnit = pref.getString("unit", null)
+            if (savedUnit != null) {
+                units =
+                    if (savedUnit == "si") WeatherUnits.SI else if (savedUnit == "us") WeatherUnits.US else WeatherUnits.AUTO
+            }
+            else {
+                units = WeatherUnits.SI
+            }
+            val location = pref.getStringSet("widgetLocation",null)
+            if(location != null && location.size == 3) {
+                val name = location.elementAt(2)
+                val lat = location.elementAt(0)
+                val lon = location.elementAt(1)
+                Log.d("Location for widget", location.toString())
+                getLocationData(
+                    name = name,
+                    lang = lang,
+                    location = Coordinates(latitude = lat.toDouble(), longitude = lon.toDouble()),
+                    units = units
+                ){
+                    completion(it)
+                }
+
+            } else {
+                completion( null)
+            }
+
+        }
+        fun getLocationData(location: Coordinates,lang: Lang,units: WeatherUnits, name:String,completion:(WidgetModel?)->Unit) {
+            val searchLanguage = if (lang == Lang.EL)  "el" else if (lang == Lang.FR) "fr" else "en"
+
+            DataFetcher.getFromUrl(url = getOpenWeatherUrlLite(location,units,searchLanguage)) { it ->
+                if (it != null) {
+                    println("DATAAA $it")
+                    val gson = Gson()
+
+                    val currentLocationData = try {
+                        gson.fromJson<CurrentWeather>(it.toString(), CurrentWeather::class.java)
+                    } catch (e: IOException) {
+                        completion(null)
+                    }
+
+                    currentLocationData?.let { dat ->
+                        completion(WidgetModel(name = name, data = dat as CurrentWeather))
+                    }
+                } else {
+                    completion(null)
                 }
             }
         }
@@ -242,20 +340,37 @@ class WeatherWidgetSmall : GlanceAppWidget() {
 }
 
 //actionRunCallback<ButtonClickAction>()
-class ButtonClickAction : ActionCallback {
+class UpdateAction : ActionCallback {
     override suspend fun onRun(context: Context, glanceId: GlanceId, parameters: ActionParameters) {
-        updateAppWidgetState(context, PreferencesGlanceStateDefinition, glanceId) {
-            it.toMutablePreferences()
-                .apply {
-//                    val glassesOfWater = this[intPreferencesKey(WATER_WIDGET_PREFS_KEY)] ?: 0
-//                    if (glassesOfWater < MAX_GLASSES) {
-//                        this[intPreferencesKey(WATER_WIDGET_PREFS_KEY)] = glassesOfWater + 1
-//                    }
-                }
-        }
-        WeatherWidgetSmall().update(context, glanceId)
 
-    }
+
+        WeatherWidgetSmall.DataService.getData(context) { data ->
+            val temp = (data?.data?.main?.temp ?: 0.0).toInt()
+            val min = (data?.data?.main?.temp_min ?: 5.0).toInt()
+            val max = (data?.data?.main?.temp_max ?: 10.0).toInt()
+            val feel = (data?.data?.main?.feels_like?: 9.0).toInt()
+            val image = (data?.data?.weather?.first()?.icon ?: "02d")
+           val  description = (data?.data?.weather?.first()?.description ?: "N/A")
+
+         GlobalScope.launch {
+             delay(2000)
+             Log.d("Updating widget","Updating")
+             updateAppWidgetState(context, PreferencesGlanceStateDefinition, glanceId) {
+                 it.toMutablePreferences()
+                     .apply {
+                         this[intPreferencesKey("curTemp")] = temp ?: 0
+                         this[intPreferencesKey("minTemp")] = min ?: 0
+                         this[intPreferencesKey("maxTemp")] = max ?: 0
+                         this[intPreferencesKey("feelsTemp")] = feel ?: 0
+                         this[stringPreferencesKey("curImage")] = image ?: "01d"
+                         this[stringPreferencesKey("curDescription")] = description ?: "N/A"
+                     }
+             }
+
+             WeatherWidgetSmall().update(context, glanceId)
+         }
+        }
+        }
 }
 
 class InitAction : ActionCallback {
@@ -273,11 +388,23 @@ class InitAction : ActionCallback {
 
     }
 }
+
+
 class WeatherWidgetSmallReceiver : GlanceAppWidgetReceiver() {
 
-
-
     override val glanceAppWidget: GlanceAppWidget = WeatherWidgetSmall()
+
+
+
+    override fun onEnabled(context: Context?) {
+        super.onEnabled(context)
+
+    }
+
+    override fun onRestored(context: Context?, oldWidgetIds: IntArray?, newWidgetIds: IntArray?) {
+        super.onRestored(context, oldWidgetIds, newWidgetIds)
+
+    }
 
     override fun onUpdate(
         context: Context,
@@ -285,6 +412,7 @@ class WeatherWidgetSmallReceiver : GlanceAppWidgetReceiver() {
         appWidgetIds: IntArray
     ) {
         super.onUpdate(context, appWidgetManager, appWidgetIds)
+
     }
 
     override fun onAppWidgetOptionsChanged(
@@ -297,6 +425,10 @@ class WeatherWidgetSmallReceiver : GlanceAppWidgetReceiver() {
 
     }
 
+    override fun onReceive(context: Context, intent: Intent) {
+        super.onReceive(context, intent)
+
+    }
 }
 class WeatherWidgetBigReceiver : GlanceAppWidgetReceiver() {
 
@@ -348,3 +480,9 @@ class WeatherWidgetWideReceiver : GlanceAppWidgetReceiver() {
     }
 
 }
+
+class WidgetModel constructor(
+    val name: String,
+    val data: CurrentWeather,
+
+)

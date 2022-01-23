@@ -18,11 +18,12 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material.icons.rounded.*
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -82,16 +83,16 @@ sealed class Screen(val route: String, @StringRes val resourceId: Int, val icon:
 
 @ExperimentalCoilApi
 @ExperimentalAnimationApi
-@OptIn(ExperimentalFoundationApi::class)
-@ExperimentalMaterialApi
+@OptIn(ExperimentalFoundationApi::class, androidx.compose.material3.ExperimentalMaterial3Api::class,
+    androidx.compose.material.ExperimentalMaterialApi::class
+)
+
 @Composable
 fun MainPageView(model: WeatherViewModel, controller: NavController) {
     val items = listOf(Screen.Main,Screen.ManageLocation,Screen.Settings)
     val scope = rememberCoroutineScope()
 
-    val state = rememberScaffoldState(
-        rememberDrawerState(DrawerValue.Closed)
-    )
+
     var currentPage by remember { mutableStateOf("Main") }
 
     val configuration = LocalConfiguration.current
