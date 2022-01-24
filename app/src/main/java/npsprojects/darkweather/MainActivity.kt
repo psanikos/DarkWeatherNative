@@ -14,6 +14,8 @@ import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.navigation.compose.NavHost
@@ -29,18 +31,6 @@ import npsprojects.darkweather.ui.theme.DarkWeatherTheme
 import npsprojects.darkweather.views.*
 
 
-@SuppressLint("StaticFieldLeak")
-object MyApp {
-    lateinit var context: Context
-    lateinit var activity: Activity
-    fun setAppContext(con: Context) {
-        context = con
-    }
-
-    fun setAppActivity(act: Activity) {
-        activity = act
-    }
-}
 
 @ExperimentalFoundationApi
 @ExperimentalAnimationApi
@@ -55,10 +45,6 @@ class MainActivity : ComponentActivity() {
 
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
-
-        MyApp.setAppContext(this)
-        MyApp.setAppActivity(act = this)
-
 
         setContent {
             MobileAds.initialize(
@@ -80,7 +66,7 @@ class MainActivity : ComponentActivity() {
 
                             delay(8000)
                             if (mInterstitialAd != null) {
-                                mInterstitialAd?.show(MyApp.activity)
+                                mInterstitialAd?.show(this@MainActivity)
                             } else {
                                 Log.d("TAG", "The interstitial ad wasn't ready yet.")
                             }
@@ -105,11 +91,10 @@ class MainActivity : ComponentActivity() {
 
             DarkWeatherTheme {
                 ProvideWindowInsets {
-                    if (model.hasInit) {
+
+
                         MyApp(model = model)
-                    } else {
-                        FirstScreen(model = model)
-                    }
+
                 }
             }
         }
@@ -117,11 +102,12 @@ class MainActivity : ComponentActivity() {
     }
 
 
-    @SuppressLint("MissingSuperCall")
     override fun onRequestPermissionsResult(
         requestCode: Int,
-        permissions: Array<String>, grantResults: IntArray
+        permissions: Array<out String>,
+        grantResults: IntArray
     ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         println("GAVE PERMISSION")
         if (ContextCompat.checkSelfPermission(
                 this,
@@ -131,12 +117,9 @@ class MainActivity : ComponentActivity() {
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
         ) {
-            model.onPermissionGranted()
-            model.hasRun()
-            if (model.error.value == WeatherError.NOPERMISSION || model.error.value == WeatherError.NOGPS) {
-                model.error.value = WeatherError.NONE
-            }
+
         }
+
     }
 }
 
@@ -148,9 +131,13 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MyApp(model: WeatherViewModel) {
     val controller = rememberNavController()
+    val context = LocalContext.current
+   LaunchedEffect(key1 = "data", block = {
+       model.initActions(context)
+   })
     NavHost(navController = controller, startDestination = "Main") {
         composable("Main") {
-            MainPageView(model = model, controller = controller)
+            NewMainView(model = model, controller = controller)
         }
         composable("Settings") {
             SettingsView(model = model, controller = controller)

@@ -27,7 +27,6 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.*
-import npsprojects.darkweather.MyApp.context
 import java.net.MalformedURLException
 import java.net.URL
 import androidx.compose.runtime.getValue
@@ -51,48 +50,47 @@ import npsprojects.darkweather.ui.theme.pink_500
 
 private val weatherKey = "e1e45feaea76d66517c25291f2633d9a"
 
-//temp_new
-@Composable
-fun CustomMapView(model: WeatherViewModel,controller:NavController) {
-    val map = rememberMapViewWithLifecycle()
-    var mapType by rememberSaveable { mutableStateOf("none") }
-    val index: Int by model.index.observeAsState(initial = 0)
-    val locations by model.locations.observeAsState(initial = listOf<WeatherModel>())
-
-    val testCoordinates = LatLng(37.98384, 23.72753)
-
-    var coordinates by rememberSaveable {
-        mutableStateOf(
-            testCoordinates
-        )
-    }
-    var zoom by rememberSaveable(map) { mutableStateOf(InitialZoom) }
-    val overlays: MutableList<TileOverlay> by rememberSaveable { mutableStateOf(java.util.ArrayList<TileOverlay>()) }
-    LaunchedEffect(key1 = index + locations.size, block = {
-        if (locations.isNotEmpty()) {
-            coordinates = LatLng(
-                locations[index].data.lat!!,
-                locations[index].data.lon!!
-            )
-        }
-
-    })
-
-            Box(modifier = Modifier.fillMaxSize().clickable {
-                controller.navigate("Map")
-            }, contentAlignment = Alignment.BottomEnd) {
-
-
-                MapViewContainer(
-                    map = map,
-                    latitude = coordinates.latitude,
-                    longitude = coordinates.longitude,
-                    mapType = mapType,
-                    model = model
-                )
-
-    }
-}
+////temp_new
+//@Composable
+//fun CustomMapView(model: WeatherViewModel,controller:NavController) {
+//    val map = rememberMapViewWithLifecycle()
+//    var mapType by rememberSaveable { mutableStateOf("none") }
+//    val index: Int by model.index.observeAsState(initial = 0)
+//
+//    val testCoordinates = LatLng(37.98384, 23.72753)
+//
+//    var coordinates by rememberSaveable {
+//        mutableStateOf(
+//            testCoordinates
+//        )
+//    }
+//    var zoom by rememberSaveable(map) { mutableStateOf(InitialZoom) }
+//    val overlays: MutableList<TileOverlay> by rememberSaveable { mutableStateOf(java.util.ArrayList<TileOverlay>()) }
+//    LaunchedEffect(key1 = index + locations.size, block = {
+//        if (locations.isNotEmpty()) {
+//            coordinates = LatLng(
+//                locations[index].data.lat!!,
+//                locations[index].data.lon!!
+//            )
+//        }
+//
+//    })
+//
+//            Box(modifier = Modifier.fillMaxSize().clickable {
+//                controller.navigate("Map")
+//            }, contentAlignment = Alignment.BottomEnd) {
+//
+//
+//                MapViewContainer(
+//                    map = map,
+//                    latitude = coordinates.latitude,
+//                    longitude = coordinates.longitude,
+//                    mapType = mapType,
+//                    model = model
+//                )
+//
+//    }
+//}
 
 class CustomInfoWindowForGoogleMap(context: Context) : GoogleMap.InfoWindowAdapter {
 
@@ -149,6 +147,8 @@ fun MapViewContainer(
     val coordinates = LatLng(latitude,longitude)
     var overlays:MutableList<TileOverlay>  by remember { mutableStateOf(  ArrayList<TileOverlay>())}
     val darkTheme = isSystemInDarkTheme()
+    val context = LocalContext.current
+
     Box(contentAlignment = Alignment.CenterEnd,modifier = Modifier.fillMaxSize()) {
         AndroidView({ map }) { mapView ->
 

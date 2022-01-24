@@ -19,6 +19,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -37,187 +38,8 @@ import kotlinx.coroutines.launch
 import npsprojects.darkweather.Coordinates
 import npsprojects.darkweather.R
 import npsprojects.darkweather.models.WeatherViewModel
+import npsprojects.darkweather.services.SavedLocation
 import npsprojects.darkweather.ui.theme.*
-
-@Composable
-fun SearchView(model: WeatherViewModel,onSelected:()->Unit) {
-    var searchTerm by remember {
-        mutableStateOf("")
-    }
-    var searchedAddresses: MutableList<Address> by remember { mutableStateOf(mutableListOf()) }
-    val scope = rememberCoroutineScope()
-    var showAlert: Boolean by remember { mutableStateOf(false) }
-
-    Box(contentAlignment = Alignment.Center) {
-        Column(
-            modifier = Modifier
-                .padding(horizontal = 0.dp, vertical = 20.dp)
-                .fillMaxSize(),
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.spacedBy(10.dp)
-        ) {
-
-            Box(contentAlignment = Alignment.CenterStart) {
-                BasicTextField(
-                    value = searchTerm,
-                    onValueChange = {
-                        searchTerm = it
-                    },
-                    keyboardActions = KeyboardActions(onSearch = {
-
-                        scope.launch(Dispatchers.IO) {
-                            val addresses =
-                                model.getCoordinatesFromLocation(
-                                    searchTerm
-                                )
-                            launch(Dispatchers.Main) {
-                                if (addresses.isNullOrEmpty()) {
-                                    showAlert = true
-                                } else {
-                                    searchedAddresses = addresses
-                                }
-                            }
-                        }
-                    }),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
-                    modifier = Modifier
-                        .padding(20.dp)
-                        .background(
-                            color = Color.Gray.copy(alpha = 0.1f),
-                            shape = RoundedCornerShape(20)
-                        )
-                        .height(50.dp)
-                        .fillMaxWidth()
-                        .padding(15.dp),
-//                decorationBox = {
-//                    if (searchTerm == "") Text(
-//                        text = "Search",
-//                        style = MaterialTheme.typography.bodySmall
-//                    ) else null
-//                },
-                    textStyle = MaterialTheme.typography.bodyMedium.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black),
-
-                    )
-
-                if (searchTerm == "") {
-                    Text(
-                        text = "Search",
-                        style = MaterialTheme.typography.bodySmall.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black),
-                        modifier = Modifier.padding(start = 30.dp)
-                    )
-                }
-
-            }
-
-            searchedAddresses.forEach {
-
-                if (it.locality != null || it.featureName != null) {
-
-                    Row(
-                        modifier = Modifier
-                            .padding(vertical = 5.dp, horizontal = 20.dp)
-                            .fillMaxWidth()
-                            .height(50.dp)
-                            .background(
-                                color = if (isSystemInDarkTheme()) Color(0xFF121212) else Color.White,
-                                shape = RoundedCornerShape(20)
-                            )
-                            .clickable {
-                                scope.launch {
-
-                                    model.getCoordinatesWeather(
-                                        location = Coordinates(
-                                            it.latitude,
-                                            it.longitude
-                                        )
-                                    )
-                                    searchTerm = ""
-                                    searchedAddresses.clear()
-                                    delay(1000)
-                                    onSelected()
-                                }
-                            },
-                        horizontalArrangement = Arrangement.Start,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            it.locality ?: it.featureName,
-                            style = MaterialTheme.typography.bodyMedium,
-                            modifier = Modifier.padding(
-                                horizontal = 8.dp,
-                                vertical = 8.dp
-                            )
-                        )
-
-                        Text(
-                            it.countryName ?: "",
-                            style = MaterialTheme.typography.bodySmall,
-                            modifier = Modifier.padding(
-                                horizontal = 10.dp,
-                                vertical = 8.dp
-                            )
-                        )
-
-                    }
-
-                }
-            }
-        }
-        if (showAlert) {
-            // below line is use to
-            // display a alert dialog.
-            AlertDialog(
-                // on dialog dismiss we are setting
-                // our dialog value to false.
-                onDismissRequest = { showAlert = false },
-
-                // below line is use to display title of our dialog
-                // box and we are setting text color to white.
-                title = { Text(text = stringResource(id = R.string.NoResults), style = MaterialTheme.typography.displayLarge) },
-
-                // below line is use to display
-                // description to our alert dialog.
-                text = { Text(stringResource(id = R.string.ChangeSearch), style = MaterialTheme.typography.bodySmall) },
-
-                // in below line we are displaying
-                // our confirm button.
-                confirmButton = {
-                    // below line we are adding on click
-                    // listener for our confirm button.
-                    TextButton(
-                        onClick = {
-                            showAlert = false
-                            searchTerm = ""
-
-                        }
-                    ) {
-                        // in this line we are adding
-                        // text for our confirm button.
-                        Text("OK", style = MaterialTheme.typography.displayMedium.copy(color = teal_500))
-                    }
-                },
-                // in below line we are displaying
-                // our dismiss button.
-                dismissButton = {
-                    // in below line we are displaying
-                    // our text button
-                    TextButton(
-                        // adding on click listener for this button
-                        onClick = {
-                            showAlert = false
-
-                        }
-                    ) {
-                        // adding text to our button.
-                        Text(stringResource(id = R.string.Back), style = MaterialTheme.typography.displayMedium.copy(color = red_500))
-                    }
-                }
-            )
-        }
-
-    }
-
-}
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -229,6 +51,9 @@ fun FullSearchView(model: WeatherViewModel,controller: NavController) {
     var searchedAddresses: MutableList<Address> by remember { mutableStateOf(mutableListOf()) }
     val scope = rememberCoroutineScope()
     var showAlert: Boolean by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+
+
     Scaffold(
         topBar = {
             MediumTopAppBar(
@@ -287,7 +112,8 @@ fun FullSearchView(model: WeatherViewModel,controller: NavController) {
 
                             scope.launch(Dispatchers.IO) {
                                 val addresses =
-                                    model.getCoordinatesFromLocation(
+                                    WeatherViewModel.LocationFetcher.getCoordinatesFromLocation(
+                                        context = context,
                                         searchTerm
                                     )
                                 launch(Dispatchers.Main) {
@@ -332,13 +158,12 @@ fun FullSearchView(model: WeatherViewModel,controller: NavController) {
                             )
                             .clickable {
                                 scope.launch {
+                                    model.getSearchedLocationData(
+                                        name = it.locality ?: it.subLocality,
+                                        longitude = it.longitude,
+                                        latitude = it.latitude,
+                                    context = context)
 
-                                    model.getCoordinatesWeather(
-                                        location = Coordinates(
-                                            it.latitude,
-                                            it.longitude
-                                        )
-                                    )
                                     searchTerm = ""
                                     searchedAddresses.clear()
                                     delay(1000)

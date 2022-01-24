@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -44,6 +45,7 @@ fun SettingsView(model: WeatherViewModel, controller: NavController) {
         .padding(vertical = 5.dp, horizontal = 16.dp)
         .fillMaxWidth()
     var units: WeatherUnits by remember { mutableStateOf(model.units) }
+    val context = LocalContext.current
 
 
     Scaffold(
@@ -92,7 +94,7 @@ fun SettingsView(model: WeatherViewModel, controller: NavController) {
 
                         IconButton(onClick = {
                             units = WeatherUnits.SI
-                            model.saveUnit(inputUnit = units)
+                            model.saveUnit(inputUnit = units, context = context)
                         }) {
                             ColoredIcon(
                                 imageVector = WeatherIcons.Celsius,
@@ -104,7 +106,7 @@ fun SettingsView(model: WeatherViewModel, controller: NavController) {
                         }
                         IconButton(onClick = {
                             units = WeatherUnits.US
-                            model.saveUnit(inputUnit = units)
+                            model.saveUnit(inputUnit = units, context = context)
                         }) {
                             ColoredIcon(
                                 imageVector = WeatherIcons.Fahrenheit,
@@ -120,57 +122,57 @@ fun SettingsView(model: WeatherViewModel, controller: NavController) {
             }
 
 
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-            ) {
-                if (model.error.value == WeatherError.NOPERMISSION || model.error.value == WeatherError.NOGPS) {
-                    Box(
-                        modifier = Modifier
-                            .padding(horizontal = 10.dp)
-                            .clip(RoundedCornerShape(20.dp))
-                            .fillMaxWidth()
-                            .height(200.dp)
-                            .background(MaterialTheme.colorScheme.secondaryContainer,
-                            shape = RoundedCornerShape(8.dp))
-
-                    ) {
-                        Column(
-                            Modifier
-                                .padding(16.dp), verticalArrangement = Arrangement.SpaceEvenly,
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-
-                            Icon(
-                                Icons.TwoTone.Warning,
-                                modifier = Modifier.size(50.dp),
-                                contentDescription = "",
-                                tint = orange_500
-                            )
-                            Text(
-                                stringResource(id = R.string.LocationDenied)
-                                ,style = MaterialTheme.typography.bodySmall.copy(
-                                    color = Color.White,
-
-                                    ),
-
-                                modifier = Modifier.padding(vertical = 10.dp)
-                            )
-                            Spacer(modifier = Modifier.height(14.dp))
-                            Button(
-                                onClick = {
-                                    model.askPermission(){}
-                                }, colors = ButtonDefaults.buttonColors(
-                                    contentColor = green_200,
-                                ),shape = RoundedCornerShape(12.dp)
-                            ) {
-                                Text(stringResource(id = R.string.AllowAccess), style = MaterialTheme.typography.bodyMedium)
-                            }
-                        }
-                    }
-                }
-            }
+//            Box(
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .height(200.dp)
+//            ) {
+//                if (model.error.value == WeatherError.NOPERMISSION || model.error.value == WeatherError.NOGPS) {
+//                    Box(
+//                        modifier = Modifier
+//                            .padding(horizontal = 10.dp)
+//                            .clip(RoundedCornerShape(20.dp))
+//                            .fillMaxWidth()
+//                            .height(200.dp)
+//                            .background(MaterialTheme.colorScheme.secondaryContainer,
+//                            shape = RoundedCornerShape(8.dp))
+//
+//                    ) {
+//                        Column(
+//                            Modifier
+//                                .padding(16.dp), verticalArrangement = Arrangement.SpaceEvenly,
+//                            horizontalAlignment = Alignment.CenterHorizontally
+//                        ) {
+//
+//                            Icon(
+//                                Icons.TwoTone.Warning,
+//                                modifier = Modifier.size(50.dp),
+//                                contentDescription = "",
+//                                tint = orange_500
+//                            )
+//                            Text(
+//                                stringResource(id = R.string.LocationDenied)
+//                                ,style = MaterialTheme.typography.bodySmall.copy(
+//                                    color = Color.White,
+//
+//                                    ),
+//
+//                                modifier = Modifier.padding(vertical = 10.dp)
+//                            )
+//                            Spacer(modifier = Modifier.height(14.dp))
+//                            Button(
+//                                onClick = {
+//                                    model.askPermission(context = context){}
+//                                }, colors = ButtonDefaults.buttonColors(
+//                                    contentColor = green_200,
+//                                ),shape = RoundedCornerShape(12.dp)
+//                            ) {
+//                                Text(stringResource(id = R.string.AllowAccess), style = MaterialTheme.typography.bodyMedium)
+//                            }
+//                        }
+//                    }
+//                }
+//            }
 
 
         }

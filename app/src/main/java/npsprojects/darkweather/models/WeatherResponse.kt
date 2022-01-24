@@ -7,11 +7,11 @@ import android.util.Log
 import androidx.compose.ui.graphics.Color
 import com.google.android.gms.common.util.CollectionUtils
 import com.squareup.moshi.Json
-import kotlinx.parcelize.Parcelize
 import npsprojects.darkweather.Coordinates
 import npsprojects.darkweather.R
 import npsprojects.darkweather.WeatherUnits
 import npsprojects.darkweather.round
+import npsprojects.darkweather.services.SavedLocation
 import java.util.*
 
 
@@ -111,21 +111,13 @@ data class Temp (
 
 
 class WeatherModel constructor(
-    val name: String,
+    val location: SavedLocation,
     val data: OpenWeather,
     val isCurrent: Boolean,
     val airQuality: AirQuality?
 )
 
-class SavedLocation constructor(
-    val name: String,
-    val latitude: Double,
-    val longitude: Double
-) {
-    override fun toString(): String {
-        return "[$name|${latitude.round(5)}|${longitude.round(5)}]"
-    }
-}
+
 
 data class AirQuality(
 //    @field:Json(name ="coord")

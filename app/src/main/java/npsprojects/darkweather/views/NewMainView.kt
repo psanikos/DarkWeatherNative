@@ -2,6 +2,7 @@ package npsprojects.darkweather.views
 
 import android.graphics.drawable.Icon
 import android.graphics.drawable.ShapeDrawable
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
@@ -17,14 +18,16 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.TopAppBar
-
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material3.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material.icons.outlined.*
-import androidx.compose.material.rememberBottomSheetScaffoldState
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.internal.enableLiveLiterals
 import androidx.compose.runtime.livedata.observeAsState
@@ -69,7 +72,10 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.TileOverlay
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
+import compose.icons.fontawesomeicons.solid.EllipsisV
+import compose.icons.fontawesomeicons.solid.LocationArrow
 import compose.icons.fontawesomeicons.solid.Map
+import compose.icons.fontawesomeicons.solid.Search
 import kotlinx.coroutines.launch
 import npsprojects.darkweather.*
 import npsprojects.darkweather.R
@@ -77,6 +83,7 @@ import npsprojects.darkweather.models.Current
 import npsprojects.darkweather.models.WeatherModel
 import npsprojects.darkweather.models.Weather
 import npsprojects.darkweather.models.WeatherViewModel
+import npsprojects.darkweather.services.SavedLocation
 import npsprojects.darkweather.ui.theme.*
 import java.lang.reflect.Array.get
 import java.lang.reflect.Array.set
@@ -88,40 +95,38 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 
 
-@OptIn(ExperimentalMaterialApi::class, androidx.compose.material3.ExperimentalMaterial3Api::class)
+@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
 @ExperimentalAnimationApi
 
 
 @Composable
 fun NewMainView(model: WeatherViewModel, controller: NavController) {
     val index: Int by model.index.observeAsState(initial = 0)
-    val locations by model.locations.observeAsState(initial = listOf<WeatherModel>())
+    val currentLocation by model.currentLocation.observeAsState(initial = listOf<WeatherModel>())
     val insets = LocalWindowInsets.current
     val bottomPadding = with(LocalDensity.current) { insets.systemGestures.bottom.toDp() }
-    val isRefreshing by model.loading.observeAsState(initial = false)
-    val state = rememberBottomSheetScaffoldState()
+    val isRefreshing by model.isLoading.observeAsState(initial = false)
     val scope = rememberCoroutineScope()
     val listState = rememberLazyListState()
-    val backOpacity =
-        animateFloatAsState(targetValue = if (listState.firstVisibleItemIndex > 0) 1f else 0.5f)
-    var backImage by remember {
-        mutableStateOf(R.drawable.nightphone)
+
+    val locations by model.locations.observeAsState(listOf())
+
+    var dropExtended by remember {
+        mutableStateOf(false)
     }
-    val error by model.error.observeAsState()
-    LaunchedEffect(key1 = "$index ${locations.size}", block = {
-        backImage =
-            getWeatherBack((if (locations.isNotEmpty()) locations[index].data.current!!.weather[0].icon else "01d")!!)
+    var showCurrent by remember {
+        mutableStateOf(false)
+    }
+
+    var selectedLocation: WeatherModel? by remember {
+        mutableStateOf(null)
+    }
+
+    LaunchedEffect(key1 = "${model.currentLocation.value?.size}", block = {
+
     })
     val context = LocalContext.current
-    LaunchedEffect(key1 = error, block = {
-        if (error != WeatherError.NONE) {
-            Toast.makeText(
-                context,
-                "Please check your internet connection and location access",
-                Toast.LENGTH_LONG
-            ).show()
-        }
-    })
+
     Box(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.TopCenter
@@ -130,49 +135,216 @@ fun NewMainView(model: WeatherViewModel, controller: NavController) {
 
         Scaffold(
             floatingActionButton = {
-                ExtendedFloatingActionButton(
-                    text = { Text("Map", style = MaterialTheme.typography.labelMedium) },
-                    onClick = {
-                        controller.navigate("Map")
-                    }, modifier = Modifier.navigationBarsPadding(),
-                    icon = {
-                        Icon(
-                            FontAwesomeIcons.Solid.Map,
-                            contentDescription = "map",
-                            modifier = Modifier.size(20.dp),
-                        )
-                    })
+                if (locations.isNotEmpty() && locations[index].isCurrent) {
+                    ExtendedFloatingActionButton(
+                        text = { Text("Map", style = MaterialTheme.typography.labelMedium) },
+                        onClick = {
+                            controller.navigate("Map")
+                        }, modifier = Modifier.navigationBarsPadding(),
+                        icon = {
+                            Icon(
+                                FontAwesomeIcons.Solid.Map,
+                                contentDescription = "map",
+                                modifier = Modifier.size(20.dp),
+                            )
+                        })
+                }
             },
             topBar = {
 
-                AnimatedVisibility(visible = locations.isNotEmpty()) {
-                    TopBarView(
-                        model = model,
-                        controller = controller,
-                        color = Color.Transparent
-                    )
-                }
+                AnimatedVisibility(visible = locations.isNotEmpty() || currentLocation.isNotEmpty()) {
+                    SmallTopAppBar(
+                        title = {
+                            Column(
+                                horizontalAlignment = Alignment.Start,
+                                verticalArrangement = Arrangement.Bottom
+                            ) {
 
+                                Box() {
+                                    if (!(locations.isNotEmpty() && locations.size > index) && currentLocation.isEmpty()) {
+                                        Text("N/A", style = MaterialTheme.typography.displayMedium)
+                                    } else {
+                                        Row(
+                                            horizontalArrangement = Arrangement.spacedBy(5.dp),
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            modifier = Modifier.clickable(onClick = {
+                                                dropExtended = !dropExtended
+                                            })
+                                        ) {
+                                            if (locations[index].isCurrent) {
+                                                Icon(
+                                                    FontAwesomeIcons.Solid.LocationArrow,
+                                                    modifier = Modifier.size(15.dp),
+                                                    contentDescription = "",
+                                                )
+                                            }
+                                            Text(
+                                                locations[index].location.name,
+                                                style = MaterialTheme.typography.displayMedium
+                                            )
+                                        }
+                                    }
+                                    DropdownMenu(
+                                        expanded = dropExtended,
+                                        onDismissRequest = { /*TODO*/ }) {
+
+
+                                        locations.forEachIndexed { index, item ->
+                                            DropdownMenuItem(
+                                                onClick = {
+                                                    model.changeIndex(index)
+
+                                                    dropExtended = false
+                                                },
+                                                modifier = Modifier.width(160.dp)
+                                            ) {
+                                                Row(
+                                                    horizontalArrangement = Arrangement.spacedBy(5.dp),
+                                                    verticalAlignment = Alignment.CenterVertically
+                                                ) {
+                                                    if (item.isCurrent) {
+                                                        Icon(
+                                                            FontAwesomeIcons.Solid.LocationArrow,
+                                                            modifier = Modifier.size(15.dp),
+                                                            contentDescription = "",
+                                                        )
+                                                    }
+                                                    Text(
+                                                        item.location.name,
+                                                        style = MaterialTheme.typography.bodyMedium
+                                                    )
+                                                }
+                                            }
+                                        }
+
+                                    }
+
+                                }
+
+                                Text(
+                                    if (!(locations.isNotEmpty() && locations.size > index)) "No data" else
+                                        Date.from(Instant.ofEpochSecond(locations[index].data.current!!.dt!!))
+                                            .ago(),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    modifier = Modifier.padding(start = 5.dp)
+                                )
+                            }
+                        },
+                        actions = {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                if (locations.isNotEmpty() && locations.size > index) {
+
+                                    if (!locations[index].isCurrent) {
+                                        TextButton(onClick = {
+
+                                            if (model.myLocations.firstOrNull {
+                                                    it.latitude == locations[index].location.latitude
+                                                            && it.longitude == locations[index].location.longitude
+                                                } != null) {
+                                                Log.i("Heart", "removing")
+                                                model.isLoading.value = true
+                                                val curIndex = index
+                                                model.changeIndex(0)
+                                                scope.launch {
+                                                    model.remove(
+                                                        locations[curIndex].location,
+                                                        context = context
+                                                    )
+                                                }
+                                                model.isLoading.value = false
+                                            } else {
+                                                Log.i("Heart", "saving")
+                                                model.isLoading.value = true
+                                                scope.launch {
+                                                    model.saveLocation(
+                                                        locations[index].location,
+                                                        context = context
+                                                    )
+                                                }
+
+                                                model.isLoading.value = false
+                                            }
+                                        }) {
+
+                                            ColoredIcon(
+                                                if (model.myLocations.firstOrNull {
+                                                        it.latitude == locations[index].location.latitude
+                                                                && it.longitude == locations[index].location.longitude
+                                                    } != null)
+                                                    Icons.Default.Favorite else Icons.Default.FavoriteBorder,
+                                                contentDescription = "",
+                                                modifier = Modifier.size(30.dp),
+                                                padding = 6.dp,
+                                                tint = MaterialTheme.colorScheme.primary
+                                            )
+                                        }
+
+                                    }
+
+                                }
+                                TextButton(onClick = {
+                                    controller.navigate("Search")
+                                }) {
+                                    Box() {
+
+                                        ColoredIcon(
+                                            imageVector = FontAwesomeIcons.Solid.Search,
+                                            contentDescription = "",
+                                            modifier = Modifier.size(30.dp),
+                                            padding = 6.dp,
+                                            tint = MaterialTheme.colorScheme.primary
+                                        )
+                                    }
+                                }
+                                TextButton(onClick = {
+                                    controller.navigate("Settings")
+                                }) {
+
+                                    ColoredIcon(
+                                        imageVector = FontAwesomeIcons.Solid.EllipsisV,
+                                        contentDescription = "",
+                                        modifier = Modifier.size(30.dp),
+                                        padding = 6.dp,
+                                        tint = MaterialTheme.colorScheme.primary
+                                    )
+
+
+                                }
+                            }
+
+                        },
+                        colors = TopAppBarDefaults.mediumTopAppBarColors(
+                            titleContentColor = MaterialTheme.colorScheme.tertiary,
+                            //containerColor = Color.Transparent
+                        ),
+                        modifier = Modifier.statusBarsPadding()
+                    )
+
+                }
             },
 
 
             containerColor = MaterialTheme.colorScheme.surface
 
-            ) {
+        ) {
             Box(contentAlignment = Alignment.TopCenter) {
-            AnimatedVisibility(visible = locations.isNotEmpty()) {
-                Image(
-                    painter = painterResource(id = if(locations.isNotEmpty())
-                    getWeatherBackIcon(locations[index].data.current!!.weather.first().icon!!) else R.drawable.clearday),
-                    contentDescription = "",
-                    modifier = Modifier.size(500.dp)
-
-                    , contentScale = ContentScale.Fit
-                )
-            }
+                AnimatedVisibility(visible = locations.isNotEmpty()) {
+                    Image(
+                        painter = painterResource(
+                            id = if (locations.isNotEmpty())
+                                getWeatherBackIcon(locations[index].data.current!!.weather.first().icon!!) else R.drawable.clearday
+                        ),
+                        contentDescription = "",
+                        modifier = Modifier.size(500.dp), contentScale = ContentScale.Fit
+                    )
+                }
                 SwipeRefresh(
                     state = rememberSwipeRefreshState(isRefreshing),
-                    onRefresh = { model.initActions() }
+                    onRefresh = {
+                        scope.launch {
+                            model.initActions(context = context)
+                        }
+                    }
                 ) {
                     when (locations.size) {
                         0 -> LoadingAnimationScreen()

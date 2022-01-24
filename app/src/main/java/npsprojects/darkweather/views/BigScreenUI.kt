@@ -43,7 +43,6 @@ import com.google.accompanist.insets.LocalWindowInsets
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.TileOverlay
 import kotlinx.coroutines.launch
-import npsprojects.darkweather.models.SavedLocation
 import npsprojects.darkweather.models.WeatherViewModel
 import npsprojects.darkweather.ui.theme.*
 import java.text.SimpleDateFormat

@@ -1,60 +1,58 @@
 package npsprojects.darkweather.models
 
 import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
 
-@Parcelize
 data class CurrentWeather (
-    val coord: Coord,
+    val coord: Coord? = null,
     val weather: List<CurWeather>,
-    val base: String,
-    val main: MainD,
-    val visibility: Long,
-    val wind: Wind,
-    val clouds: Clouds,
-    val dt: Long,
-    val sys: Sys,
-    val timezone: Long,
-    val id: Long,
-    val name: String,
-    val cod: Long
-):Parcelable
-@Parcelize
+    val base: String? = null,
+    val main: MainD? = null,
+    val visibility: Long? = null,
+    val wind: Wind? = null,
+    val clouds: Clouds? = null,
+    val dt: Long? = null,
+    val sys: Sys? = null,
+    val timezone: Long? = null,
+    val id: Long? = null,
+    val name: String? = null,
+    val cod: Long? = null
+)
+
 data class Clouds (
-    val all: Long
-):Parcelable
-@Parcelize
+    val all: Long? = null
+)
+
 data class Coord (
-    val lon: Double,
-    val lat: Double
-):Parcelable
-@Parcelize
+    val lon: Double? = null,
+    val lat: Double? = null
+)
+
 data class MainD (
-    val temp: Double,
-    val feels_like: Double,
-    val temp_min: Double,
-    val temp_max: Double,
-    val pressure: Long,
-    val humidity: Long
-):Parcelable
-@Parcelize
+    val temp: Double? = null,
+    val feels_like: Double? = null,
+    val temp_min: Double? = null,
+    val temp_max: Double? = null,
+    val pressure: Long? = null,
+    val humidity: Long? = null
+)
+
 data class Sys (
-    val type: Long,
-    val id: Long,
-    val country: String,
-    val sunrise: Long,
-    val sunset: Long
-):Parcelable
-@Parcelize
+    val type: Long? = null,
+    val id: Long? = null,
+    val country: String? = null,
+    val sunrise: Long? = null,
+    val sunset: Long? = null
+)
+
 data class CurWeather (
-    val id: Long,
-    val main: String,
-    val description: String,
-    val icon: String
-):Parcelable
-@Parcelize
+    val id: Long? = null,
+    val main: String? = null,
+    val description: String? = null,
+    val icon: String? = null
+)
+
 data class Wind (
-    val speed: Double,
-    val deg: Long,
-    val gust: Double
-):Parcelable
+    val speed: Double? = null,
+    val deg: Long? = null,
+    val gust: Double? = null
+)

@@ -53,7 +53,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import npsprojects.darkweather.*
 import npsprojects.darkweather.R
-import npsprojects.darkweather.models.SavedLocation
 import npsprojects.darkweather.models.WeatherViewModel
 
 import npsprojects.darkweather.ui.theme.*
@@ -73,42 +72,42 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 
-sealed class Screen(val route: String, @StringRes val resourceId: Int, val icon: ImageVector) {
-    object Main : Screen("main", R.string.home,icon = Icons.Outlined.Cloud)
-    object AddLocation : Screen("add", R.string.add_location,icon = Icons.Outlined.AddCircleOutline)
-    object ManageLocation : Screen("manage", R.string.manage_location,icon = Icons.Outlined.Summarize)
-    object Settings : Screen("settings", R.string.settings,icon = Icons.Outlined.Settings)
-}
-
-
-@ExperimentalAnimationApi
-@OptIn(ExperimentalFoundationApi::class, androidx.compose.material3.ExperimentalMaterial3Api::class,
-    androidx.compose.material.ExperimentalMaterialApi::class
-)
-
-@Composable
-fun MainPageView(model: WeatherViewModel, controller: NavController) {
-    val items = listOf(Screen.Main,Screen.ManageLocation,Screen.Settings)
-    val scope = rememberCoroutineScope()
-
-
-    var currentPage by remember { mutableStateOf("Main") }
-
-    val configuration = LocalConfiguration.current
-    val deviceType = when(with(LocalDensity.current){
-        configuration.screenWidthDp > 420
-    }){
-        true -> DeviceType.BIGSCREEN
-        false -> DeviceType.PHONE
-    }
-    val isLoading by model.loading.observeAsState(true)
-
-
-                when (deviceType) {
-                    DeviceType.PHONE -> NewMainView(model = model, controller = controller)
-                    DeviceType.BIGSCREEN -> NewMapViewBig(model = model, controller = controller)
-                }
-
-
-
-}
+//sealed class Screen(val route: String, @StringRes val resourceId: Int, val icon: ImageVector) {
+//    object Main : Screen("main", R.string.home,icon = Icons.Outlined.Cloud)
+//    object AddLocation : Screen("add", R.string.add_location,icon = Icons.Outlined.AddCircleOutline)
+//    object ManageLocation : Screen("manage", R.string.manage_location,icon = Icons.Outlined.Summarize)
+//    object Settings : Screen("settings", R.string.settings,icon = Icons.Outlined.Settings)
+//}
+//
+//
+//@ExperimentalAnimationApi
+//@OptIn(ExperimentalFoundationApi::class, androidx.compose.material3.ExperimentalMaterial3Api::class,
+//    androidx.compose.material.ExperimentalMaterialApi::class
+//)
+//
+//@Composable
+//fun MainPageView(model: WeatherViewModel, controller: NavController) {
+//    val items = listOf(Screen.Main,Screen.ManageLocation,Screen.Settings)
+//    val scope = rememberCoroutineScope()
+//
+//
+//    var currentPage by remember { mutableStateOf("Main") }
+//
+//    val configuration = LocalConfiguration.current
+//    val deviceType = when(with(LocalDensity.current){
+//        configuration.screenWidthDp > 420
+//    }){
+//        true -> DeviceType.BIGSCREEN
+//        false -> DeviceType.PHONE
+//    }
+//    val isLoading by model.loading.observeAsState(true)
+//
+//
+//                when (deviceType) {
+//                    DeviceType.PHONE -> NewMainView(model = model, controller = controller)
+//                    DeviceType.BIGSCREEN -> NewMapViewBig(model = model, controller = controller)
+//                }
+//
+//
+//
+//}

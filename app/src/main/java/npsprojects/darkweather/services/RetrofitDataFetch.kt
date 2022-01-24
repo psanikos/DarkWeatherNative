@@ -33,7 +33,7 @@ private val moshi = Moshi.Builder()
     .add(KotlinJsonAdapterFactory())
     .build()
 
-val retrofit = Retrofit.Builder()
+val retrofit: Retrofit = Retrofit.Builder()
     .baseUrl("https://api.openweathermap.org/data/2.5/")
     .addConverterFactory(MoshiConverterFactory.create(moshi))
     .build()
@@ -42,8 +42,8 @@ interface RetrofitDataFetch {
     @GET("onecall?&exclude=minutely")
     suspend fun oneCallWeather(@Query("lat") lat:Double, @Query("lon") lon:Double, @Query("units") unit:String, @Query("lang") lang:String,@Query("appid") appid:String): OpenWeather
 
-    @GET("weather?lat={lat}&lon={lon}&units={unit}&lang={lang}&appid=e1e45feaea76d66517c25291f2633d9a")
-    suspend fun currentWeather(@Path("lat") lat:Double, @Path("lon") lon:Double, @Path("unit") unit:String, @Path("lang") lang:String): CurrentWeather
+    @GET("weather?")
+    suspend fun currentWeather(@Query("lat") lat:Double, @Query("lon") lon:Double, @Query("units") unit:String, @Query("lang") lang:String,@Query("appid") appid:String): CurrentWeather
 
 
     @GET("air_pollution?")

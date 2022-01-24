@@ -35,7 +35,6 @@ fun FullMapView(model: WeatherViewModel,controller:NavController) {
     val map = rememberMapViewWithLifecycle()
     var mapType by rememberSaveable { mutableStateOf("none") }
     val index: Int by model.index.observeAsState(initial = 0)
-    val locations by model.locations.observeAsState(initial = listOf<WeatherModel>())
 
     val testCoordinates = LatLng(37.98384, 23.72753)
     var dropExtended by remember {
@@ -48,15 +47,9 @@ fun FullMapView(model: WeatherViewModel,controller:NavController) {
     }
     var zoom by rememberSaveable(map) { mutableStateOf(InitialZoom) }
     val overlays: MutableList<TileOverlay> by rememberSaveable { mutableStateOf(ArrayList<TileOverlay>()) }
-    LaunchedEffect(key1 = index + locations.size, block = {
-        if (locations.isNotEmpty() && locations.size > index) {
-            coordinates = LatLng(
-                locations[index].data.lat!!,
-                locations[index].data.lon!!
-            )
-        }
+    val locations by model.locations.observeAsState(listOf())
 
-    })
+
     val bottomPadding = with(LocalDensity.current){
         LocalWindowInsets.current.systemGestures.bottom + 10
     }
@@ -84,38 +77,38 @@ fun FullMapView(model: WeatherViewModel,controller:NavController) {
                                   Icon(FontAwesomeIcons.Solid.LocationArrow,modifier = Modifier.size(25.dp), contentDescription = "")
                               }
                               Text(
-                                  locations[index].name,
+                                  locations[index].location.name,
                                   style = androidx.compose.material3.MaterialTheme.typography.headlineLarge
 
                               )
                           }
                       }
-                      DropdownMenu(expanded = dropExtended, onDismissRequest = { /*TODO*/ }) {
-
-
-                          locations.forEachIndexed { index, item ->
-                              DropdownMenuItem(onClick = {
-                                  model.indexChange(index)
-
-                                  dropExtended = false
-                              },
-                                  modifier = Modifier.width(160.dp)) {
-                                  Row(
-                                      horizontalArrangement = Arrangement.spacedBy(5.dp),
-                                      verticalAlignment = Alignment.CenterVertically
-                                  ) {
-                                      if (item.isCurrent) {
-                                          Icon(FontAwesomeIcons.Solid.LocationArrow,modifier = Modifier.size(15.dp), contentDescription = "")
-                                      }
-                                      Text(
-                                          item.name,
-                                          style = MaterialTheme.typography.bodySmall
-                                      )
-                                  }
-                              }
-                          }
-
-                      }
+//                      DropdownMenu(expanded = dropExtended, onDismissRequest = { /*TODO*/ }) {
+//
+//
+//                          locations.forEachIndexed { index, item ->
+//                              DropdownMenuItem(onClick = {
+//                                  model.changeIndex(index)
+//
+//                                  dropExtended = false
+//                              },
+//                                  modifier = Modifier.width(160.dp)) {
+//                                  Row(
+//                                      horizontalArrangement = Arrangement.spacedBy(5.dp),
+//                                      verticalAlignment = Alignment.CenterVertically
+//                                  ) {
+//                                      if (item.isCurrent) {
+//                                          Icon(FontAwesomeIcons.Solid.LocationArrow,modifier = Modifier.size(15.dp), contentDescription = "")
+//                                      }
+//                                      Text(
+//                                          item.location.name,
+//                                          style = MaterialTheme.typography.bodySmall
+//                                      )
+//                                  }
+//                              }
+//                          }
+//
+//                      }
                   }
 
               }
