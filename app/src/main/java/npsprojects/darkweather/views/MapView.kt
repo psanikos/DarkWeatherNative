@@ -122,7 +122,7 @@ class CustomInfoWindowForGoogleMap(context: Context) : GoogleMap.InfoWindowAdapt
 }
 
 
-const val InitialZoom = 4f
+const val InitialZoom = 5f
 const val MinZoom = 2f
 const val MaxZoom = 20f
 

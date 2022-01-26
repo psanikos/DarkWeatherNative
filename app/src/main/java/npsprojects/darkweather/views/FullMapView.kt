@@ -56,13 +56,13 @@ fun FullMapView(model: WeatherViewModel,controller:NavController) {
 
   Scaffold(
       topBar = {
-          MediumTopAppBar(title = {
+          LargeTopAppBar(title = {
               Column(
                   horizontalAlignment = Alignment.Start,
                   verticalArrangement = Arrangement.SpaceEvenly,
                   modifier = Modifier
                       .height(50.dp)
-                      .fillMaxWidth(0.8f)) {
+                      .fillMaxWidth()) {
 
                   Box() {
                       if (!(locations.isNotEmpty() && locations.size > index)) {

@@ -53,14 +53,10 @@ LaunchedEffect(key1 = "Animation", block = {
       showRefresh = true
   }
 })
-    Box(modifier = Modifier
-        .statusBarsPadding()
-        .fillMaxWidth()
-        .fillMaxHeight(0.9f)
-        .background(color = MaterialTheme.colorScheme.background),
-    contentAlignment = Alignment.Center){
+
         Column(
             modifier = Modifier
+                .statusBarsPadding()
                 .fillMaxSize(),verticalArrangement = Arrangement.spacedBy(10.dp),
         horizontalAlignment = Alignment.CenterHorizontally) {
             Spacer(modifier = Modifier.height(60.dp))
@@ -114,7 +110,7 @@ LaunchedEffect(key1 = "Animation", block = {
 
         }
 
-    }
+
 
 }
 

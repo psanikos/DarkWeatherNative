@@ -162,7 +162,8 @@ fun FullSearchView(model: WeatherViewModel,controller: NavController) {
                                         name = it.locality ?: it.subLocality,
                                         longitude = it.longitude,
                                         latitude = it.latitude,
-                                    context = context)
+                                        context = context
+                                    )
 
                                     searchTerm = ""
                                     searchedAddresses.clear()
@@ -211,7 +212,11 @@ fun FullSearchView(model: WeatherViewModel,controller: NavController) {
 
                 // below line is use to display
                 // description to our alert dialog.
-                text = { Text(stringResource(id = R.string.ChangeSearch), style = MaterialTheme.typography.bodySmall) },
+                text = { Text( if(WeatherViewModel.LocationFetcher.isOnline(context = context)) stringResource(
+                    id = R.string.noInternet
+                ) else
+                    stringResource(id = R.string.ChangeSearch)
+                    , style = MaterialTheme.typography.bodySmall) },
 
                 // in below line we are displaying
                 // our confirm button.

@@ -135,7 +135,7 @@ fun NewMainView(model: WeatherViewModel, controller: NavController) {
 
         Scaffold(
             floatingActionButton = {
-                if (locations.isNotEmpty() && locations[index].isCurrent) {
+                if (locations.isNotEmpty() && locations[index].isCurrent && WeatherViewModel.LocationFetcher.isOnline(context = context)) {
                     ExtendedFloatingActionButton(
                         text = { Text("Map", style = MaterialTheme.typography.labelMedium) },
                         onClick = {

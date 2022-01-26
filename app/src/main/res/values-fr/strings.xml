@@ -56,6 +56,7 @@
     <string name="until">jusqu\'à</string>
     <string name="high">Elevé</string>
     <string name="vHigh">Très élevé</string>
+    <string name="noInternet">S\'il vous plait, vérifiez votre connexion internet</string>
     <string name="locus_rationale_title">Rationale Title</string>
     <string name="locus_rationale_message">This is a rationale message.</string>
     <string name="locus_permission_blocked_title">Permission Blocked Title</string>

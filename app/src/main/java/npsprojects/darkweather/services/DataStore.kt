@@ -36,7 +36,7 @@ abstract  class LocationsDatabase: RoomDatabase() {
 
 interface BaseDao<T> {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(vararg obj: T)
 
     @Update
