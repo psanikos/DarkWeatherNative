@@ -20,11 +20,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.birjuvachhani.locus.*
 import com.google.android.gms.common.util.CollectionUtils.listOf
+import com.google.gson.Gson
 import kotlinx.coroutines.*
 import npsprojects.darkweather.WeatherUnits
 import npsprojects.darkweather.isOnline
 import npsprojects.darkweather.openWeatherKey
 import npsprojects.darkweather.services.LocationsDatabase
+import npsprojects.darkweather.services.LocationsOldData
 import npsprojects.darkweather.services.SavedLocation
 import npsprojects.darkweather.services.WeatherDataApi
 import okio.IOException
@@ -34,6 +36,7 @@ import java.util.*
 enum class Lang {
     EN,EL,FR
 }
+
 class LOCATIONERROR:Exception(){
     object LOCATION_DENIED:Exception("Location denied")
     object LOCATION_FULL_DENIED:Exception("Enable location from settings")
@@ -289,7 +292,7 @@ class WeatherViewModel : ViewModel() {
         val locale = context.resources.configuration.locales
         val language: String = if(locale.isEmpty) "en" else locale[0].language
         val searchLanguage = if (language == "el")  "el" else if (language == "fr") "fr" else "en"
-
+        val db = LocationsDatabase.getInstance(context)
      LocationFetcher.getUserLocation(context=context){ loc,error ->
          if(error != null){
              throw error
@@ -315,18 +318,28 @@ class WeatherViewModel : ViewModel() {
                  }
 
                  data?.let {
-                     LocationFetcher.getNameFromCoordinates(context, latitude = loc!!.latitude, longitude = loc!!.longitude){
+                     var lastLocation = "Last location"
+                     val jsonString = Gson().toJson(it)
+                     LocationFetcher.getNameFromCoordinates(context, latitude = loc!!.latitude, longitude = loc!!.longitude){ name ->
+                         lastLocation = name
                        saveWidgetLocation(address = SavedLocation(
-                           name = it,
+                           name = name,
                            longitude = loc!!.longitude,
-                           latitude = loc!!.latitude
+                           latitude = loc!!.latitude,
+                           oldData = LocationsOldData(
+                               data = jsonString,
+                               isCurrent = true
+                           )
                        ), context = context)
 
                          currentLocation.value = listOf(WeatherModel(
                              location = SavedLocation(
-                                 name = it,
+                                 name = name,
                                  longitude = loc!!.longitude,
-                                 latitude = loc!!.latitude
+                                 latitude = loc!!.latitude,
+                                 oldData = LocationsOldData(
+                                     data = jsonString
+                                 )
                              ),
                              data = data,
                              isCurrent = true,
@@ -336,17 +349,35 @@ class WeatherViewModel : ViewModel() {
                          old.add(0,
                              WeatherModel(
                                  location = SavedLocation(
-                                     name = it,
+                                     name = name,
                                      longitude = loc!!.longitude,
-                                     latitude = loc!!.latitude
+                                     latitude = loc!!.latitude,
+                                     oldData = LocationsOldData(
+                                             data = jsonString
+                                             )
                                  ),
                                  data = data,
                                  isCurrent = true,
                                  airQuality = air
                              ))
                          _locations.value = old.toList()
-                     }
 
+                     }
+                     db?.let {
+                         withContext(Dispatchers.IO){
+                             with(it.locationsDao()){
+                                saveLocation(SavedLocation(
+                                    name = lastLocation,
+                                    longitude = loc!!.longitude,
+                                    latitude = loc!!.latitude,
+                                    oldData = LocationsOldData(
+                                        data = jsonString,
+                                        isCurrent = true
+                                    )
+                                ), context = context)
+                             }
+                         }
+                     }
                  }
 
              }
@@ -361,7 +392,9 @@ class WeatherViewModel : ViewModel() {
         val language: String = if(locale.isEmpty) "en" else locale[0].language
         val searchLanguage = if (language == "el")  "el" else if (language == "fr") "fr" else "en"
         var out = kotlin.collections.mutableListOf<WeatherModel>()
-            runBlocking {
+        val db = LocationsDatabase.getInstance(context)
+
+        runBlocking {
 
                 async {
                     myLocations.forEach {
@@ -389,19 +422,39 @@ class WeatherViewModel : ViewModel() {
 
                         }
                         data?.let { dat ->
+                            val jsonString = Gson().toJson(dat)
+
                             Log.i("Weather data", "Adding out")
                             out.add(
                                 WeatherModel(
                                     location = SavedLocation(
                                         name = it.name,
                                         longitude = it!!.longitude,
-                                        latitude = it!!.latitude
+                                        latitude = it!!.latitude,
+                                        oldData = LocationsOldData(
+                                            data = jsonString
+                                        )
                                     ),
                                     data = dat,
                                     isCurrent = false,
                                     airQuality = air
                                 )
                             )
+                            db?.let { d->
+                                withContext(Dispatchers.IO){
+                                    with(d.locationsDao()){
+                                        saveLocation(SavedLocation(
+                                            name = it.name,
+                                            longitude = it!!.longitude,
+                                            latitude = it!!.latitude,
+                                            oldData = LocationsOldData(
+                                                data = jsonString,
+                                                isCurrent = false
+                                            )
+                                        ), context = context)
+                                    }
+                                }
+                            }
                         }
                     }
                 }.await()
@@ -437,11 +490,15 @@ class WeatherViewModel : ViewModel() {
                 }
 
                 data?.let { dat->
+                    val jsonString = Gson().toJson(dat)
                     _locations.value = _locations.value!!.plus(WeatherModel(
                         location = SavedLocation(
                             name = name,
                             longitude = longitude,
-                            latitude = latitude
+                            latitude = latitude,
+                            oldData = LocationsOldData(
+                                data =  jsonString
+                            )
                         ),
                         data = dat,
                         isCurrent = false,

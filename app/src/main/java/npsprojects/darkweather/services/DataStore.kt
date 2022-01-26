@@ -3,6 +3,7 @@ package npsprojects.darkweather.services
 import android.content.Context
 import androidx.room.*
 import org.jetbrains.annotations.NotNull
+import java.util.*
 
 @Database(entities = [(SavedLocation::class)], version = 1)
 abstract  class LocationsDatabase: RoomDatabase() {
@@ -52,14 +53,14 @@ interface BaseDao<T> {
 abstract class LocationsDao:BaseDao<SavedLocation> {
 
     @Query("Select * from Locations")
-    abstract fun getAll():List<SavedLocation>
+    abstract fun getAll(): List<SavedLocation>
 
 
     @Query("DELETE FROM Locations")
     abstract suspend fun deleteAll()
 
     @Query("DELETE FROM Locations WHERE latitude = :latitude AND longitude = :longitude")
-    abstract suspend fun deleteWhere(latitude:Double,longitude: Double)
+    abstract suspend fun deleteWhere(latitude: Double, longitude: Double)
 
 }
 
@@ -69,9 +70,25 @@ data class SavedLocation (
     @NotNull
     var id:Long = 0L,
     @ColumnInfo(name = "name")
-    val name: String,
+    var name: String,
     @ColumnInfo(name = "latitude")
-    val latitude: Double,
+    var latitude: Double,
     @ColumnInfo(name = "longitude")
-    val longitude: Double
+    var longitude: Double,
+    @Embedded var oldData: LocationsOldData?
 )
+
+@Entity(tableName = "LocationsData")
+data class LocationsOldData(
+    @PrimaryKey(autoGenerate = true)
+    @NotNull
+    var uid:Long = 0L,
+    @ColumnInfo(name = "date")
+    var date:Long = Date().toInstant().toEpochMilli(),
+    @ColumnInfo(name = "data")
+    var data:String? = null,
+    @ColumnInfo(name = "isCurrent")
+    var isCurrent:Boolean = false
+
+)
+
