@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -32,6 +33,23 @@ import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import kotlin.math.roundToInt
+
+@Composable
+fun VerticalHourView(hourly:List<Current>,inSi:Boolean){
+    LazyColumn(content = {
+        items(hourly){ hour->
+            HorizontalHourItem(isFirst = hourly.indexOf(hour) == 0, hour = hour, inSi = inSi)
+        }
+    }, modifier = Modifier
+        .fillMaxWidth()
+        .height(440.dp)
+        .background(color = indigo_500, shape = RoundedCornerShape(16.dp))
+        .clip(RoundedCornerShape(16.dp))
+        .padding(16.dp),
+        horizontalAlignment =Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(4.dp))
+
+}
 
 @Composable
 fun HourView(hourly:List<Current>,inSi:Boolean){
@@ -92,6 +110,56 @@ fun HourItem(isFirst:Boolean,hour:Current,inSi: Boolean){
                             style = MaterialTheme.typography.labelMedium.copy(color = if(isFirst && !isSystemInDarkTheme()) Color.Gray else Color.LightGray)
                         )
                     }
+
+    }
+}
+
+@Composable
+fun HorizontalHourItem(isFirst:Boolean,hour:Current,inSi: Boolean){
+    Row(modifier = Modifier
+        .fillMaxWidth()
+        .width(40.dp)
+        .padding(horizontal = 5.dp)
+        ,
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            DateTimeFormatter.ofPattern("HH:mm").format(
+                LocalDateTime.ofInstant(
+                    Instant.ofEpochMilli(1000 * hour.dt!!),
+                    ZoneId.systemDefault()
+                )), style = MaterialTheme.typography.labelMedium.copy(color =  Color.LightGray))
+        Text(hour.temp!!.roundToInt().toString() + "°", style = MaterialTheme.typography.bodyLarge.copy(color = Color.White))
+        Image(painter = painterResource(id = getWeatherImage(hour.weather.first().icon!!)), contentDescription ="",
+            modifier = Modifier.size(30.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+            Icon(
+                FontAwesomeIcons.Solid.Umbrella, contentDescription = "",
+                modifier = Modifier.size(15.dp), tint = Color.LightGray)
+            Text(((hour.pop ?: 0.0)*100).roundToInt().toString() + "%", style = MaterialTheme.typography.labelMedium.copy(color =  Color.LightGray))
+        }
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(5.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+
+
+            ColoredIcon(
+                Icons.Filled.Navigation,
+                contentDescription = "",
+                modifier = Modifier
+                    .size(15.dp)
+                    .rotate(22.0F),
+                tint =  Color.LightGray,
+
+                )
+
+            Text(
+                text = "${hour.wind_speed!!.roundToInt()} " + if (inSi) "km/h" else "mph" ,
+                style = MaterialTheme.typography.labelMedium.copy(color = Color.LightGray)
+            )
+        }
 
     }
 }

@@ -144,7 +144,7 @@ class WeatherViewModel : ViewModel() {
         //Geolocation--------------------------------------
 
         fun getCoordinatesFromLocation(context: Context, input: String): MutableList<Address> {
-            if (input != "" && isOnline()) {
+            if (input != "" && isOnline(context)) {
 
                 val geocoder = Geocoder(context, Locale.getDefault())
                 println("Geocoding")
@@ -173,7 +173,7 @@ class WeatherViewModel : ViewModel() {
             val addresses: List<Address>
 
             val geocoder = Geocoder(myContext, Locale.getDefault())
-            if (isOnline()) {
+            if (isOnline(myContext)) {
                 addresses = try {
                     geocoder.getFromLocation(
                         latitude,

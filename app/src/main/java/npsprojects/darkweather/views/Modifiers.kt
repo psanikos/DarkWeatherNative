@@ -1,5 +1,6 @@
 package npsprojects.darkweather.views
 
+import androidx.annotation.ColorInt
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
@@ -14,12 +15,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.layout.LayoutModifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import npsprojects.darkweather.ui.theme.iceBlack
+
+
+
 
 fun Modifier.materialYouFrosted() = composed { this.background(Brush.linearGradient(colors =listOf(
     MaterialTheme.colorScheme.background.copy(alpha = 0.9f),

@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material.Text
@@ -23,10 +24,7 @@ import androidx.compose.ui.unit.dp
 import compose.icons.FontAwesomeIcons
 import compose.icons.WeatherIcons
 import compose.icons.fontawesomeicons.Solid
-import compose.icons.fontawesomeicons.solid.ArrowAltCircleDown
-import compose.icons.fontawesomeicons.solid.ArrowAltCircleUp
-import compose.icons.fontawesomeicons.solid.Sun
-import compose.icons.fontawesomeicons.solid.Umbrella
+import compose.icons.fontawesomeicons.solid.*
 import compose.icons.weathericons.Sunrise
 import compose.icons.weathericons.Sunset
 import npsprojects.darkweather.models.Current
@@ -43,7 +41,9 @@ import kotlin.math.roundToInt
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun DetailsCard(current: Current,daily: Daily,inSi:Boolean){
-    Box(modifier = Modifier.fillMaxWidth().height(170.dp)
+    Box(modifier = Modifier
+        .fillMaxWidth()
+        .height(170.dp)
         .background(color = MaterialTheme.colorScheme.background, shape = RoundedCornerShape(16.dp))
         .padding(12.dp), contentAlignment = Alignment.Center) {
         LazyVerticalGrid(cells = GridCells.Fixed(3), content = {
@@ -84,6 +84,93 @@ fun DetailsCard(current: Current,daily: Daily,inSi:Boolean){
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun DetailsCardCompact(current: Current,daily: Daily,inSi:Boolean){
+
+    Column(modifier = Modifier
+        .fillMaxWidth()
+        .height(170.dp)
+        .background(color = MaterialTheme.colorScheme.background, shape = RoundedCornerShape(16.dp))
+        .padding(12.dp),
+        horizontalAlignment = Alignment.Start,
+        verticalArrangement = Arrangement.Top
+
+    ) {
+
+            Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+                Box(modifier = Modifier.width(100.dp)) {
+                    DetailsItemCompact(
+                        icon = FontAwesomeIcons.Solid.ArrowAltCircleUp,
+                        "High",
+                        value = daily.temp!!.max!!.roundToInt().toString() + "°",
+                        null
+                    )
+                }
+                Box(modifier = Modifier.width(100.dp)) {
+                    DetailsItemCompact(
+                        icon = FontAwesomeIcons.Solid.ArrowAltCircleDown,
+                        "Low",
+                        value = daily.temp!!.min!!.roundToInt().toString() + "°",
+                        null
+                    )
+                }
+                Box(modifier = Modifier.width(100.dp)) {
+
+                    DetailsItemCompact(
+                        icon = FontAwesomeIcons.Solid.Sun,
+                        "UV level",
+                        value = current.uvi!!.roundToInt().toString(),
+                        null
+                    )
+                }
+            }
+            Divider()
+            Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+                Box(modifier = Modifier.width(100.dp)) {
+
+                    DetailsItemCompact(
+                        icon = Icons.Default.Navigation,
+                        "Air speed",
+                        value = current.wind_speed!!.roundToInt()
+                            .toString() + if (inSi) "km/h" else "mph",
+                        secondValue = current.wind_deg!!.toDouble()
+                    )
+                }
+                Box(modifier = Modifier.width(100.dp)) {
+
+                    DetailsItemCompact(
+                        icon = WeatherIcons.Sunrise,
+                        "Sunrise",
+                        value = DateTimeFormatter.ofPattern("HH:mm").format(
+                            LocalDateTime.ofInstant(
+                                Instant.ofEpochMilli(1000 * daily.sunrise!!),
+                                ZoneId.systemDefault()
+                            )
+                        ),
+                        null
+                    )
+                }
+                Box(modifier = Modifier.width(100.dp)) {
+
+                    DetailsItemCompact(
+                        icon = WeatherIcons.Sunset,
+                        "Sunset",
+                        DateTimeFormatter.ofPattern("HH:mm").format(
+                            LocalDateTime.ofInstant(
+                                Instant.ofEpochMilli(1000 * daily.sunset!!),
+                                ZoneId.systemDefault()
+                            )
+                        ),
+                        null
+                    )
+                }
+            }
+        }
+
+}
+
+
 @Composable
 fun DetailsItem(icon:ImageVector,title:String,value:String,secondValue:Double?){
     Column(modifier = Modifier
@@ -96,7 +183,29 @@ fun DetailsItem(icon:ImageVector,title:String,value:String,secondValue:Double?){
         Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
             Icon(
                 icon, contentDescription = "",
-                modifier = Modifier.size(15.dp).rotate((secondValue ?: 0.0).toFloat()), tint = Color.Gray)
+                modifier = Modifier
+                    .size(15.dp)
+                    .rotate((secondValue ?: 0.0).toFloat()), tint = Color.Gray)
+            Text(title, style = MaterialTheme.typography.labelMedium.copy(color = Color.Gray))
+
+        }
+        Text(value, style = MaterialTheme.typography.displayLarge.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black))
+    }
+}
+@Composable
+fun DetailsItemCompact(icon:ImageVector,title:String,value:String,secondValue:Double?){
+    Column(modifier = Modifier
+        .height(50.dp)
+        .fillMaxWidth(),
+        horizontalAlignment = Alignment.Start,
+        verticalArrangement = Arrangement.SpaceEvenly
+    ) {
+        Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+            Icon(
+                icon, contentDescription = "",
+                modifier = Modifier
+                    .size(15.dp)
+                    .rotate((secondValue ?: 0.0).toFloat()), tint = Color.Gray)
             Text(title, style = MaterialTheme.typography.labelMedium.copy(color = Color.Gray))
 
         }

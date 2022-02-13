@@ -5,6 +5,9 @@
       <map>
         <entry key="../../../../layout/compose-model-1642893845472.xml" value="0.13796296296296295" />
         <entry key="../../../../layout/compose-model-1642939006653.xml" value="0.15555555555555556" />
+        <entry key="app/src/main/res/drawable/mywidgetbackground.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/mywidgetbgdynamic.xml" value="0.1" />
+        <entry key="app/src/main/res/drawable/rounded_rectangle.xml" value="0.1" />
       </map>
     </option>
   </component>

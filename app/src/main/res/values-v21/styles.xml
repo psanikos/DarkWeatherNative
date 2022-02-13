@@ -9,4 +9,7 @@
         <item name="android:padding">?attr/appWidgetPadding</item>
         <item name="android:background">@color/black</item>
     </style>
+    <style name="MyWidgetTheme">
+        <item name="backgroundRadius">@dimen/my_background_radius_dimen</item>
+    </style>
 </resources>

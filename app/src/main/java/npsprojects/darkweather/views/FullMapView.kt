@@ -56,7 +56,7 @@ fun FullMapView(model: WeatherViewModel,controller:NavController) {
 
   Scaffold(
       topBar = {
-          LargeTopAppBar(title = {
+          MediumTopAppBar(title = {
               Column(
                   horizontalAlignment = Alignment.Start,
                   verticalArrangement = Arrangement.SpaceEvenly,
@@ -83,32 +83,7 @@ fun FullMapView(model: WeatherViewModel,controller:NavController) {
                               )
                           }
                       }
-//                      DropdownMenu(expanded = dropExtended, onDismissRequest = { /*TODO*/ }) {
-//
-//
-//                          locations.forEachIndexed { index, item ->
-//                              DropdownMenuItem(onClick = {
-//                                  model.changeIndex(index)
-//
-//                                  dropExtended = false
-//                              },
-//                                  modifier = Modifier.width(160.dp)) {
-//                                  Row(
-//                                      horizontalArrangement = Arrangement.spacedBy(5.dp),
-//                                      verticalAlignment = Alignment.CenterVertically
-//                                  ) {
-//                                      if (item.isCurrent) {
-//                                          Icon(FontAwesomeIcons.Solid.LocationArrow,modifier = Modifier.size(15.dp), contentDescription = "")
-//                                      }
-//                                      Text(
-//                                          item.location.name,
-//                                          style = MaterialTheme.typography.bodySmall
-//                                      )
-//                                  }
-//                              }
-//                          }
-//
-//                      }
+
                   }
 
               }

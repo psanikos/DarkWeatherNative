@@ -19,7 +19,7 @@
         android:theme="@style/Theme.DarkWeather" >
 
         <receiver
-            android:name=".widgets.WeatherWidgetSmallReceiver"
+            android:name=".widgets.WeatherWidgetReceiver"
             android:enabled="@bool/glance_appwidget_available"
             android:exported="false">
             <intent-filter>

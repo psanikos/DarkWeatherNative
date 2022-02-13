@@ -1,12 +1,16 @@
 package npsprojects.darkweather
 
 import android.annotation.SuppressLint
+import android.content.Context
 import android.graphics.drawable.VectorDrawable
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.text.format.DateUtils
 import android.util.Log
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
@@ -46,25 +50,33 @@ class Coordinates(
     val latitude: Double,
     val longitude: Double
 )
-fun isOnline() : Boolean {
-    val runtime = Runtime.getRuntime()
-    return try {
-        val ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8")
-        val exitValue = ipProcess.waitFor()
-        exitValue == 0
-    } catch (e: IOException) {
-
-        false
-    } catch (e: InterruptedException) {
-        false
+fun isOnline(context: Context): Boolean {
+    val connectivityManager =
+        context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    if (connectivityManager != null) {
+        val capabilities =
+            connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+        if (capabilities != null) {
+            if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+                Log.i("Internet", "NetworkCapabilities.TRANSPORT_CELLULAR")
+                return true
+            } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+                Log.i("Internet", "NetworkCapabilities.TRANSPORT_WIFI")
+                return true
+            } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
+                Log.i("Internet", "NetworkCapabilities.TRANSPORT_ETHERNET")
+                return true
+            }
+        }
     }
-
+    return false
 }
 fun Double.round(decimals: Int): Double {
     var multiplier = 1.0
     repeat(decimals) { multiplier *= 10 }
     return kotlin.math.round(this * multiplier) / multiplier
 }
+
 fun getWeatherBack(input: String): Int {
     return when (input) {
         "01d" -> R.drawable.dayphone
@@ -330,25 +342,7 @@ fun getWeatherImage(input: String): Int {
 ////}
 ////
 //}
-//fun getWeatherIcon(input: String): Int {
-//
-//    return when (input) {
-//        "clear-day" -> R.drawable.sun
-//        "clear-night" -> R.drawable.clearnight
-//        "rain" -> R.drawable.rain
-//        "snow" -> R.drawable.snow
-//        "sleet" -> R.drawable.snow
-//        "wind" -> R.drawable.air
-//        "fog" -> R.drawable.clouds
-//        "cloudy" -> R.drawable.clouds
-//        "partly-cloudy-day" -> R.drawable.partlycloudy
-//        "partly-cloudy-night" -> R.drawable.partlycloudynight
-//        "hail" -> R.drawable.snow
-//        "thunderstorm" -> R.drawable.heavyrain
-//        "tornado" -> R.drawable.air
-//        else -> R.drawable.sun
-//    }
-//}
+
 
 
 
@@ -368,6 +362,7 @@ fun moonIcon(input:Double):Int{
     }
 
 }
+
 fun moonDescription(input:Double):Int{
 
     return when(input){
@@ -380,30 +375,6 @@ fun moonDescription(input:Double):Int{
     }
 
 }
-//fun getWeatherIcon(input: String): Int {
-//
-//    return when (input) {
-//        "01d" -> R.drawable.i01d
-//        "02d" -> R.drawable.i02d
-//        "03d" -> R.drawable.i03d
-//        "04d" -> R.drawable.i04d
-//        "01n" -> R.drawable.i01n
-//        "02n" -> R.drawable.i02n
-//        "03n" -> R.drawable.i03n
-//        "04n" -> R.drawable.i04n
-//        "09n" -> R.drawable.i09n
-//        "10n" -> R.drawable.i10n
-//        "11n" -> R.drawable.i11n
-//        "13n" -> R.drawable.i13n
-//        "50n" -> R.drawable.i50n
-//        "09d" -> R.drawable.i09d
-//        "10d" -> R.drawable.i10d
-//        "11d" -> R.drawable.i11d
-//        "13d" -> R.drawable.i13d
-//        "50d" -> R.drawable.i50d
-//        else -> R.drawable.i02d
-//    }
-//}
 
 fun Date.timeAgo():String {
   val dateString = SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.getDefault()).format(this)
@@ -441,6 +412,7 @@ fun Date.timeAgo():String {
     }
     return conversionTime
 }
+
 fun Date.ago():String {
     val dateString = SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.getDefault()).format(this)
     val sdf = SimpleDateFormat("yyyy-MM-dd hh:mm:ss", Locale.getDefault())
@@ -462,17 +434,84 @@ Box(modifier = Modifier.wrapContentSize().background(color = color.copy(alpha = 
     body()
 }
 }
+fun getBackColor(input:String):Color {
+    return when (input) {
 
-//val map = rememberMapViewWithLifecycle()
-//val mapType by remember { mutableStateOf("clouds_new") }
-//val coordinates by remember {
-//    mutableStateOf(
-//        if (model.locations.isNotEmpty()) LatLng(
-//            model.locations[model.index].data.lat,
-//            model.locations[model.index].data.lon
-//        ) else LatLng(37.9838, 23.7275)
-//    )
-//}
-//var zoom by rememberSaveable(map) { mutableStateOf(InitialZoom) }
-//
-//val overlays: MutableList<TileOverlay> by remember { mutableStateOf(ArrayList<TileOverlay>()) }
+        "01d"-> Color(red=235/255, green=220/255, blue=180/255)
+        "01n"-> Color(0xFF183050)
+        "09d","09n","10d","10n"-> Color(0xFF305c81)
+        "13d"-> Color(0xFFbadbe3)
+        "50d"-> Color(0xFFc5e1e8)
+        "50n"-> Color(0xFF90a699)
+        "04d","04n","03n","03d"->  Color(0xFF3B5C77)
+        "02d"-> Color(0xFF1d4c70)
+        "02n"-> Color(0xFF1d4c57)
+        "13n"->  Color(0xFFc5e1e8)
+        "11d"-> Color(0xFF130c36)
+        "11n"->  Color(0xFF1e1640)
+        else -> Color(0xFF18a9c9)
+    }
+
+}
+fun getBackColorHex(input:String):Long {
+    return when (input) {
+
+        "01d"-> 0xFFfff8d6
+        "01n"-> 0xFF183050
+        "09d","09n","10d","10n"-> 0xFF305c81
+        "13d"-> 0xFFbadbe3
+        "50d"-> 0xFFc5e1e8
+        "50n"-> 0xFF90a699
+        "04d","04n","03n","03d"-> 0xFF3B5C77
+        "02d"-> 0xFF1d4c70
+        "02n"-> 0xFF1d4c57
+        "13n"->  0xFFc5e1e8
+        "11d"-> 0xFF130c36
+        "11n"->  0xFF1e1640
+        else -> 0xFF18a9c9
+    }
+
+}
+fun LazyListScope.gridItems(
+    count: Int,
+    nColumns: Int,
+    horizontalArrangement: Arrangement.Horizontal = Arrangement.Start,
+    itemContent: @Composable BoxScope.(Int) -> Unit,
+) {
+    gridItems(
+        data = List(count) { it },
+        nColumns = nColumns,
+        horizontalArrangement = horizontalArrangement,
+        itemContent = itemContent,
+    )
+}
+
+fun <T> LazyListScope.gridItems(
+    data: List<T>,
+    nColumns: Int,
+    horizontalArrangement: Arrangement.Horizontal = Arrangement.Start,
+    key: ((item: T) -> Any)? = null,
+    itemContent: @Composable BoxScope.(T) -> Unit,
+) {
+    val rows = if (data.isEmpty()) 0 else 1 + (data.count() - 1) / nColumns
+    items(rows) { rowIndex ->
+        Row(horizontalArrangement = horizontalArrangement) {
+            for (columnIndex in 0 until nColumns) {
+                val itemIndex = rowIndex * nColumns + columnIndex
+                if (itemIndex < data.count()) {
+                    val item = data[itemIndex]
+                    androidx.compose.runtime.key(key?.invoke(item)) {
+                        Box(
+                            modifier = Modifier.weight(1f, fill = true),
+                            propagateMinConstraints = true
+                        ) {
+                            itemContent.invoke(this, item)
+                        }
+                    }
+                } else {
+                    Spacer(Modifier.weight(1f, fill = true))
+                }
+            }
+        }
+    }
+}

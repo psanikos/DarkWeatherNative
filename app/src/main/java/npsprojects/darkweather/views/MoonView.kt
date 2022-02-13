@@ -39,8 +39,11 @@ fun MoonView(phase:Double,moonrise:Long,moonset:Long){
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .height(160.dp)
-            .background(color = MaterialTheme.colorScheme.background, shape = RoundedCornerShape(16.dp))
+            .height(190.dp)
+            .background(
+                color = MaterialTheme.colorScheme.background,
+                shape = RoundedCornerShape(16.dp)
+            )
             .padding(16.dp),
         horizontalAlignment = Alignment.Start,
         verticalArrangement = Arrangement.SpaceBetween
@@ -66,7 +69,9 @@ fun MoonView(phase:Double,moonrise:Long,moonset:Long){
           Image(painter = painterResource(id = moonIcon(phase)), contentDescription = "",
           modifier = Modifier.size(70.dp))
         }
-        Divider(modifier = Modifier.fillMaxWidth(0.7f).padding(vertical = 5.dp))
+        Divider(modifier = Modifier
+            .fillMaxWidth(0.7f)
+            .padding(vertical = 5.dp))
         Text("The moon rises at ${ DateTimeFormatter.ofPattern("HH:mm").format(
             LocalDateTime.ofInstant(
                 Instant.ofEpochMilli(1000 * moonrise),
@@ -76,7 +81,7 @@ fun MoonView(phase:Double,moonrise:Long,moonset:Long){
                 Instant.ofEpochMilli(1000 * moonset),
                 ZoneId.systemDefault()
             ))}", style = MaterialTheme.typography.labelMedium.copy(color = Color.Gray))
-
+Spacer(modifier = Modifier.height(1.dp))
     }
 }
 

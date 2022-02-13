@@ -7,6 +7,7 @@ import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalAnimationApi
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
@@ -39,12 +40,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -53,6 +52,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.glance.LocalSize
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -121,293 +121,44 @@ fun NewMainView(model: WeatherViewModel, controller: NavController) {
     var selectedLocation: WeatherModel? by remember {
         mutableStateOf(null)
     }
+    var isNight by remember {
+        mutableStateOf(false)
+    }
 
-    LaunchedEffect(key1 = "${model.currentLocation.value?.size}", block = {
+    fun isNight(): Boolean {
+        if (locations.isNotEmpty()) {
 
-    })
-    val context = LocalContext.current
+            val sunrise = LocalDateTime.ofInstant(
+                Instant.ofEpochMilli(1000 * locations[index].data.daily[1].sunrise!!),
+                ZoneId.systemDefault()
+            )
+            Log.i("Sunrise", sunrise.toString())
 
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.TopCenter
-    ) {
+            val currentTime = LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault())
+            Log.i("Current", currentTime.toString())
 
-
-        Scaffold(
-            floatingActionButton = {
-                if (locations.isNotEmpty() && locations[index].isCurrent && WeatherViewModel.LocationFetcher.isOnline(context = context)) {
-                    ExtendedFloatingActionButton(
-                        text = { Text("Map", style = MaterialTheme.typography.labelMedium) },
-                        onClick = {
-                            controller.navigate("Map")
-                        }, modifier = Modifier.navigationBarsPadding(),
-                        icon = {
-                            Icon(
-                                FontAwesomeIcons.Solid.Map,
-                                contentDescription = "map",
-                                modifier = Modifier.size(20.dp),
-                            )
-                        })
-                }
-            },
-            topBar = {
-
-                AnimatedVisibility(visible = locations.isNotEmpty() || currentLocation.isNotEmpty()) {
-                    SmallTopAppBar(
-                        title = {
-                            Column(
-                                horizontalAlignment = Alignment.Start,
-                                verticalArrangement = Arrangement.Bottom
-                            ) {
-
-                                Box() {
-                                    if (!(locations.isNotEmpty() && locations.size > index) && currentLocation.isEmpty()) {
-                                        Text("N/A", style = MaterialTheme.typography.displayMedium)
-                                    } else {
-                                        Row(
-                                            horizontalArrangement = Arrangement.spacedBy(5.dp),
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            modifier = Modifier.clickable(onClick = {
-                                                dropExtended = !dropExtended
-                                            })
-                                        ) {
-                                            if (locations[index].isCurrent) {
-                                                Icon(
-                                                    FontAwesomeIcons.Solid.LocationArrow,
-                                                    modifier = Modifier.size(15.dp),
-                                                    contentDescription = "",
-                                                )
-                                            }
-                                            Text(
-                                                locations[index].location.name,
-                                                style = MaterialTheme.typography.displayMedium
-                                            )
-                                        }
-                                    }
-                                    DropdownMenu(
-                                        expanded = dropExtended,
-                                        onDismissRequest = { /*TODO*/ }) {
-
-
-                                        locations.forEachIndexed { index, item ->
-                                            DropdownMenuItem(
-                                                onClick = {
-                                                    model.changeIndex(index)
-
-                                                    dropExtended = false
-                                                },
-                                                modifier = Modifier.width(160.dp)
-                                            ) {
-                                                Row(
-                                                    horizontalArrangement = Arrangement.spacedBy(5.dp),
-                                                    verticalAlignment = Alignment.CenterVertically
-                                                ) {
-                                                    if (item.isCurrent) {
-                                                        Icon(
-                                                            FontAwesomeIcons.Solid.LocationArrow,
-                                                            modifier = Modifier.size(15.dp),
-                                                            contentDescription = "",
-                                                        )
-                                                    }
-                                                    Text(
-                                                        item.location.name,
-                                                        style = MaterialTheme.typography.bodyMedium
-                                                    )
-                                                }
-                                            }
-                                        }
-
-                                    }
-
-                                }
-
-                                Text(
-                                    if (!(locations.isNotEmpty() && locations.size > index)) "No data" else
-                                        Date.from(Instant.ofEpochSecond(locations[index].data.current!!.dt!!))
-                                            .ago(),
-                                    style = MaterialTheme.typography.labelSmall,
-                                    modifier = Modifier.padding(start = 5.dp)
-                                )
-                            }
-                        },
-                        actions = {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                if (locations.isNotEmpty() && locations.size > index) {
-
-                                    if (!locations[index].isCurrent) {
-                                        TextButton(onClick = {
-
-                                            if (model.myLocations.firstOrNull {
-                                                    it.latitude == locations[index].location.latitude
-                                                            && it.longitude == locations[index].location.longitude
-                                                } != null) {
-                                                Log.i("Heart", "removing")
-                                                model.isLoading.value = true
-                                                val curIndex = index
-                                                model.changeIndex(0)
-                                                scope.launch {
-                                                    model.remove(
-                                                        locations[curIndex].location,
-                                                        context = context
-                                                    )
-                                                }
-                                                model.isLoading.value = false
-                                            } else {
-                                                Log.i("Heart", "saving")
-                                                model.isLoading.value = true
-                                                scope.launch {
-                                                    model.saveLocation(
-                                                        locations[index].location,
-                                                        context = context
-                                                    )
-                                                }
-
-                                                model.isLoading.value = false
-                                            }
-                                        }) {
-
-                                            ColoredIcon(
-                                                if (model.myLocations.firstOrNull {
-                                                        it.latitude == locations[index].location.latitude
-                                                                && it.longitude == locations[index].location.longitude
-                                                    } != null)
-                                                    Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                                                contentDescription = "",
-                                                modifier = Modifier.size(30.dp),
-                                                padding = 6.dp,
-                                                tint = MaterialTheme.colorScheme.primary
-                                            )
-                                        }
-
-                                    }
-
-                                }
-                                TextButton(onClick = {
-                                    controller.navigate("Search")
-                                }) {
-                                    Box() {
-
-                                        ColoredIcon(
-                                            imageVector = FontAwesomeIcons.Solid.Search,
-                                            contentDescription = "",
-                                            modifier = Modifier.size(30.dp),
-                                            padding = 6.dp,
-                                            tint = MaterialTheme.colorScheme.primary
-                                        )
-                                    }
-                                }
-                                TextButton(onClick = {
-                                    controller.navigate("Settings")
-                                }) {
-
-                                    ColoredIcon(
-                                        imageVector = FontAwesomeIcons.Solid.EllipsisV,
-                                        contentDescription = "",
-                                        modifier = Modifier.size(30.dp),
-                                        padding = 6.dp,
-                                        tint = MaterialTheme.colorScheme.primary
-                                    )
-
-
-                                }
-                            }
-
-                        },
-                        colors = TopAppBarDefaults.mediumTopAppBarColors(
-                            titleContentColor = MaterialTheme.colorScheme.tertiary,
-                            //containerColor = Color.Transparent
-                        ),
-                        modifier = Modifier.statusBarsPadding()
-                    )
-
-                }
-            },
-
-
-            containerColor = MaterialTheme.colorScheme.surface
-
-        ) {
-            Box(contentAlignment = Alignment.TopCenter) {
-                AnimatedVisibility(visible = locations.isNotEmpty()) {
-                    Image(
-                        painter = painterResource(
-                            id = if (locations.isNotEmpty())
-                                getWeatherBackIcon(locations[index].data.current!!.weather.first().icon!!) else R.drawable.clearday
-                        ),
-                        contentDescription = "",
-                        modifier = Modifier.size(500.dp), contentScale = ContentScale.Fit
-                    )
-                }
-                SwipeRefresh(
-                    state = rememberSwipeRefreshState(isRefreshing),
-                    onRefresh = {
-                        scope.launch {
-                            model.initActions(context = context)
-                        }
-                    }
-                ) {
-                    when (locations.size) {
-                        0 -> LoadingAnimationScreen()
-
-                        else -> Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .verticalScroll(state = ScrollState(0)),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(40.dp)
-                        ) {
-                            Spacer(modifier = Modifier.height(300.dp))
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .wrapContentHeight()
-                                    .materialYouFrosted(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Column(
-                                    modifier = Modifier.padding(15.dp),
-                                    horizontalAlignment = Alignment.Start,
-                                    verticalArrangement = Arrangement.spacedBy(10.dp)
-                                ) {
-                                    SummaryCard(
-                                        current = locations[index].data.current!!,
-                                        dayDetails = locations[index].data.daily.first().weather.first().description!!
-                                    )
-                                    HourView(
-                                        hourly = locations[index].data.hourly,
-                                        inSi = model.units == WeatherUnits.SI
-                                    )
-                                    DetailsCard(
-                                        current = locations[index].data.current!!,
-                                        daily = locations[index].data.daily.first(),
-                                        inSi = model.units == WeatherUnits.SI
-                                    )
-                                    if (locations[index].airQuality != null) {
-                                        AirQuality(
-                                            aqi = locations[index].airQuality?.list?.first()?.main?.aqi
-                                                ?: 1
-                                        )
-                                    }
-                                    MoonView(
-                                        phase = locations[index].data.daily.first().moon_phase!!,
-                                        moonrise = locations[index].data.daily.first().moonrise!!,
-                                        moonset = locations[index].data.daily.first().moonset!!
-                                    )
-                                    WeeklyView(
-                                        days = locations[index].data.daily,
-                                        inSi = model.units == WeatherUnits.SI
-                                    )
-                                    Spacer(modifier = Modifier.height(40.dp))
-                                }
-                            }
-
-                        }
-
-                    }
-                }
-
-            }
+            return currentTime.isBefore(sunrise)
+        } else {
+            return false
         }
     }
-}
 
+    LaunchedEffect(key1 = "${locations.size}", block = {
+//        isNight = isNight()
+//        Log.i("IsNight", isNight.toString())
+    })
+    val context = LocalContext.current
+    val configuration = LocalConfiguration.current
+    val deviceType = when(with(LocalDensity.current){
+        configuration.screenWidthDp > 480
+    }){
+        true -> DeviceType.BIGSCREEN
+        false -> DeviceType.PHONE
+    }
+    when (deviceType) {
+                DeviceType.PHONE -> SmallMain(model = model, controller = controller)
+                    DeviceType.BIGSCREEN -> LargeMain(model = model, controller = controller)
+                }
+
+
+}

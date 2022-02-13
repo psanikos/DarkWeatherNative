@@ -10,12 +10,11 @@ import android.util.Range
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.dynamicDarkColorScheme
-import androidx.compose.material3.dynamicLightColorScheme
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -41,9 +40,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import npsprojects.darkweather.*
+import npsprojects.darkweather.R
 import npsprojects.darkweather.models.*
 import npsprojects.darkweather.services.WeatherDataApi
 import npsprojects.darkweather.ui.theme.*
@@ -57,10 +58,6 @@ import kotlin.math.roundToInt
 //GlanceModifier.clickable(actionRunCallback<UpdateAction>())
 //  .clickable(actionStartActivity<MainActivity>())
 
-@OptIn(ExperimentalFoundationApi::class,
-    androidx.compose.animation.ExperimentalAnimationApi::class,
-    androidx.compose.material.ExperimentalMaterialApi::class
-)
 
 private val curTemp = intPreferencesKey("curTemp")
 private val minTemp = intPreferencesKey("minTemp")
@@ -68,20 +65,20 @@ private val maxTemp = intPreferencesKey("maxTemp")
 private val feelsTemp = intPreferencesKey("feelsTemp")
 private val curImage= stringPreferencesKey("curImage")
 private val curDescription = stringPreferencesKey("curDescription")
-
-
-class WeatherWidgetSmall : GlanceAppWidget() {
+private val back = intPreferencesKey("back")
+@OptIn(ExperimentalFoundationApi::class,
+    androidx.compose.animation.ExperimentalAnimationApi::class,
+    androidx.compose.material.ExperimentalMaterialApi::class,
+    ExperimentalFoundationApi::class
+)
+class WeatherWidget : GlanceAppWidget() {
 
 
     override var stateDefinition: GlanceStateDefinition<*> = PreferencesGlanceStateDefinition
 
-    override val sizeMode: SizeMode = SizeMode.Responsive(
-        setOf(SMALL_BOX, BIG_BOX, ROW, LARGE_ROW, COLUMN)
-    )
+    override val sizeMode: SizeMode = SizeMode.Single
 
-    override suspend fun onDelete(glanceId: GlanceId) {
-        super.onDelete(glanceId)
-    }
+
 
 
     @Composable
@@ -95,16 +92,16 @@ class WeatherWidgetSmall : GlanceAppWidget() {
 //        var secondaryTextColor:ColorProvider = ColorProvider(day = Color.DarkGray, night = Color.Gray)
 //        var borderColor:ColorProvider = ColorProvider(day = Color.Black, night = Color.White)
 
-
-        when (LocalSize.current) {
-            EXTRA_SMALL_BOX-> ExtraSmallBox()
-            COLUMN -> SmallBox()
-            ROW -> RowWidget()
-            LARGE_ROW -> RowWidget()
-            SMALL_BOX -> MediumBox()
-            BIG_BOX -> LargeBox()
-            else -> throw IllegalArgumentException("Invalid size not matching the provided ones")
-        }
+        MediumBox()
+//        when (LocalSize.current) {
+//            EXTRA_SMALL_BOX-> ExtraSmallBox()
+//            COLUMN -> SmallBox()
+//            ROW -> RowWidget()
+//            LARGE_ROW -> RowWidget()
+//            SMALL_BOX -> MediumBox()
+//            BIG_BOX -> LargeBox()
+//            else -> throw IllegalArgumentException("Invalid size not matching the provided ones")
+//        }
 
 
 
@@ -121,329 +118,56 @@ class WeatherWidgetSmall : GlanceAppWidget() {
     }
 
 }
-@Composable
-fun ExtraSmallBox(){
-    val prefs = currentState<Preferences>()
-    var color:ColorProvider = ColorProvider(day = Color.White, night = Color.Black)
-    var textColor:ColorProvider = ColorProvider(day = Color.Black, night = Color.White)
-    var secondaryTextColor:ColorProvider = ColorProvider(day = Color.DarkGray, night = Color.Gray)
-    var borderColor:ColorProvider = ColorProvider(day = Color.Black, night = Color.White)
-//    var color =
-//        ColorProvider(day = MaterialTheme.colorScheme.primaryContainer, night = MaterialTheme.colorScheme.primaryContainer)
-//    var textColor = ColorProvider(
-//        day = MaterialTheme.colorScheme.onPrimaryContainer, night = MaterialTheme.colorScheme.onPrimaryContainer
-//    )
-//    var  secondaryTextColor =
-//        ColorProvider(day = MaterialTheme.colorScheme.onTertiaryContainer, night = MaterialTheme.colorScheme.onTertiaryContainer)
-//    var  borderColor = ColorProvider(day = MaterialTheme.colorScheme.tertiaryContainer, night = MaterialTheme.colorScheme.tertiaryContainer)
-    Column(
-        modifier = GlanceModifier
-            .padding(3.dp)
-            .size(48.dp)
-            .background(color)
-            .cornerRadius(30.dp)
-            .clickable(actionRunCallback<UpdateAction>()),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Image(
-            provider = ImageProvider(getWeatherImage(prefs[curImage] ?: "01d")),
-            contentDescription = "",
-            modifier = GlanceModifier.size( 30.dp)
-        )
-        // Text("h${size.height.value.toInt()}w${size.width.value.toInt()}")
-
-        Text(
-            text = ((prefs[curTemp] ?: 0).toString() + "°"),
-            style = TextStyle(
-                fontWeight = FontWeight.Bold,
-                fontSize = 18.sp,
-                color = textColor
-            ),
-        )
-        Spacer(modifier = GlanceModifier.height(5.dp))
-    }
 
 
-}
-
-
-@Composable
-fun SmallBox(){
-    val prefs = currentState<Preferences>()
-            var color:ColorProvider = ColorProvider(day = Color.White, night = Color.Black)
-        var textColor:ColorProvider = ColorProvider(day = Color.Black, night = Color.White)
-        var secondaryTextColor:ColorProvider = ColorProvider(day = Color.DarkGray, night = Color.Gray)
-        var borderColor:ColorProvider = ColorProvider(day = Color.Black, night = Color.White)
-//    var color =
-//        ColorProvider(day = MaterialTheme.colorScheme.primaryContainer, night = MaterialTheme.colorScheme.primaryContainer)
-//    var textColor = ColorProvider(
-//        day = MaterialTheme.colorScheme.onPrimaryContainer, night = MaterialTheme.colorScheme.onPrimaryContainer
-//    )
-//    var  secondaryTextColor =
-//        ColorProvider(day = MaterialTheme.colorScheme.onTertiaryContainer, night = MaterialTheme.colorScheme.onTertiaryContainer)
-//    var  borderColor = ColorProvider(day = MaterialTheme.colorScheme.tertiaryContainer, night = MaterialTheme.colorScheme.tertiaryContainer)
-    Column(
-        modifier = GlanceModifier
-            .padding(3.dp)
-            .width(48.dp)
-            .fillMaxHeight()
-            .background(color)
-            .cornerRadius(30.dp)
-            .clickable(actionRunCallback<UpdateAction>()),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Image(
-            provider = ImageProvider(getWeatherImage(prefs[curImage] ?: "01d")),
-            contentDescription = "",
-            modifier = GlanceModifier.fillMaxWidth(),
-            contentScale = ContentScale.Fit
-        )
-        // Text("h${size.height.value.toInt()}w${size.width.value.toInt()}")
-        Spacer(modifier = GlanceModifier.height(5.dp))
-            Text(
-                text = ((prefs[curTemp] ?: 0).toString() + "°"),
-                style = TextStyle(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
-                    color = textColor
-                ),
-            )
-            Spacer(modifier = GlanceModifier.height(3.dp))
-        }
-
-
-    }
-
-
-@Composable
-fun RowWidget() {
-    val prefs = currentState<Preferences>()
-    var color:ColorProvider = ColorProvider(day = Color.White, night = Color.Black)
-    var textColor:ColorProvider = ColorProvider(day = Color.Black, night = Color.White)
-    var secondaryTextColor:ColorProvider = ColorProvider(day = Color.DarkGray, night = Color.Gray)
-    var borderColor:ColorProvider = ColorProvider(day = Color.Black, night = Color.White)
-    Row(
-        modifier = GlanceModifier
-            .padding(horizontal = 10.dp)
-            .fillMaxWidth()
-            .height(48.dp)
-            .background(color)
-            .cornerRadius(30.dp)
-
-            .clickable(actionRunCallback<UpdateAction>()),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-
-        Image(
-            provider = ImageProvider(getWeatherImage(prefs[curImage] ?: "01d")),
-            contentDescription = "",
-            modifier = GlanceModifier.size(40.dp)
-        )
-        Column(
-            modifier = GlanceModifier
-                .fillMaxWidth()
-                .padding(end = 16.dp, top = 2.dp, bottom = 2.dp),
-            horizontalAlignment = Alignment.End,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = ((prefs[curTemp] ?: 0).toString() + "°"),
-                style = TextStyle(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 20.sp,
-                    color = textColor,
-                    textAlign = TextAlign.End
-                ),
-            )
-            Text(
-                text = (prefs[curDescription] ?: "N/A").toString(),
-                style = TextStyle(
-                    fontWeight = FontWeight.Normal,
-                    fontSize = 10.sp,
-                    color = secondaryTextColor
-                ),
-            )
-
-        }
-    }
-}
-
+@OptIn(ExperimentalFoundationApi::class, androidx.compose.animation.ExperimentalAnimationApi::class,
+    androidx.compose.material.ExperimentalMaterialApi::class
+)
 @Composable
 fun MediumBox(){
     val prefs = currentState<Preferences>()
-    var color:ColorProvider = ColorProvider(day = Color.White, night = Color.Black)
-    var textColor:ColorProvider = ColorProvider(day = Color.Black, night = Color.White)
-    var secondaryTextColor:ColorProvider = ColorProvider(day = Color.DarkGray, night = Color.Gray)
-    var borderColor:ColorProvider = ColorProvider(day = Color.Black, night = Color.White)
-    val size = LocalSize.current
+    val context = LocalContext.current
+    val back:Long = prefs[back]?.toLong() ?: 0xFFFFFFFF
+
+    fun InitModifier():GlanceModifier{
+
+       return if(Build.VERSION.SDK_INT > 30) {
+            GlanceModifier
+                .fillMaxSize()
+                .background(ColorProvider(day = Color(back), night = Color(back)))
+                .cornerRadius(20.dp)
+        }
+        else{
+            GlanceModifier
+                .fillMaxSize().background(ImageProvider(R.drawable.mywidgetbackground))
+        }
+    }
+
     Column(
-        modifier = GlanceModifier
-            .padding(3.dp)
-            .fillMaxSize()
-            .background(color)
-            .cornerRadius(30.dp)
-            .clickable(actionRunCallback<UpdateAction>()),
+        modifier = InitModifier()
+            .appWidgetBackground()
+            .clickable(actionStartActivity<MainActivity>()),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
             provider = ImageProvider(getWeatherImage(prefs[curImage] ?: "01d")),
             contentDescription = "",
-            modifier = GlanceModifier.size( 50.dp)
+            modifier = GlanceModifier.size( 60.dp)
         )
         // Text("h${size.height.value.toInt()}w${size.width.value.toInt()}")
-
         Text(
             text = ((prefs[curTemp] ?: 0).toString() + "°"),
             style = TextStyle(
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp,
-                color = textColor
+                color = ColorProvider(day = contentColorFor(backgroundColor = Color(back)), night = contentColorFor(backgroundColor = Color(back))),
             ),
         )
-    if(size.width > 90.dp) {
-        Text(
-            text = (prefs[curDescription] ?: "N/A").toString(),
-            style = TextStyle(
-                fontWeight = FontWeight.Normal,
-                fontSize = 10.sp,
-                color = secondaryTextColor
-            ),
-        )
-    }
+
     }
 
 }
-@Composable
-fun LargeBox(){
-    val prefs = currentState<Preferences>()
-    var color:ColorProvider = ColorProvider(day = Color.White, night = Color.Black)
-    var textColor:ColorProvider = ColorProvider(day = Color.Black, night = Color.White)
-    var secondaryTextColor:ColorProvider = ColorProvider(day = Color.DarkGray, night = Color.Gray)
-    var borderColor:ColorProvider = ColorProvider(day = Color.Black, night = Color.White)
-    Column(
-        modifier = GlanceModifier
-            .padding(5.dp)
-            .fillMaxSize()
-            .background(color)
-            .cornerRadius(30.dp)
-            .clickable(actionRunCallback<UpdateAction>()),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Image(
-            provider = ImageProvider(getWeatherImage(prefs[curImage] ?: "01d")),
-            contentDescription = "",
-            modifier = GlanceModifier.size( 70.dp)
-        )
-        // Text("h${size.height.value.toInt()}w${size.width.value.toInt()}")
-
-        Text(
-            text = ((prefs[curTemp] ?: 0).toString() + "°"),
-            style = TextStyle(
-                fontWeight = FontWeight.Bold,
-                fontSize = 22.sp,
-                color = textColor
-            ),
-        )
-        Spacer(modifier = GlanceModifier.height(5.dp))
-        Text(
-            text = (prefs[curDescription] ?: "N/A").toString(),
-            style = TextStyle(
-                fontWeight = FontWeight.Normal,
-                fontSize = 10.sp,
-                color = secondaryTextColor
-            ),
-        )
-        Row(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = GlanceModifier.padding(top = 8.dp)
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = GlanceModifier.padding(horizontal = 5.dp)
-            ) {
-                Text(
-                    text = "Min",
-                    style = TextStyle(
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 9.sp,
-                        color = secondaryTextColor
-                    ),
-                )
-
-                Text(
-                    text = ((prefs[minTemp] ?: 0).toString() + "°"),
-                    style = TextStyle(
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 12.sp,
-                        color = ColorProvider(
-                            day = light_blue_800,
-                            night = light_blue_500
-                        )
-                    ),
-                )
-
-            }
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = GlanceModifier.padding(horizontal = 10.dp)
-            ) {
-                Text(
-                    text = "Max",
-                    style = TextStyle(
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 9.sp,
-                        color = secondaryTextColor
-                    ),
-                )
-
-                Text(
-                    text = ((prefs[maxTemp] ?: 0).toString() + "°"),
-                    style = TextStyle(
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 12.sp,
-                        color = ColorProvider(day = pink_800, night = pink_500)
-                    ),
-                )
-
-
-            }
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = GlanceModifier.padding(horizontal = 5.dp)
-            ) {
-                Text(
-                    text = "Feels",
-                    style = TextStyle(
-                        fontWeight = FontWeight.Normal,
-                        fontSize = 9.sp,
-                        color = secondaryTextColor
-                    ),
-                )
-
-                Text(
-                    text = ((prefs[feelsTemp] ?: 1).toString() + "°"),
-                    style = TextStyle(
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 12.sp,
-                        color = ColorProvider(day = teal_800, night = teal_500)
-                    ),
-                )
-
-            }
-        }
-    }
-}
-
-
 
 
 
@@ -503,13 +227,13 @@ object DataService{
     }
 
 }
-//actionRunCallback<ButtonClickAction>()
+
+
 @OptIn(ExperimentalFoundationApi::class,
     androidx.compose.animation.ExperimentalAnimationApi::class,
     ExperimentalMaterialApi::class
 )
 class UpdateAction : ActionCallback {
-
 
 
     override suspend fun onRun(context: Context, glanceId: GlanceId, parameters: ActionParameters) {
@@ -521,6 +245,8 @@ class UpdateAction : ActionCallback {
             val feel = (data?.data?.main?.feels_like?: 9.0).toInt()
             val image = (data?.data?.weather?.first()?.icon ?: "02d")
            val  description = (data?.data?.weather?.first()?.description ?: "N/A")
+
+            val background = getBackColorHex(data?.data?.weather?.first()?.icon ?: "02d")
 
          GlobalScope.launch {
              delay(2000)
@@ -534,12 +260,13 @@ class UpdateAction : ActionCallback {
                          this[intPreferencesKey("feelsTemp")] = feel ?: 0
                          this[stringPreferencesKey("curImage")] = image ?: "01d"
                          this[stringPreferencesKey("curDescription")] = description ?: "N/A"
+                         this[intPreferencesKey("back")] = background.toInt()
                      }
              }
 
-             WeatherWidgetSmall().update(context, glanceId)
-             actionStartActivity<MainActivity>()
-         }
+             WeatherWidget().update(context, glanceId)
+//             actionStartActivity<MainActivity>()
+       }
         }
         }
 }
@@ -555,15 +282,16 @@ class InitAction : ActionCallback {
 //                    }
                 }
         }
-        WeatherWidgetSmall().update(context, glanceId)
+        WeatherWidget().update(context, glanceId)
 
     }
 }
 
 
-class WeatherWidgetSmallReceiver : GlanceAppWidgetReceiver() {
+class WeatherWidgetReceiver : GlanceAppWidgetReceiver() {
 
-    override val glanceAppWidget: GlanceAppWidget = WeatherWidgetSmall()
+    override val glanceAppWidget: GlanceAppWidget = WeatherWidget()
+    private val coroutineScope = MainScope()
 
 
     override fun onEnabled(context: Context?) {
@@ -571,8 +299,103 @@ class WeatherWidgetSmallReceiver : GlanceAppWidgetReceiver() {
 
     }
 
+    override fun onReceive(context: Context, intent: Intent) {
+        super.onReceive(context, intent)
+        if (intent.action == WidgetRefreshCallback.UPDATE_ACTION) {
+            observeData(context)
+        }
+    }
+
     override fun onRestored(context: Context?, oldWidgetIds: IntArray?, newWidgetIds: IntArray?) {
         super.onRestored(context, oldWidgetIds, newWidgetIds)
+
+    }
+    class WidgetRefreshCallback : ActionCallback {
+
+        override suspend fun onRun(context: Context, glanceId: GlanceId, parameters: ActionParameters) {
+            val intent = Intent(context, WeatherWidget::class.java).apply {
+                action = UPDATE_ACTION
+            }
+            context.sendBroadcast(intent)
+        }
+
+        companion object {
+            const val UPDATE_ACTION = "updateAction"
+        }
+    }
+
+
+    private  fun observeData(context: Context){
+        coroutineScope.launch {
+           GlanceAppWidgetManager(context).getGlanceIds(WeatherWidget::class.java)
+                    .firstOrNull()?.let {
+                    var lang = "en"
+
+                    val locale = Locale.getDefault().displayLanguage
+                    lang = when (locale.lowercase()) {
+                        "french" -> "fr"
+                        "greek" -> "el"
+                        else -> "en"
+                    }
+                    val pref: SharedPreferences = context
+                        .getSharedPreferences("MyPref", 0) // 0 - for private mode
+
+                    val savedUnit = pref.getString("unit", null)
+                    val units = if (savedUnit != null) {
+                        if (savedUnit == "si") "metric" else if (savedUnit == "us") "imperial" else "metric"
+                    } else {
+                        "metric"
+                    }
+                    val location = pref.getString("widgetLocation", null)
+                    val locationList = location?.split(",")
+                    if (locationList != null && locationList.size == 3) {
+                        val name = locationList.elementAt(0)
+                        val lat = locationList.elementAt(1)
+                        val lon = locationList.elementAt(2)
+                       val openData =  WeatherDataApi.retrofitService.currentWeather(lon = lon.toDouble(), lat = lat.toDouble(), lang = lang, unit = units, appid = openWeatherKey)
+
+                        openData?.let { data ->
+
+                            val temp = (data.main?.temp ?: 0.0).toInt()
+                            val min = (data.main?.temp_min ?: 5.0).toInt()
+                            val max = (data.main?.temp_max ?: 10.0).toInt()
+                            val feel = (data.main?.feels_like ?: 9.0).toInt()
+                            val image = (data.weather?.first()?.icon ?: "02d")
+                            val description = (data.weather?.first()?.description ?: "N/A")
+                            val background = getBackColorHex(data.weather?.first()?.icon ?: "02d")
+
+                            updateAppWidgetState(context, PreferencesGlanceStateDefinition, it) {
+                                it.toMutablePreferences()
+                                    .apply {
+                                        this[intPreferencesKey("curTemp")] = temp ?: 0
+                                        this[intPreferencesKey("minTemp")] = min ?: 0
+                                        this[intPreferencesKey("maxTemp")] = max ?: 0
+                                        this[intPreferencesKey("feelsTemp")] = feel ?: 0
+                                        this[stringPreferencesKey("curImage")] = image ?: "01d"
+                                        this[stringPreferencesKey("curDescription")] =
+                                            description ?: "N/A"
+                                        this[intPreferencesKey("back")] = background.toInt()
+
+
+                                    }
+                            }
+
+                            WeatherWidget().update(context, it)
+//
+                        }
+                    }
+                }
+        }
+    }
+
+    override fun onUpdate(
+        context: Context,
+        appWidgetManager: AppWidgetManager,
+        appWidgetIds: IntArray
+    ) {
+        super.onUpdate(context, appWidgetManager, appWidgetIds)
+
+        observeData(context)
 
     }
 

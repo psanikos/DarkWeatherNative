@@ -2,14 +2,14 @@
 
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:description="@string/app_widget_description"
-    android:minWidth="40dp"
-    android:minHeight="40dp"
+    android:minWidth="80dp"
+    android:minHeight="48dp"
     android:maxWidth="250dp"
-    android:maxHeight="120dp"
+    android:maxHeight="80dp"
     android:initialLayout="@layout/widget_loading_small"
     android:previewImage="@drawable/smallpreview"
     android:previewLayout="@layout/widget_small_preview"
-    android:resizeMode="horizontal|vertical"
+    android:resizeMode="horizontal"
     android:widgetCategory="home_screen"
     android:updatePeriodMillis="1800000"
     />

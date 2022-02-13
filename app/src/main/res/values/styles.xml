@@ -9,4 +9,7 @@
         <item name="android:background">?android:attr/colorBackground</item>
         <item name="android:textColor">?android:attr/textColorPrimary</item>
     </style>
+    <style name="MyWidgetTheme">
+        <item name="backgroundRadius">@dimen/my_background_radius_dimen</item>
+    </style>
 </resources>
