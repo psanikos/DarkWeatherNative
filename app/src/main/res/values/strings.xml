@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">DarkWeather</string>
+    <string name="app_name">Eclipse</string>
     <string name="title_activity_main_weather_card" translatable="false">MainWeatherCard</string>
     <string name="searchText">Search a new place</string>
     <string name="home">Home</string>

@@ -288,16 +288,9 @@ fun SmallMain(model: WeatherViewModel, controller: NavController){
                 }
 
                 when (locations.size) {
-                    0 -> SwipeRefresh(
-                        state = rememberSwipeRefreshState(isRefreshing),
-                        onRefresh = {
-                            scope.launch {
-                                model.initActions(context = context)
-                            }
-                        }
-                    ) {
-                        LoadingAnimationScreen()
-                    }
+                    0 ->
+                        LoadingAnimationScreen(model = model)
+
 
                     else -> SwipeRefresh(
                         state = rememberSwipeRefreshState(isRefreshing),
