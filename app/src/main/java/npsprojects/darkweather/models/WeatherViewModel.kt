@@ -53,7 +53,6 @@ class WeatherViewModel : ViewModel() {
     companion object LocationFetcher {
 
         fun getUserLocation(context: Context, completion: (Location?, Exception?) -> Unit) {
-            val permissionFineLocation = android.Manifest.permission.ACCESS_FINE_LOCATION
             val permissionCoarseLocation = android.Manifest.permission.ACCESS_COARSE_LOCATION
             val REQUEST_CODE_LOCATION = 100
 
@@ -62,7 +61,7 @@ class WeatherViewModel : ViewModel() {
                     if (error != null) {
                         requestPermissions(
                             context as Activity,
-                            arrayOf(permissionFineLocation, permissionCoarseLocation),
+                            arrayOf(permissionCoarseLocation),
                             REQUEST_CODE_LOCATION
                         )
                         completion(null, error)
