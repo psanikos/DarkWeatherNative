@@ -1,34 +1,24 @@
 package npsprojects.darkweather
 
-import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.drawable.VectorDrawable
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.text.format.DateUtils
 import android.util.Log
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.*
-import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.stringResource
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.TileOverlay
-import compose.icons.AllIcons
-
-import npsprojects.darkweather.views.InitialZoom
-import npsprojects.darkweather.views.rememberMapViewWithLifecycle
-import java.io.IOException
+import androidx.compose.ui.graphics.toArgb
+import androidx.core.graphics.ColorUtils
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.time.Instant
 import java.time.ZoneId
 import java.util.*
+
 
 const val openWeatherKey = "e1e45feaea76d66517c25291f2633d9a"
 
@@ -430,7 +420,9 @@ fun Date.ago():String {
 
 @Composable
 fun OverlayView(showOverlay:Boolean,color: Color,body:@Composable () -> Unit){
-Box(modifier = Modifier.wrapContentSize().background(color = color.copy(alpha = if(showOverlay) 0.9f else 0.0f))){
+Box(modifier = Modifier
+    .wrapContentSize()
+    .background(color = color.copy(alpha = if (showOverlay) 0.9f else 0.0f))){
     body()
 }
 }
@@ -514,4 +506,7 @@ fun <T> LazyListScope.gridItems(
             }
         }
     }
+}
+fun Color.isDark(): Boolean {
+    return ColorUtils.calculateLuminance(this.toArgb()) < 0.5
 }

@@ -129,7 +129,7 @@ fun MediumBox(){
     val context = LocalContext.current
     val back:Long = prefs[back]?.toLong() ?: 0xFFFFFFFF
 
-    fun InitModifier():GlanceModifier{
+    fun initModifier():GlanceModifier{
 
        return if(Build.VERSION.SDK_INT > 30) {
             GlanceModifier
@@ -144,7 +144,7 @@ fun MediumBox(){
     }
 
     Column(
-        modifier = InitModifier()
+        modifier = initModifier()
             .appWidgetBackground()
             .clickable(actionStartActivity<MainActivity>()),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -161,7 +161,7 @@ fun MediumBox(){
             style = TextStyle(
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp,
-                color = ColorProvider(day = contentColorFor(backgroundColor = Color(back)), night = contentColorFor(backgroundColor = Color(back))),
+                color = ColorProvider(if(Color(back).isDark()) Color.White else Color.Black),
             ),
         )
 

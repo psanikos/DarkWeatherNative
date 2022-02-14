@@ -122,59 +122,6 @@ fun SettingsView(model: WeatherViewModel, controller: NavController) {
             }
 
 
-//            Box(
-//                modifier = Modifier
-//                    .fillMaxWidth()
-//                    .height(200.dp)
-//            ) {
-//                if (model.error.value == WeatherError.NOPERMISSION || model.error.value == WeatherError.NOGPS) {
-//                    Box(
-//                        modifier = Modifier
-//                            .padding(horizontal = 10.dp)
-//                            .clip(RoundedCornerShape(20.dp))
-//                            .fillMaxWidth()
-//                            .height(200.dp)
-//                            .background(MaterialTheme.colorScheme.secondaryContainer,
-//                            shape = RoundedCornerShape(8.dp))
-//
-//                    ) {
-//                        Column(
-//                            Modifier
-//                                .padding(16.dp), verticalArrangement = Arrangement.SpaceEvenly,
-//                            horizontalAlignment = Alignment.CenterHorizontally
-//                        ) {
-//
-//                            Icon(
-//                                Icons.TwoTone.Warning,
-//                                modifier = Modifier.size(50.dp),
-//                                contentDescription = "",
-//                                tint = orange_500
-//                            )
-//                            Text(
-//                                stringResource(id = R.string.LocationDenied)
-//                                ,style = MaterialTheme.typography.bodySmall.copy(
-//                                    color = Color.White,
-//
-//                                    ),
-//
-//                                modifier = Modifier.padding(vertical = 10.dp)
-//                            )
-//                            Spacer(modifier = Modifier.height(14.dp))
-//                            Button(
-//                                onClick = {
-//                                    model.askPermission(context = context){}
-//                                }, colors = ButtonDefaults.buttonColors(
-//                                    contentColor = green_200,
-//                                ),shape = RoundedCornerShape(12.dp)
-//                            ) {
-//                                Text(stringResource(id = R.string.AllowAccess), style = MaterialTheme.typography.bodyMedium)
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-
-
         }
     }
 }

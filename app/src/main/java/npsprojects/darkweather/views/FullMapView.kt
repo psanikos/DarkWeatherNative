@@ -54,6 +54,12 @@ fun FullMapView(model: WeatherViewModel,controller:NavController) {
         LocalWindowInsets.current.systemGestures.bottom + 10
     }
 
+    LaunchedEffect(key1 = "Coordinates", block ={
+        if(model.currentLocation.value?.isNotEmpty() == true){
+          coordinates = LatLng(model.currentLocation.value!![0].location.latitude,model.currentLocation.value!![0].location.longitude)
+        }
+    } )
+
   Scaffold(
       topBar = {
           MediumTopAppBar(title = {
