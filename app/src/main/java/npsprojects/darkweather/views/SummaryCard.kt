@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -28,6 +29,7 @@ import npsprojects.darkweather.ui.theme.DarkWeatherTheme
 import npsprojects.darkweather.ui.theme.frosted
 import npsprojects.darkweather.ui.theme.iceBlack
 import kotlin.math.roundToInt
+import npsprojects.darkweather.R
 
 //current: Current,daySummary:String
 
@@ -72,14 +74,14 @@ fun SummaryCard(current: Current,dayDetails:String){
                Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
                    Icon(FontAwesomeIcons.Solid.Tint, contentDescription = "",
                        modifier = Modifier.size(15.dp), tint = Color.Gray)
-                   Text("Humidity", style = MaterialTheme.typography.labelMedium.copy(color = Color.Gray))
+                   Text(stringResource(id = R.string.humidity), style = MaterialTheme.typography.labelMedium.copy(color = Color.Gray))
                }
                Text(current.humidity.toString() + "%", style = MaterialTheme.typography.displayLarge.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black))
                 Divider()
                Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
                    Icon(FontAwesomeIcons.Solid.Child, contentDescription = "",
                        modifier = Modifier.size(15.dp), tint = Color.Gray)
-                   Text("Feels like", style = MaterialTheme.typography.labelMedium.copy(color = Color.Gray))
+                   Text(stringResource(id = R.string.Feels), style = MaterialTheme.typography.labelMedium.copy(color = Color.Gray))
                }
                Text(current.feels_like!!.roundToInt().toString() + "°", style = MaterialTheme.typography.displayLarge.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black))
            }

@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import compose.icons.FontAwesomeIcons
@@ -27,6 +28,7 @@ import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.solid.*
 import compose.icons.weathericons.Sunrise
 import compose.icons.weathericons.Sunset
+import npsprojects.darkweather.R
 import npsprojects.darkweather.models.Current
 import npsprojects.darkweather.models.Daily
 import npsprojects.darkweather.ui.theme.DarkWeatherTheme
@@ -48,22 +50,22 @@ fun DetailsCard(current: Current,daily: Daily,inSi:Boolean){
         .padding(12.dp), contentAlignment = Alignment.Center) {
         LazyVerticalGrid(cells = GridCells.Fixed(3), content = {
             item {
-                DetailsItem(icon = FontAwesomeIcons.Solid.ArrowAltCircleUp, "High", value = daily.temp!!.max!!.roundToInt().toString() + "°",null)
+                DetailsItem(icon = FontAwesomeIcons.Solid.ArrowAltCircleUp, stringResource(id = R.string.highT), value = daily.temp!!.max!!.roundToInt().toString() + "°",null)
             }
             item {
-                DetailsItem(icon = FontAwesomeIcons.Solid.ArrowAltCircleDown, "Low",value = daily.temp!!.min!!.roundToInt().toString() + "°",null)
+                DetailsItem(icon = FontAwesomeIcons.Solid.ArrowAltCircleDown, stringResource(id = R.string.lowT),value = daily.temp!!.min!!.roundToInt().toString() + "°",null)
 
             }
             item {
-                DetailsItem(icon = FontAwesomeIcons.Solid.Sun, "UV level", value = current.uvi!!.roundToInt().toString(),null)
+                DetailsItem(icon = FontAwesomeIcons.Solid.Sun, stringResource(id = R.string.uv), value = current.uvi!!.roundToInt().toString(),null)
 
             }
             item {
-                DetailsItem(icon = Icons.Default.Navigation, "Air speed", value = current.wind_speed!!.roundToInt().toString() + if (inSi) "km/h" else "mph", secondValue = current.wind_deg!!.toDouble())
+                DetailsItem(icon = Icons.Default.Navigation, stringResource(id = R.string.humidity), value = current.wind_speed!!.roundToInt().toString() + if (inSi) "km/h" else "mph", secondValue = current.wind_deg!!.toDouble())
 
             }
             item {
-                DetailsItem(icon = WeatherIcons.Sunrise, "Sunrise", value = DateTimeFormatter.ofPattern("HH:mm").format(
+                DetailsItem(icon = WeatherIcons.Sunrise, stringResource(id = R.string.sunrise), value = DateTimeFormatter.ofPattern("HH:mm").format(
                                 LocalDateTime.ofInstant(
                                     Instant.ofEpochMilli(1000 * daily.sunrise!!),
                                     ZoneId.systemDefault()
@@ -72,7 +74,7 @@ fun DetailsCard(current: Current,daily: Daily,inSi:Boolean){
 
             }
             item {
-                DetailsItem(icon = WeatherIcons.Sunset, "Sunset",DateTimeFormatter.ofPattern("HH:mm").format(
+                DetailsItem(icon = WeatherIcons.Sunset, stringResource(id = R.string.Sunset),DateTimeFormatter.ofPattern("HH:mm").format(
                     LocalDateTime.ofInstant(
                         Instant.ofEpochMilli(1000 * daily.sunset!!),
                         ZoneId.systemDefault()
@@ -102,7 +104,7 @@ fun DetailsCardCompact(current: Current,daily: Daily,inSi:Boolean){
                 Box(modifier = Modifier.width(100.dp)) {
                     DetailsItemCompact(
                         icon = FontAwesomeIcons.Solid.ArrowAltCircleUp,
-                        "High",
+                        stringResource(id = R.string.highT),
                         value = daily.temp!!.max!!.roundToInt().toString() + "°",
                         null
                     )
@@ -110,7 +112,7 @@ fun DetailsCardCompact(current: Current,daily: Daily,inSi:Boolean){
                 Box(modifier = Modifier.width(100.dp)) {
                     DetailsItemCompact(
                         icon = FontAwesomeIcons.Solid.ArrowAltCircleDown,
-                        "Low",
+                        stringResource(id = R.string.lowT),
                         value = daily.temp!!.min!!.roundToInt().toString() + "°",
                         null
                     )
@@ -119,7 +121,7 @@ fun DetailsCardCompact(current: Current,daily: Daily,inSi:Boolean){
 
                     DetailsItemCompact(
                         icon = FontAwesomeIcons.Solid.Sun,
-                        "UV level",
+                        stringResource(id = R.string.uv),
                         value = current.uvi!!.roundToInt().toString(),
                         null
                     )
@@ -131,7 +133,7 @@ fun DetailsCardCompact(current: Current,daily: Daily,inSi:Boolean){
 
                     DetailsItemCompact(
                         icon = Icons.Default.Navigation,
-                        "Air speed",
+                        stringResource(id = R.string.airSpeed),
                         value = current.wind_speed!!.roundToInt()
                             .toString() + if (inSi) "km/h" else "mph",
                         secondValue = current.wind_deg!!.toDouble()
@@ -141,7 +143,7 @@ fun DetailsCardCompact(current: Current,daily: Daily,inSi:Boolean){
 
                     DetailsItemCompact(
                         icon = WeatherIcons.Sunrise,
-                        "Sunrise",
+                        stringResource(id = R.string.sunrise),
                         value = DateTimeFormatter.ofPattern("HH:mm").format(
                             LocalDateTime.ofInstant(
                                 Instant.ofEpochMilli(1000 * daily.sunrise!!),
@@ -155,7 +157,7 @@ fun DetailsCardCompact(current: Current,daily: Daily,inSi:Boolean){
 
                     DetailsItemCompact(
                         icon = WeatherIcons.Sunset,
-                        "Sunset",
+                        stringResource(id = R.string.Sunset),
                         DateTimeFormatter.ofPattern("HH:mm").format(
                             LocalDateTime.ofInstant(
                                 Instant.ofEpochMilli(1000 * daily.sunset!!),

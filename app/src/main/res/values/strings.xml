@@ -2,9 +2,18 @@
     <string name="app_name">Eclipse</string>
     <string name="title_activity_main_weather_card" translatable="false">MainWeatherCard</string>
     <string name="searchText">Search a new place</string>
-    <string name="home">Home</string>
+    <string name="home" translatable="false">Home</string>
     <string name="add_location">Add location</string>
     <string name="manage_location">Manage locations</string>
+    <string name="humidity">Humidity</string>
+    <string name="highT">High</string>
+    <string name="lowT">Low</string>
+    <string name="UV">UV level</string>
+    <string name="sunrise">Sunrise</string>
+    <string name="Sunset">Sunset</string>
+    <string name="Moon">Moon</string>
+    <string name="MoonText">The moon rises at</string>
+    <string name="MoonText2">and sets at</string>
     <string name="settings">Settings</string>
     <string name="clouds">Clouds</string>
     <string name="rain">Rain</string>
@@ -39,15 +48,15 @@
     <string name="NoResults">No results found</string>
     <string name="ChangeSearch">Try searching with a different name</string>
     <string name="Back">Back</string>
-    <string name="WelcomeText">"Welcome to DarkWeather! You can use the app with or without access to your location. To see your current location please allow access or add places by searching.</string>
+    <string name="WelcomeText">"Welcome to Eclipse! You can use the app with or without access to your location. To see your current location please allow access or add places by searching.</string>
     <string name="Continue">Continue</string>
     <string name="AllowAccess">Allow access</string>
     <string name="LocationDenied">No location access is provided, if you want to see your current location please tap to allow access.</string>
-    <string name="appwidget_text">EXAMPLE</string>
-    <string name="configure">Configure</string>
-    <string name="add_widget">Add widget</string>
-    <string name="app_widget_description">DarkWeather widget</string>
-    <string name="icon">icon</string>
+    <string name="appwidget_text" translatable="false">Eclipse</string>
+    <string name="configure" translatable="false">Configure</string>
+    <string name="add_widget" translatable="false">Add widget</string>
+    <string name="app_widget_description" translatable="false">Eclipse widget</string>
+    <string name="icon" translatable="false">icon</string>
     <string name="today">Today</string>
     <string name="hourly">Hourly</string>
     <string name="weekly">Weekly</string>
@@ -63,6 +72,7 @@
     <string name="until">until</string>
     <string name="high">High</string>
     <string name="vHigh">Very high</string>
+    <string name="airSpeed">Air Speed</string>
     <string name="noInternet">Please check your intenet connection</string>
     <string name="locus_rationale_title">Rationale Title</string>
     <string name="locus_rationale_message">This is a rationale message.</string>

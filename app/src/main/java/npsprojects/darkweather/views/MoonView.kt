@@ -24,6 +24,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import compose.icons.WeatherIcons
 import compose.icons.weathericons.MoonFirstQuarter
+import npsprojects.darkweather.R
 import npsprojects.darkweather.moonDescription
 import npsprojects.darkweather.moonIcon
 import npsprojects.darkweather.ui.theme.DarkWeatherTheme
@@ -60,7 +61,7 @@ fun MoonView(phase:Double,moonrise:Long,moonset:Long){
                     Icon(
                         WeatherIcons.MoonFirstQuarter, contentDescription = "",
                         modifier = Modifier.size(15.dp), tint = Color.Gray)
-                    Text("Moon", style = MaterialTheme.typography.labelMedium.copy(color = Color.Gray))
+                    Text(stringResource(id = R.string.Moon), style = MaterialTheme.typography.labelMedium.copy(color = Color.Gray))
 
                 }
                 Text(stringResource(id = moonDescription(phase)), style =  androidx.compose.material3.MaterialTheme.typography.headlineMedium.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black))
@@ -72,15 +73,15 @@ fun MoonView(phase:Double,moonrise:Long,moonset:Long){
         Divider(modifier = Modifier
             .fillMaxWidth(0.7f)
             .padding(vertical = 5.dp))
-        Text("The moon rises at ${ DateTimeFormatter.ofPattern("HH:mm").format(
+        Text(stringResource(id = R.string.MoonText) +" ${ DateTimeFormatter.ofPattern("HH:mm").format(
             LocalDateTime.ofInstant(
                 Instant.ofEpochMilli(1000 * moonrise),
                 ZoneId.systemDefault()
-            ))} and sets at ${ DateTimeFormatter.ofPattern("HH:mm").format(
+            ))} " + stringResource(id = R.string.MoonText2) + DateTimeFormatter.ofPattern("HH:mm").format(
             LocalDateTime.ofInstant(
                 Instant.ofEpochMilli(1000 * moonset),
                 ZoneId.systemDefault()
-            ))}", style = MaterialTheme.typography.labelMedium.copy(color = Color.Gray))
+            )), style = MaterialTheme.typography.labelMedium.copy(color = Color.Gray))
 Spacer(modifier = Modifier.height(1.dp))
     }
 }

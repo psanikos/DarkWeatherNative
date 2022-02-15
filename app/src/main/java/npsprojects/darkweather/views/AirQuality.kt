@@ -69,7 +69,7 @@ fun AirQuality(aqi:Int){
                     Icon(
                         Icons.Default.Air, contentDescription = "",
                         modifier = Modifier.size(15.dp), tint = Color.Gray)
-                    Text("Air Quality", style = MaterialTheme.typography.labelMedium.copy(color = Color.Gray))
+                    Text(stringResource(id = R.string.AirQ), style = MaterialTheme.typography.labelMedium.copy(color = Color.Gray))
 
                 }
                 Text("$aqi", style =  androidx.compose.material3.MaterialTheme.typography.headlineMedium.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black))

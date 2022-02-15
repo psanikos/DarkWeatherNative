@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">DarkWeather</string>
+    <string name="app_name">Eclipse</string>
     <string name="searchText">Rechercher</string>
     <string name="add_location">Rechercher</string>
     <string name="clouds">Nuages</string>
@@ -63,4 +63,15 @@
     <string name="locus_permission_blocked_message">This is a permission blocked message.</string>
     <string name="locus_location_resolution_title">Permission Resolution Title</string>
     <string name="locus_location_resolution_message">This is a permission resolution message.</string>
+    <string name="manage_location">Gérer les lieux</string>
+    <string name="humidity">humidité</string>
+    <string name="highT">haute</string>
+    <string name="lowT">meugler</string>
+    <string name="UV">Niveau d\'UV</string>
+    <string name="sunrise">Lever</string>
+    <string name="Sunset">Coucher</string>
+    <string name="Moon">lune</string>
+    <string name="MoonText">La lune se lève à</string>
+    <string name="MoonText2">et fixe à</string>
+    <string name="airSpeed">Vitesse de l\'air</string>
 </resources>

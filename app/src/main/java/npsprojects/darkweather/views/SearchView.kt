@@ -133,7 +133,7 @@ fun FullSearchView(model: WeatherViewModel,controller: NavController) {
 
 
                                 if (searchTerm.isEmpty()) {
-                                    Text("Search for location", style = MaterialTheme.typography.bodySmall)
+                                    Text(stringResource(id = R.string.searchText), style = MaterialTheme.typography.bodySmall)
                                 }
 
                                 innerTextField()

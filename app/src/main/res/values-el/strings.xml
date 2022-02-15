@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">DarkWeather</string>
+    <string name="app_name">Eclipse</string>
     <string name="title_activity_main_weather_card">MainWeatherCard</string>
     <string name="searchText">Νέα αναζήτηση</string>
     <string name="clouds">Σύννεφα</string>
@@ -63,4 +63,15 @@
     <string name="locus_permission_blocked_message">This is a permission blocked message.</string>
     <string name="locus_location_resolution_title">Permission Resolution Title</string>
     <string name="locus_location_resolution_message">This is a permission resolution message.</string>
+    <string name="manage_location">Τοποθεσίες</string>
+    <string name="humidity">Υγρασία</string>
+    <string name="highT">Υψηλή</string>
+    <string name="lowT">Χαμηλή</string>
+    <string name="UV">Ακτινοβολία</string>
+    <string name="sunrise">Ανατολή</string>
+    <string name="Sunset">Δύση</string>
+    <string name="Moon">Φεγγάρι</string>
+    <string name="MoonText">Ανατέλει στις</string>
+    <string name="MoonText2">και δύει στις</string>
+    <string name="airSpeed">Ταχύτητα αέρα</string>
 </resources>
