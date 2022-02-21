@@ -60,7 +60,7 @@
     <string name="today">Today</string>
     <string name="hourly">Hourly</string>
     <string name="weekly">Weekly</string>
-    <string name="uv">UV Radiation</string>
+    <string name="uv">UV</string>
     <string name="map">Weather map</string>
     <string name="new_moon">New moon</string>
     <string name="full_moon">Full moon</string>
