@@ -73,35 +73,39 @@ class WeatherViewModel : ViewModel() {
                 completion(null, LOCATIONERROR.LOCATION_FATAL)
             }
         }
-
+        @Throws(Exception::class)
         private fun getCurrentLocation(
             context: Context,
             completion: (Location?, Exception?) -> Unit
         ) {
-            Locus.getCurrentLocation(context = context) { result ->
-                result.location?.let {
-                    completion(it, null)
-                }
-                result.error?.let { error ->
-                    when {
-                        error.isDenied -> {
-                            completion(null, LOCATIONERROR.LOCATION_DENIED)
-                        }
-                        error.isPermanentlyDenied -> {
-                            completion(null, LOCATIONERROR.LOCATION_FULL_DENIED)
-                        }
-                        error.isFatal -> {
-                            completion(null, LOCATIONERROR.LOCATION_FATAL)
-                        }
-                        error.isSettingsDenied -> {
-                            completion(null, LOCATIONERROR.LOCATION_FULL_DENIED)
-                        }
-                        error.isSettingsResolutionFailed -> {
-                            completion(null, LOCATIONERROR.LOCATION_NOT_ASKED)
-                        }
-                    }
-                }
-            }
+           try{
+               Locus.getCurrentLocation(context = context) { result ->
+                   result.location?.let {
+                       completion(it, null)
+                   }
+                   result.error?.let { error ->
+                       when {
+                           error.isDenied -> {
+                               completion(null, LOCATIONERROR.LOCATION_DENIED)
+                           }
+                           error.isPermanentlyDenied -> {
+                               completion(null, LOCATIONERROR.LOCATION_FULL_DENIED)
+                           }
+                           error.isFatal -> {
+                               completion(null, LOCATIONERROR.LOCATION_FATAL)
+                           }
+                           error.isSettingsDenied -> {
+                               completion(null, LOCATIONERROR.LOCATION_FULL_DENIED)
+                           }
+                           error.isSettingsResolutionFailed -> {
+                               completion(null, LOCATIONERROR.LOCATION_NOT_ASKED)
+                           }
+                       }
+                   }
+               }
+           } catch(e:Exception){
+               throw e
+           }
         }
 
         private fun isLocationEnabled(context: Context): Boolean {
@@ -356,107 +360,112 @@ class WeatherViewModel : ViewModel() {
         val language: String = if (locale.isEmpty) "en" else locale[0].language
         val searchLanguage = if (language == "el") "el" else if (language == "fr") "fr" else "en"
         val db = LocationsDatabase.getInstance(context)
-        LocationFetcher.getUserLocation(context = context) { loc, error ->
-            if (error != null) {
-                throw error
-            } else {
+      try {
+          LocationFetcher.getUserLocation(context = context) { loc, error ->
+              if (error != null) {
+                  throw error
+              } else {
 
-                viewModelScope.launch {
-                    val air = try {
-                        WeatherDataApi.retrofitService.airData(
-                            loc!!.latitude, loc!!.longitude,
-                            appid = openWeatherKey
-                        )
-                    } catch (e: Exception) {
-                        null
-                    }
-                    val data = try {
-                        WeatherDataApi.retrofitService.oneCallWeather(
-                            lat = loc!!.latitude, lon = loc!!.longitude,
-                            unit = unit, lang = searchLanguage,
-                            appid = openWeatherKey
-                        )
+                  viewModelScope.launch {
+                      val air = try {
+                          WeatherDataApi.retrofitService.airData(
+                              loc!!.latitude, loc!!.longitude,
+                              appid = openWeatherKey
+                          )
+                      } catch (e: Exception) {
+                          null
+                      }
+                      val data = try {
+                          WeatherDataApi.retrofitService.oneCallWeather(
+                              lat = loc!!.latitude, lon = loc!!.longitude,
+                              unit = unit, lang = searchLanguage,
+                              appid = openWeatherKey
+                          )
 
-                    } catch (e: Exception) {
-                        null
-                    }
+                      } catch (e: Exception) {
+                          null
+                      }
 
-                    data?.let {
-                        var lastLocation = "Last location"
-                        val jsonString = Gson().toJson(it)
-                        LocationFetcher.getNameFromCoordinates(
-                            context,
-                            latitude = loc!!.latitude,
-                            longitude = loc!!.longitude
-                        ) { name ->
-                            lastLocation = name
-                            saveWidgetLocation(
-                                address = SavedLocation(
-                                    name = name,
-                                    longitude = loc!!.longitude,
-                                    latitude = loc!!.latitude,
-                                    oldData = LocationsOldData(
-                                        data = jsonString,
-                                        isCurrent = true
-                                    )
-                                ), context = context
-                            )
+                      data?.let {
+                          var lastLocation = "Last location"
+                          val jsonString = Gson().toJson(it)
+                          LocationFetcher.getNameFromCoordinates(
+                              context,
+                              latitude = loc!!.latitude,
+                              longitude = loc!!.longitude
+                          ) { name ->
+                              lastLocation = name
+                              saveWidgetLocation(
+                                  address = SavedLocation(
+                                      name = name,
+                                      longitude = loc!!.longitude,
+                                      latitude = loc!!.latitude,
+                                      oldData = LocationsOldData(
+                                          data = jsonString,
+                                          isCurrent = true
+                                      )
+                                  ), context = context
+                              )
 
-                            currentLocation.value = listOf(
-                                WeatherModel(
-                                    location = SavedLocation(
-                                        name = name,
-                                        longitude = loc!!.longitude,
-                                        latitude = loc!!.latitude,
-                                        oldData = LocationsOldData(
-                                            data = jsonString
-                                        )
-                                    ),
-                                    data = data,
-                                    isCurrent = true,
-                                    airQuality = air
-                                )
-                            )
-                            var old = _locations.value?.toMutableList() ?: mutableListOf()
+                              currentLocation.value = listOf(
+                                  WeatherModel(
+                                      location = SavedLocation(
+                                          name = name,
+                                          longitude = loc!!.longitude,
+                                          latitude = loc!!.latitude,
+                                          oldData = LocationsOldData(
+                                              data = jsonString
+                                          )
+                                      ),
+                                      data = data,
+                                      isCurrent = true,
+                                      airQuality = air
+                                  )
+                              )
+                              var old = _locations.value?.toMutableList() ?: mutableListOf()
 
-                            old.removeAll { it.location.latitude == loc!!.latitude && it.location.longitude == loc!!.longitude }
+                              old.removeAll { it.location.latitude == loc!!.latitude && it.location.longitude == loc!!.longitude }
 
-                            old.add(
-                                0,
-                                WeatherModel(
-                                    location = SavedLocation(
-                                        name = name,
-                                        longitude = loc!!.longitude,
-                                        latitude = loc!!.latitude,
-                                        oldData = LocationsOldData(
-                                            data = jsonString
-                                        )
-                                    ),
-                                    data = data,
-                                    isCurrent = true,
-                                    airQuality = air
-                                )
-                            )
-                            _locations.value = old.toList()
+                              old.add(
+                                  0,
+                                  WeatherModel(
+                                      location = SavedLocation(
+                                          name = name,
+                                          longitude = loc!!.longitude,
+                                          latitude = loc!!.latitude,
+                                          oldData = LocationsOldData(
+                                              data = jsonString
+                                          )
+                                      ),
+                                      data = data,
+                                      isCurrent = true,
+                                      airQuality = air
+                                  )
+                              )
+                              _locations.value = old.toList()
 
-                        }
-                                    saveLocation(
-                                        SavedLocation(
-                                            name = lastLocation,
-                                            longitude = loc!!.longitude,
-                                            latitude = loc!!.latitude,
-                                            oldData = LocationsOldData(
-                                                data = jsonString,
-                                                isCurrent = true
-                                            )
-                                        ), context = context
-                                    )
+                          }
+                          saveLocation(
+                              SavedLocation(
+                                  name = lastLocation,
+                                  longitude = loc!!.longitude,
+                                  latitude = loc!!.latitude,
+                                  oldData = LocationsOldData(
+                                      data = jsonString,
+                                      isCurrent = true
+                                  )
+                              ), context = context
+                          )
 
-                    }
+                      }
 
-                }
-            }
-        }
+                  }
+              }
+          }
+      }
+      catch (e:Exception){
+          throw LOCATIONERROR.LOCATION_FATAL
+      }
 
     }
 
@@ -653,7 +662,12 @@ class WeatherViewModel : ViewModel() {
             getLang()
             getDataFromUserDefaults(context)
             if(LocationFetcher.isOnline(context = context)) {
-                getCurrentLocation(context = context)
+             try {
+                 getCurrentLocation(context = context)
+             }
+             catch (e:Exception){
+                 return@launch
+             }
                 getSavedLocationData(context = context)
             }
             else {
