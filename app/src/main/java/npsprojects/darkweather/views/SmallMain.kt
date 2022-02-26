@@ -1,18 +1,23 @@
 package npsprojects.darkweather.views
 
+import android.content.Intent
+import android.location.Address
+import android.net.Uri
+import android.provider.Settings
 import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.ScrollState
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
@@ -23,7 +28,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.google.accompanist.insets.LocalWindowInsets
 import com.google.accompanist.insets.navigationBarsPadding
@@ -32,10 +40,9 @@ import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
-import compose.icons.fontawesomeicons.solid.EllipsisV
-import compose.icons.fontawesomeicons.solid.LocationArrow
-import compose.icons.fontawesomeicons.solid.Map
-import compose.icons.fontawesomeicons.solid.Search
+import compose.icons.fontawesomeicons.solid.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import npsprojects.darkweather.R
 import npsprojects.darkweather.WeatherUnits
@@ -50,6 +57,7 @@ import java.util.*
 @Composable
 fun SmallMain(model: WeatherViewModel, controller: NavController){
     val index: Int by model.index.observeAsState(initial = 0)
+    val isLoading:Boolean by model.isLoading.observeAsState(initial = true)
     val currentLocation by model.currentLocation.observeAsState(initial = listOf<WeatherModel>())
     val insets = LocalWindowInsets.current
     val bottomPadding = with(LocalDensity.current) { insets.systemGestures.bottom.toDp() }
@@ -287,8 +295,8 @@ fun SmallMain(model: WeatherViewModel, controller: NavController){
                     )
                 }
 
-                when (locations.size) {
-                    0 ->
+                when (isLoading) {
+                    true ->
                         LoadingAnimationScreen(model = model)
 
 
@@ -300,7 +308,9 @@ fun SmallMain(model: WeatherViewModel, controller: NavController){
                             }
                         }
                     ) {
-                        Column(
+                        when(locations.size) {
+                       0->    EmptyView(model = model)
+                        else ->  Column(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .verticalScroll(state = ScrollState(0)),
@@ -352,12 +362,280 @@ fun SmallMain(model: WeatherViewModel, controller: NavController){
                                 }
                             }
                         }
-
-
+                        }
                     }
                 }
             }
 
         }
     }
+}
+
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun EmptyView(model: WeatherViewModel){
+    var searchTerm by remember {
+        mutableStateOf("")
+    }
+    var searchedAddresses: MutableList<Address> by remember { mutableStateOf(mutableListOf()) }
+    val scope = rememberCoroutineScope()
+    var showAlert: Boolean by remember { mutableStateOf(false) }
+    val context = LocalContext.current
+
+
+
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(horizontal = 15.dp, vertical = 20.dp)
+                    .fillMaxSize(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Spacer(modifier = Modifier.height(5.dp))
+                Column(
+                    modifier = Modifier
+                        .padding(horizontal = 15.dp, vertical = 20.dp)
+                        .fillMaxWidth()
+                        .wrapContentHeight(),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(20.dp)
+                ) {
+
+                    Icon(
+                        FontAwesomeIcons.Solid.GlobeAmericas, contentDescription = "",
+                        modifier = Modifier.size(140.dp), tint = MaterialTheme.colorScheme.primary
+                    )
+                    Row(
+                        modifier = Modifier
+                            .background(
+                                color = MaterialTheme.colorScheme.tertiaryContainer,
+                                shape = RoundedCornerShape(50)
+                            )
+                            .height(50.dp)
+                            .fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(5.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            Icons.Default.Search,
+                            contentDescription = "",
+                            modifier = Modifier
+                                .size(30.dp)
+                                .padding(start = 15.dp),
+                            tint = MaterialTheme.colorScheme.onTertiaryContainer
+                        )
+                        BasicTextField(
+                            value = searchTerm,
+                            onValueChange = {
+                                searchTerm = it
+                            },
+                            keyboardActions = KeyboardActions(onSearch = {
+
+                                scope.launch(Dispatchers.IO) {
+                                    val addresses =
+                                        WeatherViewModel.getCoordinatesFromLocation(
+                                            context = context,
+                                            searchTerm
+                                        )
+                                    launch(Dispatchers.Main) {
+                                        if (addresses.isNullOrEmpty()) {
+                                            showAlert = true
+                                        } else {
+                                            searchedAddresses = addresses
+                                        }
+                                    }
+                                }
+                            }),
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+//                },
+                            textStyle = MaterialTheme.typography
+                                .bodyMedium.copy(color = MaterialTheme.colorScheme.onPrimaryContainer),
+                            decorationBox = { innerTextField ->
+
+
+                                if (searchTerm.isEmpty()) {
+                                    Text(
+                                        stringResource(id = R.string.searchText),
+                                        style = MaterialTheme.typography.bodySmall
+                                    )
+                                }
+
+                                innerTextField()
+
+                            }
+
+                        )
+
+                    }
+                    if (searchedAddresses.size == 0) {
+                        IconButton(onClick = {
+                            scope.launch {
+                                model.initActions(context = context)
+                            }
+                        }) {
+                            androidx.compose.material.Icon(
+                                Icons.Default.Refresh, contentDescription = "",
+                                tint = Color.White,
+                                modifier = Modifier
+                                    .size(45.dp)
+                                    .background(Color.DarkGray, shape = CircleShape)
+                                    .padding(5.dp)
+                            )
+                        }
+                    }
+                    searchedAddresses.forEach {
+
+                        if (it.locality != null || it.featureName != null) {
+
+                            Row(
+                                modifier = Modifier
+                                    .padding(vertical = 5.dp)
+                                    .fillMaxWidth()
+                                    .height(40.dp)
+                                    .background(
+                                        color = MaterialTheme.colorScheme.surface,
+                                        shape = RoundedCornerShape(20)
+                                    )
+                                    .clickable {
+                                        scope.launch {
+                                            model.getSearchedLocationData(
+                                                name = it.locality ?: it.subLocality,
+                                                longitude = it.longitude,
+                                                latitude = it.latitude,
+                                                context = context
+                                            )
+
+                                            searchTerm = ""
+                                            searchedAddresses.clear()
+                                            delay(1000)
+
+                                        }
+                                    },
+                                horizontalArrangement = Arrangement.Start,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    it.locality ?: it.featureName,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    modifier = Modifier.padding(
+                                        horizontal = 8.dp,
+                                        vertical = 8.dp
+                                    )
+                                )
+
+                                Text(
+                                    it.countryName ?: "",
+                                    style = MaterialTheme.typography.bodySmall,
+                                    modifier = Modifier.padding(
+                                        horizontal = 10.dp,
+                                        vertical = 8.dp
+                                    )
+                                )
+
+                            }
+
+                        }
+                    }
+
+                }
+                if (searchedAddresses.size == 0) {
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(5.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(bottom = 30.dp)
+                    ) {
+                        Text(
+                            "To get your current location please allow access on settings ",
+                            style = MaterialTheme.typography.labelSmall.copy(color = Color.Gray)
+                        )
+                        IconButton(onClick = {
+                            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                            intent.data = Uri.parse("package:" + context.packageName)
+                            ContextCompat.startActivity(context, intent, null)
+                        }) {
+                            androidx.compose.material.Icon(
+                                Icons.Default.Settings, contentDescription = "",
+                                modifier = Modifier
+                                    .size(25.dp)
+                            )
+                        }
+                    }
+
+
+                }
+                else{
+                    Spacer(modifier = Modifier.height(5.dp))
+                }
+            }
+            if (showAlert) {
+                // below line is use to
+                // display a alert dialog.
+                AlertDialog(
+                    // on dialog dismiss we are setting
+                    // our dialog value to false.
+                    onDismissRequest = { showAlert = false },
+
+                    // below line is use to display title of our dialog
+                    // box and we are setting text color to white.
+                    title = {
+                        Text(
+                            text = stringResource(id = R.string.NoResults),
+                            style = MaterialTheme.typography.displayLarge
+                        )
+                    },
+
+                    // below line is use to display
+                    // description to our alert dialog.
+                    text = {
+                        Text(
+                            if (WeatherViewModel.LocationFetcher.isOnline(context = context)) stringResource(
+                                id = R.string.noInternet
+                            ) else
+                                stringResource(id = R.string.ChangeSearch),
+                            style = MaterialTheme.typography.bodySmall
+                        )
+                    },
+
+                    // in below line we are displaying
+                    // our confirm button.
+                    confirmButton = {
+                        // below line we are adding on click
+                        // listener for our confirm button.
+                        TextButton(onClick = {
+                            showAlert = false
+                            searchTerm = ""
+                        }) {
+                            Text("OK", style = MaterialTheme.typography.displayMedium)
+
+                        }
+
+                    },
+                    // in below line we are displaying
+                    // our dismiss button.
+                    dismissButton = {
+                        TextButton(
+                            onClick = {
+                                showAlert = false
+                            },
+                        ) {
+                            Text(
+                                stringResource(id = R.string.Back),
+                                style = MaterialTheme.typography.displayMedium
+                            )
+
+                        }
+
+                    }, icon = {
+                        Icon(Icons.Default.Warning, contentDescription = null)
+                    }
+
+                )
+            }
+        }
+
 }

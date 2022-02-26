@@ -1,8 +1,10 @@
 package npsprojects.darkweather.models
 
+import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
 import android.location.Location
@@ -17,6 +19,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.core.app.ActivityCompat.requestPermissions
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -52,6 +55,17 @@ class WeatherViewModel : ViewModel() {
 
     companion object LocationFetcher {
 
+
+        fun canGetLocation(context: Context):Boolean{
+            return when(ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_COARSE_LOCATION
+            ) == PackageManager.PERMISSION_DENIED){
+                false -> true
+                 else ->  false
+            }
+        }
+
         fun getUserLocation(context: Context, completion: (Location?, Exception?) -> Unit) {
             val permissionCoarseLocation = android.Manifest.permission.ACCESS_COARSE_LOCATION
             val REQUEST_CODE_LOCATION = 100
@@ -73,39 +87,45 @@ class WeatherViewModel : ViewModel() {
                 completion(null, LOCATIONERROR.LOCATION_FATAL)
             }
         }
+
         @Throws(Exception::class)
         private fun getCurrentLocation(
             context: Context,
             completion: (Location?, Exception?) -> Unit
         ) {
-           try{
-               Locus.getCurrentLocation(context = context) { result ->
-                   result.location?.let {
-                       completion(it, null)
-                   }
-                   result.error?.let { error ->
-                       when {
-                           error.isDenied -> {
-                               completion(null, LOCATIONERROR.LOCATION_DENIED)
-                           }
-                           error.isPermanentlyDenied -> {
-                               completion(null, LOCATIONERROR.LOCATION_FULL_DENIED)
-                           }
-                           error.isFatal -> {
-                               completion(null, LOCATIONERROR.LOCATION_FATAL)
-                           }
-                           error.isSettingsDenied -> {
-                               completion(null, LOCATIONERROR.LOCATION_FULL_DENIED)
-                           }
-                           error.isSettingsResolutionFailed -> {
-                               completion(null, LOCATIONERROR.LOCATION_NOT_ASKED)
-                           }
-                       }
-                   }
-               }
-           } catch(e:Exception){
-               throw e
-           }
+            if(canGetLocation(context = context)) {
+                try {
+                    Locus.getCurrentLocation(context = context) { result ->
+                        result.location?.let {
+                            completion(it, null)
+                        }
+                        result.error?.let { error ->
+                            when {
+                                error.isDenied -> {
+                                    completion(null, LOCATIONERROR.LOCATION_DENIED)
+                                }
+                                error.isPermanentlyDenied -> {
+                                    completion(null, LOCATIONERROR.LOCATION_FULL_DENIED)
+                                }
+                                error.isFatal -> {
+                                    completion(null, LOCATIONERROR.LOCATION_FATAL)
+                                }
+                                error.isSettingsDenied -> {
+                                    completion(null, LOCATIONERROR.LOCATION_FULL_DENIED)
+                                }
+                                error.isSettingsResolutionFailed -> {
+                                    completion(null, LOCATIONERROR.LOCATION_NOT_ASKED)
+                                }
+                            }
+                        }
+                    }
+                } catch (e: Exception) {
+                    throw e
+                }
+            }
+            else {
+                throw LOCATIONERROR.LOCATION_DENIED
+            }
         }
 
         private fun isLocationEnabled(context: Context): Boolean {
@@ -362,8 +382,8 @@ class WeatherViewModel : ViewModel() {
         val db = LocationsDatabase.getInstance(context)
       try {
           LocationFetcher.getUserLocation(context = context) { loc, error ->
-              if (error != null) {
-                  throw error
+              if (error != null || loc == null) {
+                  throw error ?: LOCATIONERROR.LOCATION_FATAL
               } else {
 
                   viewModelScope.launch {
@@ -661,13 +681,19 @@ class WeatherViewModel : ViewModel() {
             getSavedLocations(context = context)
             getLang()
             getDataFromUserDefaults(context)
-            if(LocationFetcher.isOnline(context = context)) {
+            if(LocationFetcher.isOnline(context = context) && canGetLocation(context = context)) {
              try {
                  getCurrentLocation(context = context)
              }
              catch (e:Exception){
-                 return@launch
+
              }
+                getSavedLocationData(context = context)
+            }
+           else if(isOnline(context)){
+                withContext(Dispatchers.Main){
+                    Toast.makeText(context,"No location access",Toast.LENGTH_LONG).show()
+                }
                 getSavedLocationData(context = context)
             }
             else {

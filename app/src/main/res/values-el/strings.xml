@@ -22,7 +22,7 @@
     <string name="ModerateText">Πιθανός κίνδυνος για ευαίσθητες ομάδες</string>
     <string name="PoorText">Πιθανός κίνδυνος για όλους</string>
     <string name="VeryPoorText">Κίνδυνος για όλο τον πληθυσμό</string>
-<string name="RainEnds">Η βρόχη τελειώνει σε </string>
+    <string name="RainEnds">Η βρόχη τελειώνει σε </string>
     <string name="SnowEnds">Το χιόνι τελειώνει σε </string>
     <string name="RainStarts">Η βροχή αρχίζει σε </string>
     <string name="SnowStarts">Το χίονι αρχίζει σε </string>
@@ -33,12 +33,12 @@
     <string name="ListRemove">Αφαίρεση</string>
     <string name="ListAdd">Αποθήκευση</string>
     <string name="NoLocationNoAccess">Δεν υπάρχει πρόσβαση στην τοποθεσία σας, ούτε αποθηκευμένα μέρη</string>
-<string name="NoInternet">Δεν υπάρχει πρόσβαση στο ίντερνετ</string>
+    <string name="NoInternet">Δεν υπάρχει πρόσβαση στο ίντερνετ</string>
     <string name="NoResults">Κανένα αποτέλεσμα</string>
     <string name="ChangeSearch">Δοκιμάστε διαφορετικό όνομα</string>
     <string name="Back">Πίσω</string>
     <string name="WelcomeText">Καλωσήλθατε στο DarkWeather! Η εφαρμογή μπορεί να χρησιμοποιηθεί με η χωρίς πρόσβαση στην τοποθεσία σας.</string>
-<string name="Continue">Συνέχεια</string>
+    <string name="Continue">Συνέχεια</string>
     <string name="AllowAccess">Αποδοχή πρόσβασης</string>
     <string name="LocationDenied">Δεν υπάρχει πρόσβαση στην τοποθεσία σας. Πατήστε για να επιτρέψετε</string>
     <string name="hourly">Ανα ώρα</string>
@@ -74,4 +74,5 @@
     <string name="MoonText">Ανατέλει στις</string>
     <string name="MoonText2">και δύει στις</string>
     <string name="airSpeed">Ταχύτητα αέρα</string>
+    <string name="no_Saved">Δεν υπάρχει τοποθεσία</string>
 </resources>

@@ -52,6 +52,7 @@ import java.util.*
 @Composable
 fun LargeMain(model: WeatherViewModel, controller: NavController){
         val index: Int by model.index.observeAsState(initial = 0)
+         val isLoading:Boolean by model.isLoading.observeAsState(initial = true)
         val currentLocation by model.currentLocation.observeAsState(initial = listOf<WeatherModel>())
         val insets = LocalWindowInsets.current
         val bottomPadding = with(LocalDensity.current) { insets.systemGestures.bottom.toDp() }
@@ -289,8 +290,8 @@ fun LargeMain(model: WeatherViewModel, controller: NavController){
                         )
                     }
 
-                    when (locations.size) {
-                        0 ->
+                    when (isLoading) {
+                        true ->
                             LoadingAnimationScreen(model = model)
 
 
@@ -302,102 +303,106 @@ fun LargeMain(model: WeatherViewModel, controller: NavController){
                                 }
                             }
                         ) {
-                            LazyColumn(
-                                modifier = Modifier
-                                    .fillMaxWidth(),
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.spacedBy(40.dp)
-                            ) {
-                                item {
-                                    Spacer(modifier = Modifier.height(250.dp))
-                                }
-                                item{
-                                Column(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .wrapContentHeight()
-                                        .background(color = MaterialTheme.colorScheme.background,
-                                            shape = RoundedCornerShape(16.dp)
-                                        )
-                                        .padding(10.dp)
-                                    ,
-                                    horizontalAlignment = Alignment.CenterHorizontally,
-                                    verticalArrangement = Arrangement.spacedBy(40.dp)
-                                ) {
-
-                                        Row(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.SpaceEvenly,
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            Box(modifier = Modifier.fillMaxWidth(0.5f)) {
-                                                SummaryCard(
-                                                    current = locations[index].data.current!!,
-                                                    dayDetails = locations[index].data.daily.first().weather.first().description!!
-                                                )
-                                            }
-                                            Box(modifier = Modifier.fillMaxWidth(1f)) {
-                                                DetailsCardCompact(
-                                                    current = locations[index].data.current!!,
-                                                    daily = locations[index].data.daily.first(),
-                                                    inSi = model.units == WeatherUnits.SI
-                                                )
-                                            }
+                            when (locations.size) {
+                                0 -> EmptyView(model = model)
+                                else ->
+                                    LazyColumn(
+                                        modifier = Modifier
+                                            .fillMaxWidth(),
+                                        horizontalAlignment = Alignment.CenterHorizontally,
+                                        verticalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        item {
+                                            Spacer(modifier = Modifier.height(250.dp))
                                         }
-
-
-                                        Row(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.SpaceEvenly,
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            Box(modifier = Modifier.fillMaxWidth(0.5f)) {
-
-                                                MoonView(
-                                                    phase = locations[index].data.daily.first().moon_phase!!,
-                                                    moonrise = locations[index].data.daily.first().moonrise!!,
-                                                    moonset = locations[index].data.daily.first().moonset!!
-                                                )
-                                            }
-                                            if (locations[index].airQuality != null) {
-                                                Box(modifier = Modifier.fillMaxWidth(1f)) {
-
-                                                    AirQuality(
-                                                        aqi = locations[index].airQuality?.list?.first()?.main?.aqi
-                                                            ?: 1
+                                        item {
+                                            Column(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .wrapContentHeight()
+                                                    .background(
+                                                        color = MaterialTheme.colorScheme.background,
+                                                        shape = RoundedCornerShape(16.dp)
                                                     )
+                                                    .padding(10.dp),
+                                                horizontalAlignment = Alignment.CenterHorizontally,
+                                                verticalArrangement = Arrangement.spacedBy(40.dp)
+                                            ) {
+
+                                                Row(
+                                                    modifier = Modifier.fillMaxWidth(),
+                                                    horizontalArrangement = Arrangement.SpaceEvenly,
+                                                    verticalAlignment = Alignment.CenterVertically
+                                                ) {
+                                                    Box(modifier = Modifier.fillMaxWidth(0.5f)) {
+                                                        SummaryCard(
+                                                            current = locations[index].data.current!!,
+                                                            dayDetails = locations[index].data.daily.first().weather.first().description!!
+                                                        )
+                                                    }
+                                                    Box(modifier = Modifier.fillMaxWidth(1f)) {
+                                                        DetailsCardCompact(
+                                                            current = locations[index].data.current!!,
+                                                            daily = locations[index].data.daily.first(),
+                                                            inSi = model.units == WeatherUnits.SI
+                                                        )
+                                                    }
                                                 }
-                                            }
 
+
+                                                Row(
+                                                    modifier = Modifier.fillMaxWidth(),
+                                                    horizontalArrangement = Arrangement.SpaceEvenly,
+                                                    verticalAlignment = Alignment.CenterVertically
+                                                ) {
+                                                    Box(modifier = Modifier.fillMaxWidth(0.5f)) {
+
+                                                        MoonView(
+                                                            phase = locations[index].data.daily.first().moon_phase!!,
+                                                            moonrise = locations[index].data.daily.first().moonrise!!,
+                                                            moonset = locations[index].data.daily.first().moonset!!
+                                                        )
+                                                    }
+                                                    if (locations[index].airQuality != null) {
+                                                        Box(modifier = Modifier.fillMaxWidth(1f)) {
+
+                                                            AirQuality(
+                                                                aqi = locations[index].airQuality?.list?.first()?.main?.aqi
+                                                                    ?: 1
+                                                            )
+                                                        }
+                                                    }
+
+                                                }
+
+
+                                                Row(
+                                                    modifier = Modifier.fillMaxWidth(),
+                                                    horizontalArrangement = Arrangement.SpaceEvenly,
+                                                    verticalAlignment = Alignment.CenterVertically
+                                                ) {
+                                                    Box(modifier = Modifier.fillMaxWidth(0.5f)) {
+
+                                                        VerticalHourView(
+                                                            hourly = locations[index].data.hourly,
+                                                            inSi = model.units == WeatherUnits.SI
+                                                        )
+                                                    }
+                                                    Box(modifier = Modifier.fillMaxWidth(1f)) {
+
+                                                        WeeklyView(
+                                                            days = locations[index].data.daily,
+                                                            inSi = model.units == WeatherUnits.SI
+                                                        )
+                                                    }
+                                                }
+
+
+                                                Spacer(modifier = Modifier.height(50.dp))
+
+                                            }
                                         }
-
-
-                                        Row(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            horizontalArrangement = Arrangement.SpaceEvenly,
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            Box(modifier = Modifier.fillMaxWidth(0.5f)) {
-
-                                                VerticalHourView(
-                                                    hourly = locations[index].data.hourly,
-                                                    inSi = model.units == WeatherUnits.SI
-                                                )
-                                            }
-                                            Box(modifier = Modifier.fillMaxWidth(1f)) {
-
-                                                WeeklyView(
-                                                    days = locations[index].data.daily,
-                                                    inSi = model.units == WeatherUnits.SI
-                                                )
-                                            }
-                                        }
-
-
-                                        Spacer(modifier = Modifier.height(50.dp))
-
-                                }
-                                }
+                                    }
                             }
                         }
                     }

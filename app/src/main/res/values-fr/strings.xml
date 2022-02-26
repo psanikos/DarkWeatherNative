@@ -74,4 +74,5 @@
     <string name="MoonText">La lune se lève à</string>
     <string name="MoonText2">et fixe à</string>
     <string name="airSpeed">Vitesse de l\'air</string>
+    <string name="no_Saved">Lieu non enregistré</string>
 </resources>
