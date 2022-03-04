@@ -53,7 +53,7 @@ fun LoadingAnimationScreen(model:WeatherViewModel) {
         targetValue = if (startRotation) 360f else 0f,
         animationSpec = infiniteRepeatable(
             animation = tween(
-                durationMillis = 1400,
+                durationMillis = 400,
                 easing = LinearEasing
             ), repeatMode = RepeatMode.Restart
         )
@@ -66,10 +66,10 @@ fun LoadingAnimationScreen(model:WeatherViewModel) {
     val scope = rememberCoroutineScope()
     val isRefreshing by model.isLoading.observeAsState(initial = false)
 
-    LaunchedEffect(key1 = "Animation", block = {
-        startRotation = true
+    LaunchedEffect(key1 = isRefreshing, block = {
+      startRotation = isRefreshing
         scope.launch {
-            delay(5000)
+            delay(4000)
             showRefresh = true
         }
     })
@@ -100,6 +100,7 @@ fun LoadingAnimationScreen(model:WeatherViewModel) {
                     modifier = Modifier
                         .size(70.dp)
                         .rotate(rotation.value)
+
                 )
                 Icon(
                     FontAwesomeIcons.Solid.Cloud,

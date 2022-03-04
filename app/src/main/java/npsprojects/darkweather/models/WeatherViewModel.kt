@@ -14,10 +14,8 @@ import android.provider.Settings
 import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
@@ -27,9 +25,11 @@ import androidx.lifecycle.viewModelScope
 import com.birjuvachhani.locus.*
 import com.google.android.gms.common.util.CollectionUtils.listOf
 import com.google.gson.Gson
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 import npsprojects.darkweather.WeatherUnits
-import npsprojects.darkweather.isOnline
 import npsprojects.darkweather.openWeatherKey
 import npsprojects.darkweather.services.LocationsDatabase
 import npsprojects.darkweather.services.LocationsOldData
@@ -149,15 +149,19 @@ class WeatherViewModel : ViewModel() {
                 val capabilities =
                     connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
                 if (capabilities != null) {
-                    if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
-                        Log.i("Internet", "NetworkCapabilities.TRANSPORT_CELLULAR")
-                        return true
-                    } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
-                        Log.i("Internet", "NetworkCapabilities.TRANSPORT_WIFI")
-                        return true
-                    } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
-                        Log.i("Internet", "NetworkCapabilities.TRANSPORT_ETHERNET")
-                        return true
+                    when {
+                        capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> {
+                            Log.i("Internet", "NetworkCapabilities.TRANSPORT_CELLULAR")
+                            return true
+                        }
+                        capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> {
+                            Log.i("Internet", "NetworkCapabilities.TRANSPORT_WIFI")
+                            return true
+                        }
+                        capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> {
+                            Log.i("Internet", "NetworkCapabilities.TRANSPORT_ETHERNET")
+                            return true
+                        }
                     }
                 }
             }
@@ -292,11 +296,10 @@ class WeatherViewModel : ViewModel() {
             .getSharedPreferences("MyPref", 0) // 0 - for private mode
 
         val savedUnit = pref.getString("unit", null)
-        if (savedUnit != null) {
-            units =
-                if (savedUnit == "si") WeatherUnits.SI else if (savedUnit == "us") WeatherUnits.US else WeatherUnits.AUTO
+        units = if (savedUnit != null) {
+            if (savedUnit == "si") WeatherUnits.SI else if (savedUnit == "us") WeatherUnits.US else WeatherUnits.AUTO
         } else {
-            units = WeatherUnits.SI
+            WeatherUnits.SI
         }
     }
 
@@ -310,19 +313,20 @@ class WeatherViewModel : ViewModel() {
             db?.let {
                 with(db.locationsDao()) {
 
-                    val data = async {
-                        getAll()
-                    }.await()
+                    val data =
+                        withContext(Dispatchers.Default) {
+                            getAll()
+                        }
                     if (address.oldData?.isCurrent == true) {
-                        async {
-                        data.forEach {
-                            if(it.oldData?.isCurrent == true){
+                        withContext(Dispatchers.Default) {
+                            data.forEach {
+                                if (it.oldData?.isCurrent == true) {
 
                                     delete(it)
 
+                                }
                             }
                         }
-                        }.await()
                         insert(address)
                     } else {
                         if (data.firstOrNull { it.longitude == address.longitude && it.latitude == address.latitude } != null) {
@@ -444,7 +448,7 @@ class WeatherViewModel : ViewModel() {
                               )
                               var old = _locations.value?.toMutableList() ?: mutableListOf()
 
-                              old.removeAll { it.location.latitude == loc!!.latitude && it.location.longitude == loc!!.longitude }
+                              old.removeAll { ol-> ol.location.latitude == loc!!.latitude && ol.location.longitude == loc!!.longitude }
 
                               old.add(
                                   0,
@@ -500,7 +504,7 @@ class WeatherViewModel : ViewModel() {
 
         runBlocking {
 
-            async {
+            withContext(Dispatchers.Default) {
                 myLocations.forEach {
 
                     val air = try {
@@ -564,7 +568,7 @@ class WeatherViewModel : ViewModel() {
                         }
                     }
                 }
-            }.await()
+            }
             Log.i("Weather data", out.size.toString() + " locations ${myLocations.size}")
             _locations.value = out.toList()
         }
@@ -636,7 +640,7 @@ class WeatherViewModel : ViewModel() {
             with(it.locationsDao()) {
                 val locations = getAll()
                 myLocations = locations
-                async {
+                withContext(Dispatchers.Default) {
                     locations.forEach {
                         it.oldData?.data?.let { dataString ->
 
@@ -659,7 +663,7 @@ class WeatherViewModel : ViewModel() {
                             }
                         }
                     }
-                }.await()
+                }
 
             }
         }

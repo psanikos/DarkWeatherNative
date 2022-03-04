@@ -14,8 +14,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.BottomSheetScaffold
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.FabPosition
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -53,11 +55,11 @@ import npsprojects.darkweather.models.WeatherViewModel
 import java.time.Instant
 import java.util.*
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, androidx.compose.material.ExperimentalMaterialApi::class)
 @Composable
-fun SmallMain(model: WeatherViewModel, controller: NavController){
+fun SmallMain(model: WeatherViewModel, controller: NavController) {
     val index: Int by model.index.observeAsState(initial = 0)
-    val isLoading:Boolean by model.isLoading.observeAsState(initial = true)
+    val isLoading: Boolean by model.isLoading.observeAsState(initial = true)
     val currentLocation by model.currentLocation.observeAsState(initial = listOf<WeatherModel>())
     val insets = LocalWindowInsets.current
     val bottomPadding = with(LocalDensity.current) { insets.systemGestures.bottom.toDp() }
@@ -70,30 +72,62 @@ fun SmallMain(model: WeatherViewModel, controller: NavController){
         mutableStateOf(false)
     }
 
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.TopCenter
-    ) {
-
-
-        Scaffold(
-            floatingActionButton = {
-                if (locations.isNotEmpty() && locations[index].isCurrent && WeatherViewModel.isOnline(
-                        context = context
-                    )
-                ) {
-                    ExtendedFloatingActionButton(
-                        text = { Text("Map", style = MaterialTheme.typography.labelMedium) },
-                        onClick = {
-                            controller.navigate("Map")
-                        }, modifier = Modifier.navigationBarsPadding(),
-                        icon = {
-                            Icon(
-                                FontAwesomeIcons.Solid.Map,
-                                contentDescription = "map",
-                                modifier = Modifier.size(20.dp),
-                            )
-                        })
+    when (isLoading) {
+        true -> LoadingAnimationScreen(model = model)
+        false -> BottomSheetScaffold(
+            sheetContent = {
+                if(locations.isNotEmpty()) {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .verticalScroll(state = ScrollState(0)),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(40.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight()
+                                .materialYouFrosted(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(
+                                modifier = Modifier.padding(15.dp),
+                                horizontalAlignment = Alignment.Start,
+                                verticalArrangement = Arrangement.spacedBy(10.dp)
+                            ) {
+                                SummaryCard(
+                                    current = locations[index].data.current!!,
+                                    dayDetails = locations[index].data.daily.first().weather.first().description!!
+                                )
+                                HourView(
+                                    hourly = locations[index].data.hourly,
+                                    inSi = model.units == WeatherUnits.SI
+                                )
+                                DetailsCard(
+                                    current = locations[index].data.current!!,
+                                    daily = locations[index].data.daily.first(),
+                                    inSi = model.units == WeatherUnits.SI
+                                )
+                                if (locations[index].airQuality != null) {
+                                    AirQuality(
+                                        aqi = locations[index].airQuality?.list?.first()?.main?.aqi
+                                            ?: 1
+                                    )
+                                }
+                                MoonView(
+                                    phase = locations[index].data.daily.first().moon_phase!!,
+                                    moonrise = locations[index].data.daily.first().moonrise!!,
+                                    moonset = locations[index].data.daily.first().moonset!!
+                                )
+                                WeeklyView(
+                                    days = locations[index].data.daily,
+                                    inSi = model.units == WeatherUnits.SI
+                                )
+                                Spacer(modifier = Modifier.height(40.dp))
+                            }
+                        }
+                    }
                 }
             },
             topBar = {
@@ -103,7 +137,8 @@ fun SmallMain(model: WeatherViewModel, controller: NavController){
                         title = {
                             Column(
                                 horizontalAlignment = Alignment.Start,
-                                verticalArrangement = Arrangement.Bottom
+                                verticalArrangement = Arrangement.Bottom,
+                                modifier = Modifier.fillMaxWidth(0.8f)
                             ) {
 
                                 Box() {
@@ -237,6 +272,20 @@ fun SmallMain(model: WeatherViewModel, controller: NavController){
 
                                     }
 
+                                    if (locations[index].isCurrent) {
+                                        TextButton(onClick = {
+                                            controller.navigate("Map")
+                                        }) {
+                                            ColoredIcon(
+                                                imageVector = FontAwesomeIcons.Solid.Map,
+                                                contentDescription = "",
+                                                modifier = Modifier.size(30.dp),
+                                                padding = 6.dp,
+                                                tint = MaterialTheme.colorScheme.primary
+                                            )
+                                        }
+                                    }
+
                                 }
                                 TextButton(onClick = {
                                     controller.navigate("Search")
@@ -278,98 +327,42 @@ fun SmallMain(model: WeatherViewModel, controller: NavController){
 
                 }
             },
+            sheetPeekHeight = 500.dp,
+            sheetShape = RoundedCornerShape(12.dp)
 
+            ) {
 
-            containerColor = MaterialTheme.colorScheme.background
-
-        ) {
-            Box(contentAlignment = Alignment.TopCenter) {
-                AnimatedVisibility(visible = locations.isNotEmpty()) {
-                    Image(
-                        painter = painterResource(
-                            id = if (locations.isNotEmpty())
-                                getWeatherBackIcon(locations[index].data.current!!.weather.first().icon!!) else R.drawable.clearday
-                        ),
-                        contentDescription = "",
-                        modifier = Modifier.size(500.dp), contentScale = ContentScale.Fit
-                    )
-                }
-
-                when (isLoading) {
-                    true ->
-                        LoadingAnimationScreen(model = model)
-
-
-                    else -> SwipeRefresh(
-                        state = rememberSwipeRefreshState(isRefreshing),
-                        onRefresh = {
-                            scope.launch {
-                                model.initActions(context = context)
-                            }
-                        }
-                    ) {
-                        when(locations.size) {
-                       0->    EmptyView(model = model)
-                        else ->  Column(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .verticalScroll(state = ScrollState(0)),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(40.dp)
-                        ) {
-                            Spacer(modifier = Modifier.height(300.dp))
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .wrapContentHeight()
-                                    .materialYouFrosted(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Column(
-                                    modifier = Modifier.padding(15.dp),
-                                    horizontalAlignment = Alignment.Start,
-                                    verticalArrangement = Arrangement.spacedBy(10.dp)
-                                ) {
-                                    SummaryCard(
-                                        current = locations[index].data.current!!,
-                                        dayDetails = locations[index].data.daily.first().weather.first().description!!
-                                    )
-                                    HourView(
-                                        hourly = locations[index].data.hourly,
-                                        inSi = model.units == WeatherUnits.SI
-                                    )
-                                    DetailsCard(
-                                        current = locations[index].data.current!!,
-                                        daily = locations[index].data.daily.first(),
-                                        inSi = model.units == WeatherUnits.SI
-                                    )
-                                    if (locations[index].airQuality != null) {
-                                        AirQuality(
-                                            aqi = locations[index].airQuality?.list?.first()?.main?.aqi
-                                                ?: 1
-                                        )
-                                    }
-                                    MoonView(
-                                        phase = locations[index].data.daily.first().moon_phase!!,
-                                        moonrise = locations[index].data.daily.first().moonrise!!,
-                                        moonset = locations[index].data.daily.first().moonset!!
-                                    )
-                                    WeeklyView(
-                                        days = locations[index].data.daily,
-                                        inSi = model.units == WeatherUnits.SI
-                                    )
-                                    Spacer(modifier = Modifier.height(40.dp))
-                                }
-                            }
-                        }
-                        }
+            SwipeRefresh(
+                state = rememberSwipeRefreshState(isRefreshing),
+                onRefresh = {
+                    scope.launch {
+                        model.initActions(context = context)
                     }
+                }
+            ) {
+                when (locations.size) {
+                    0 -> EmptyView(model = model)
+                    else -> Column(Modifier.verticalScroll(rememberScrollState())) {
+                        Image(
+                            painter = painterResource(
+                                id = if (locations.isNotEmpty())
+                                    getWeatherBackIcon(locations[index].data.current!!.weather.first().icon!!) else R.drawable.clearday
+                            ),
+                            contentDescription = "",
+                            modifier = Modifier.size(500.dp), contentScale = ContentScale.Fit
+                        )
+                    }
+                }
                 }
             }
 
+
         }
     }
-}
+
+
+
+
 
 
 
@@ -385,7 +378,6 @@ fun EmptyView(model: WeatherViewModel){
     val context = LocalContext.current
 
 
-
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
@@ -393,7 +385,8 @@ fun EmptyView(model: WeatherViewModel){
             Column(
                 modifier = Modifier
                     .padding(horizontal = 15.dp, vertical = 20.dp)
-                    .fillMaxSize(),
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState()),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
