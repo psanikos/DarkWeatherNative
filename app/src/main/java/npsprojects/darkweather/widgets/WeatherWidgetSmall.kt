@@ -9,9 +9,14 @@ import android.util.Log
 import android.util.Range
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
@@ -38,6 +43,8 @@ import androidx.glance.text.*
 import androidx.glance.unit.ColorProvider
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import compose.icons.FontAwesomeIcons
+import compose.icons.fontawesomeicons.Solid
 
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.MainScope
@@ -66,6 +73,7 @@ private val feelsTemp = intPreferencesKey("feelsTemp")
 private val curImage= stringPreferencesKey("curImage")
 private val curDescription = stringPreferencesKey("curDescription")
 private val back = intPreferencesKey("back")
+private val name = stringPreferencesKey("name")
 @OptIn(ExperimentalFoundationApi::class,
     androidx.compose.animation.ExperimentalAnimationApi::class,
     androidx.compose.material.ExperimentalMaterialApi::class,
@@ -135,7 +143,7 @@ fun MediumBox(){
             GlanceModifier
                 .fillMaxSize()
                 .background(ColorProvider(day = Color(back), night = Color(back)))
-                .cornerRadius(20.dp)
+                .cornerRadius(22.dp)
         }
         else{
             GlanceModifier
@@ -146,24 +154,42 @@ fun MediumBox(){
     Column(
         modifier = initModifier()
             .appWidgetBackground()
+            .padding(16.dp)
             .clickable(actionStartActivity<MainActivity>()),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Image(
-            provider = ImageProvider(getWeatherImage(prefs[curImage] ?: "01d")),
-            contentDescription = "",
-            modifier = GlanceModifier.size( 60.dp)
-        )
+        Row(modifier = GlanceModifier.fillMaxWidth()) {
+            Text(
+                text = ((prefs[curTemp] ?: 0).toString() + "°"),
+                style = TextStyle(
+                    fontWeight = FontWeight.Normal,
+                    fontSize = 50.sp,
+                    color = ColorProvider(if(Color(back).isDark()) Color.White else Color.Black),
+                ),
+            )
+        }
+        Spacer(modifier = GlanceModifier.height(35.dp))
+
+        Row(modifier = GlanceModifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.End) {
+       Column(horizontalAlignment = Alignment.End,
+       verticalAlignment = Alignment.CenterVertically) {
+           Image(
+               provider = ImageProvider(getWeatherImage(prefs[curImage] ?: "01d")),
+               contentDescription = "",
+               modifier = GlanceModifier.size(60.dp)
+           )
+
+               Text((prefs[name] ?: ""), style = TextStyle(
+                   fontWeight = FontWeight.Medium,
+                    fontSize = 14.sp,
+               color = ColorProvider(day = Color.White, night = Color.White)))
+           }
+
+        }
         // Text("h${size.height.value.toInt()}w${size.width.value.toInt()}")
-        Text(
-            text = ((prefs[curTemp] ?: 0).toString() + "°"),
-            style = TextStyle(
-                fontWeight = FontWeight.Bold,
-                fontSize = 20.sp,
-                color = ColorProvider(if(Color(back).isDark()) Color.White else Color.Black),
-            ),
-        )
+
 
     }
 
@@ -216,11 +242,11 @@ object DataService{
     private fun getLocationData(location: Coordinates, lang: Lang, units: WeatherUnits, name:String, completion:(WidgetModel?)->Unit) {
         val searchLanguage = if (lang == Lang.EL)  "el" else if (lang == Lang.FR) "fr" else "en"
         val unit = if(units == WeatherUnits.SI || units == WeatherUnits.AUTO) "metric" else "imperial"
-
+        Log.d("name",name)
         GlobalScope.launch {
             val data = WeatherDataApi.retrofitService.currentWeather(location.latitude,location.longitude, unit,searchLanguage,
                 openWeatherKey)
-            data?.let { dat ->
+            data.let { dat ->
                 completion(WidgetModel(name = name, data = dat))
             }
         }
@@ -236,7 +262,7 @@ object DataService{
 class UpdateAction : ActionCallback {
 
 
-    override suspend fun onRun(context: Context, glanceId: GlanceId, parameters: ActionParameters) {
+    override suspend fun onAction(context: Context, glanceId: GlanceId, parameters: ActionParameters) {
 
         DataService.getData(context) { data ->
             val temp = (data?.data?.main?.temp ?: 0.0).toInt()
@@ -245,6 +271,7 @@ class UpdateAction : ActionCallback {
             val feel = (data?.data?.main?.feels_like?: 9.0).toInt()
             val image = (data?.data?.weather?.first()?.icon ?: "02d")
            val  description = (data?.data?.weather?.first()?.description ?: "N/A")
+            val locationName = data?.name ?: ""
 
             val background = getBackColorHex(data?.data?.weather?.first()?.icon ?: "02d")
 
@@ -261,6 +288,7 @@ class UpdateAction : ActionCallback {
                          this[stringPreferencesKey("curImage")] = image ?: "01d"
                          this[stringPreferencesKey("curDescription")] = description ?: "N/A"
                          this[intPreferencesKey("back")] = background.toInt()
+                         this[stringPreferencesKey("name")] = locationName.toString()
                      }
              }
 
@@ -272,7 +300,7 @@ class UpdateAction : ActionCallback {
 }
 
 class InitAction : ActionCallback {
-    override suspend fun onRun(context: Context, glanceId: GlanceId, parameters: ActionParameters) {
+    override suspend fun onAction(context: Context, glanceId: GlanceId, parameters: ActionParameters) {
         updateAppWidgetState(context, PreferencesGlanceStateDefinition, glanceId) {
             it.toMutablePreferences()
                 .apply {
@@ -312,7 +340,7 @@ class WeatherWidgetReceiver : GlanceAppWidgetReceiver() {
     }
     class WidgetRefreshCallback : ActionCallback {
 
-        override suspend fun onRun(context: Context, glanceId: GlanceId, parameters: ActionParameters) {
+        override suspend fun onAction(context: Context, glanceId: GlanceId, parameters: ActionParameters) {
             val intent = Intent(context, WeatherWidget::class.java).apply {
                 action = UPDATE_ACTION
             }
@@ -354,7 +382,7 @@ class WeatherWidgetReceiver : GlanceAppWidgetReceiver() {
                         val lon = locationList.elementAt(2)
                        val openData =  WeatherDataApi.retrofitService.currentWeather(lon = lon.toDouble(), lat = lat.toDouble(), lang = lang, unit = units, appid = openWeatherKey)
 
-                        openData?.let { data ->
+                        openData.let { data ->
 
                             val temp = (data.main?.temp ?: 0.0).toInt()
                             val min = (data.main?.temp_min ?: 5.0).toInt()
@@ -363,6 +391,7 @@ class WeatherWidgetReceiver : GlanceAppWidgetReceiver() {
                             val image = (data.weather?.first()?.icon ?: "02d")
                             val description = (data.weather?.first()?.description ?: "N/A")
                             val background = getBackColorHex(data.weather?.first()?.icon ?: "02d")
+                            val locationName = data?.name ?: ""
 
                             updateAppWidgetState(context, PreferencesGlanceStateDefinition, it) {
                                 it.toMutablePreferences()
@@ -375,13 +404,14 @@ class WeatherWidgetReceiver : GlanceAppWidgetReceiver() {
                                         this[stringPreferencesKey("curDescription")] =
                                             description ?: "N/A"
                                         this[intPreferencesKey("back")] = background.toInt()
+                                        this[stringPreferencesKey("name")] = locationName.toString()
 
 
                                     }
                             }
 
                             WeatherWidget().update(context, it)
-//
+                    //
                         }
                     }
                 }

@@ -4,8 +4,10 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.GridCells
 import androidx.compose.foundation.lazy.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyGridScope
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
@@ -48,41 +50,76 @@ fun DetailsCard(current: Current,daily: Daily,inSi:Boolean){
         .height(170.dp)
         .background(color = MaterialTheme.colorScheme.background, shape = RoundedCornerShape(16.dp))
         .padding(12.dp), contentAlignment = Alignment.Center) {
-        LazyVerticalGrid(cells = GridCells.Fixed(3), content = {
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(3),
+            verticalArrangement = Arrangement.spacedBy(5.dp),
+            horizontalArrangement = Arrangement.Center,
+        ) {
             item {
-                DetailsItem(icon = FontAwesomeIcons.Solid.ArrowAltCircleUp, stringResource(id = R.string.highT), value = daily.temp!!.max!!.roundToInt().toString() + "°",null)
+                DetailsItem(
+                    icon = FontAwesomeIcons.Solid.ArrowAltCircleUp,
+                    stringResource(id = R.string.highT),
+                    value = daily.temp!!.max!!.roundToInt().toString() + "°",
+                    null
+                )
             }
             item {
-                DetailsItem(icon = FontAwesomeIcons.Solid.ArrowAltCircleDown, stringResource(id = R.string.lowT),value = daily.temp!!.min!!.roundToInt().toString() + "°",null)
+                DetailsItem(
+                    icon = FontAwesomeIcons.Solid.ArrowAltCircleDown,
+                    stringResource(id = R.string.lowT),
+                    value = daily.temp!!.min!!.roundToInt().toString() + "°",
+                    null
+                )
 
             }
             item {
-                DetailsItem(icon = FontAwesomeIcons.Solid.Sun, stringResource(id = R.string.uv), value = current.uvi!!.roundToInt().toString(),null)
+                DetailsItem(
+                    icon = FontAwesomeIcons.Solid.Sun,
+                    stringResource(id = R.string.uv),
+                    value = current.uvi!!.roundToInt().toString(),
+                    null
+                )
 
             }
             item {
-                DetailsItem(icon = Icons.Default.Navigation, stringResource(id = R.string.humidity), value = current.wind_speed!!.roundToInt().toString() + if (inSi) "km/h" else "mph", secondValue = current.wind_deg!!.toDouble())
+                DetailsItem(
+                    icon = Icons.Default.Navigation,
+                    stringResource(id = R.string.airSpeed),
+                    value = current.wind_speed!!.roundToInt()
+                        .toString() + if (inSi) "km/h" else "mph",
+                    secondValue = current.wind_deg!!.toDouble()
+                )
 
             }
             item {
-                DetailsItem(icon = WeatherIcons.Sunrise, stringResource(id = R.string.sunrise), value = DateTimeFormatter.ofPattern("HH:mm").format(
-                                LocalDateTime.ofInstant(
-                                    Instant.ofEpochMilli(1000 * daily.sunrise!!),
-                                    ZoneId.systemDefault()
-                                )
-                            ),null)
+                DetailsItem(
+                    icon = WeatherIcons.Sunrise,
+                    stringResource(id = R.string.sunrise),
+                    value = DateTimeFormatter.ofPattern("HH:mm").format(
+                        LocalDateTime.ofInstant(
+                            Instant.ofEpochMilli(1000 * daily.sunrise!!),
+                            ZoneId.systemDefault()
+                        )
+                    ),
+                    null
+                )
 
             }
             item {
-                DetailsItem(icon = WeatherIcons.Sunset, stringResource(id = R.string.Sunset),DateTimeFormatter.ofPattern("HH:mm").format(
-                    LocalDateTime.ofInstant(
-                        Instant.ofEpochMilli(1000 * daily.sunset!!),
-                        ZoneId.systemDefault()
-                    )
-                ),null)
+                DetailsItem(
+                    icon = WeatherIcons.Sunset,
+                    stringResource(id = R.string.Sunset),
+                    DateTimeFormatter.ofPattern("HH:mm").format(
+                        LocalDateTime.ofInstant(
+                            Instant.ofEpochMilli(1000 * daily.sunset!!),
+                            ZoneId.systemDefault()
+                        )
+                    ),
+                    null
+                )
 
             }
-        })
+        }
     }
 }
 

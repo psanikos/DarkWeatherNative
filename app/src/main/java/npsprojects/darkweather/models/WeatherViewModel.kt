@@ -16,6 +16,7 @@ import android.widget.Toast
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.core.app.ActivityCompat
 import androidx.core.app.ActivityCompat.requestPermissions
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LiveData
@@ -43,6 +44,10 @@ enum class Lang {
     EN,EL,FR
 }
 
+enum class LOCATIONERRORVALUES{
+    LOCATION_DENIED,LOCATION_FULL_DENIED,LOCATION_NOT_ASKED,LOCATION_FATAL
+}
+
 class LOCATIONERROR:Exception(){
     object LOCATION_DENIED:Exception("Location denied")
     object LOCATION_FULL_DENIED:Exception("Enable location from settings")
@@ -66,55 +71,66 @@ class WeatherViewModel : ViewModel() {
             }
         }
 
-        fun getUserLocation(context: Context, completion: (Location?, Exception?) -> Unit) {
+        fun getUserLocation(context: Context, completion: (Location?, Exception?,LOCATIONERRORVALUES?) -> Unit) {
             val permissionCoarseLocation = android.Manifest.permission.ACCESS_COARSE_LOCATION
             val REQUEST_CODE_LOCATION = 100
 
             if (isLocationEnabled(context = context)) {
-                getCurrentLocation(context) { loc, error ->
+                getCurrentLocation(context) { loc, error,value ->
                     if (error != null) {
                         requestPermissions(
                             context as Activity,
                             arrayOf(permissionCoarseLocation),
                             REQUEST_CODE_LOCATION
                         )
-                        completion(null, error)
+                        completion(null, error,LOCATIONERRORVALUES.LOCATION_DENIED)
                     } else {
-                        completion(loc, null)
+                        completion(loc, null,null)
                     }
                 }
             } else {
-                completion(null, LOCATIONERROR.LOCATION_FATAL)
+                completion(null, LOCATIONERROR.LOCATION_FATAL,LOCATIONERRORVALUES.LOCATION_FATAL)
             }
         }
-
+        private fun requestLocationPermission(context: Context) {
+            val MY_PERMISSIONS_REQUEST_LOCATION = 99
+            ActivityCompat.requestPermissions(
+                context as Activity,
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                ),
+                MY_PERMISSIONS_REQUEST_LOCATION
+            )
+        }
         @Throws(Exception::class)
         private fun getCurrentLocation(
             context: Context,
-            completion: (Location?, Exception?) -> Unit
+            completion: (Location?, Exception?,LOCATIONERRORVALUES?) -> Unit
         ) {
             if(canGetLocation(context = context)) {
                 try {
                     Locus.getCurrentLocation(context = context) { result ->
                         result.location?.let {
-                            completion(it, null)
+                            completion(it, null,null)
                         }
                         result.error?.let { error ->
                             when {
                                 error.isDenied -> {
-                                    completion(null, LOCATIONERROR.LOCATION_DENIED)
+                                    requestLocationPermission(context)
+                                    completion(null, LOCATIONERROR.LOCATION_DENIED,LOCATIONERRORVALUES.LOCATION_DENIED)
                                 }
                                 error.isPermanentlyDenied -> {
-                                    completion(null, LOCATIONERROR.LOCATION_FULL_DENIED)
+                                    completion(null, LOCATIONERROR.LOCATION_FULL_DENIED,LOCATIONERRORVALUES.LOCATION_FULL_DENIED)
                                 }
                                 error.isFatal -> {
-                                    completion(null, LOCATIONERROR.LOCATION_FATAL)
+                                    completion(null, LOCATIONERROR.LOCATION_FATAL,LOCATIONERRORVALUES.LOCATION_FATAL)
                                 }
                                 error.isSettingsDenied -> {
-                                    completion(null, LOCATIONERROR.LOCATION_FULL_DENIED)
+                                    completion(null, LOCATIONERROR.LOCATION_FULL_DENIED,LOCATIONERRORVALUES.LOCATION_FULL_DENIED)
                                 }
                                 error.isSettingsResolutionFailed -> {
-                                    completion(null, LOCATIONERROR.LOCATION_NOT_ASKED)
+                                    requestLocationPermission(context)
+                                    completion(null, LOCATIONERROR.LOCATION_NOT_ASKED,LOCATIONERRORVALUES.LOCATION_NOT_ASKED)
                                 }
                             }
                         }
@@ -249,9 +265,15 @@ class WeatherViewModel : ViewModel() {
 
     private var lang by mutableStateOf(Lang.EN)
 
+    private val _error = MutableLiveData<LOCATIONERRORVALUES?>(null)
+    val error = _error
 
     fun changeIndex(value: Int) {
         _index.value = value
+    }
+
+    fun resetError(){
+        _error.value = null
     }
 
     //Device settings-----------------
@@ -385,8 +407,9 @@ class WeatherViewModel : ViewModel() {
         val searchLanguage = if (language == "el") "el" else if (language == "fr") "fr" else "en"
         val db = LocationsDatabase.getInstance(context)
       try {
-          LocationFetcher.getUserLocation(context = context) { loc, error ->
+          LocationFetcher.getUserLocation(context = context) { loc, error,value ->
               if (error != null || loc == null) {
+                  _error.value = value
                   throw error ?: LOCATIONERROR.LOCATION_FATAL
               } else {
 

@@ -1,5 +1,9 @@
 package npsprojects.darkweather.views
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.location.Address
 import android.net.Uri
@@ -27,12 +31,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
 import com.google.accompanist.insets.LocalWindowInsets
@@ -50,6 +56,8 @@ import npsprojects.darkweather.R
 import npsprojects.darkweather.WeatherUnits
 import npsprojects.darkweather.ago
 import npsprojects.darkweather.getWeatherBackIcon
+import npsprojects.darkweather.models.LOCATIONERROR
+import npsprojects.darkweather.models.LOCATIONERRORVALUES
 import npsprojects.darkweather.models.WeatherModel
 import npsprojects.darkweather.models.WeatherViewModel
 import java.time.Instant
@@ -327,8 +335,9 @@ fun SmallMain(model: WeatherViewModel, controller: NavController) {
 
                 }
             },
-            sheetPeekHeight = 500.dp,
-            sheetShape = RoundedCornerShape(12.dp)
+            sheetPeekHeight = if(locations.isNotEmpty()) (LocalConfiguration.current.screenHeightDp*0.55).dp else 0.dp,
+            sheetShape = RoundedCornerShape(12.dp),
+            backgroundColor = MaterialTheme.colorScheme.background
 
             ) {
 
@@ -366,6 +375,7 @@ fun SmallMain(model: WeatherViewModel, controller: NavController) {
 
 
 
+@SuppressLint("SuspiciousIndentation")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EmptyView(model: WeatherViewModel){
@@ -376,7 +386,18 @@ fun EmptyView(model: WeatherViewModel){
     val scope = rememberCoroutineScope()
     var showAlert: Boolean by remember { mutableStateOf(false) }
     val context = LocalContext.current
-
+     fun requestLocationPermission(context: Context) {
+        val MY_PERMISSIONS_REQUEST_LOCATION = 99
+        ActivityCompat.requestPermissions(
+            context as Activity,
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+            ),
+            MY_PERMISSIONS_REQUEST_LOCATION
+        )
+         model.resetError()
+    }
+    val error by model.error.observeAsState(null)
 
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -410,7 +431,7 @@ fun EmptyView(model: WeatherViewModel){
                                 color = MaterialTheme.colorScheme.tertiaryContainer,
                                 shape = RoundedCornerShape(50)
                             )
-                            .height(50.dp)
+                            .height(40.dp)
                             .fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(5.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -465,22 +486,22 @@ fun EmptyView(model: WeatherViewModel){
                         )
 
                     }
-                    if (searchedAddresses.size == 0) {
-                        IconButton(onClick = {
-                            scope.launch {
-                                model.initActions(context = context)
-                            }
-                        }) {
-                            androidx.compose.material.Icon(
-                                Icons.Default.Refresh, contentDescription = "",
-                                tint = Color.White,
-                                modifier = Modifier
-                                    .size(45.dp)
-                                    .background(Color.DarkGray, shape = CircleShape)
-                                    .padding(5.dp)
-                            )
-                        }
-                    }
+//                    if (searchedAddresses.size == 0) {
+//                        IconButton(onClick = {
+//                            scope.launch {
+//                                model.initActions(context = context)
+//                            }
+//                        }) {
+//                            androidx.compose.material.Icon(
+//                                Icons.Default.Refresh, contentDescription = "",
+//                                tint = Color.White,
+//                                modifier = Modifier
+//                                    .size(45.dp)
+//                                    .background(Color.DarkGray, shape = CircleShape)
+//                                    .padding(5.dp)
+//                            )
+//                        }
+//                    }
                     searchedAddresses.forEach {
 
                         if (it.locality != null || it.featureName != null) {
@@ -517,8 +538,8 @@ fun EmptyView(model: WeatherViewModel){
                                     style = MaterialTheme.typography.bodyMedium,
                                     modifier = Modifier.padding(
                                         horizontal = 8.dp,
-                                        vertical = 8.dp
-                                    )
+                                        vertical = 8.dp),
+                                    color = if(isSystemInDarkTheme()) Color.White else Color.DarkGray
                                 )
 
                                 Text(
@@ -527,7 +548,8 @@ fun EmptyView(model: WeatherViewModel){
                                     modifier = Modifier.padding(
                                         horizontal = 10.dp,
                                         vertical = 8.dp
-                                    )
+                                    ),
+                                    color = if(isSystemInDarkTheme()) Color.White else Color.DarkGray
                                 )
 
                             }
@@ -542,19 +564,25 @@ fun EmptyView(model: WeatherViewModel){
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.padding(bottom = 30.dp)
                     ) {
-                        Text(
-                            "To get your current location please allow access on settings ",
-                            style = MaterialTheme.typography.labelSmall.copy(color = Color.Gray)
-                        )
+
                         IconButton(onClick = {
-                            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-                            intent.data = Uri.parse("package:" + context.packageName)
-                            ContextCompat.startActivity(context, intent, null)
+                          if (error != LOCATIONERRORVALUES.LOCATION_FULL_DENIED){
+                              requestLocationPermission(context = context)
+                          }
+                            else if(error == null){
+                              scope.launch {
+                                  model.initActions(context = context)
+                              }
+                          }
+                            else{
+                              val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
+                              intent.data = Uri.parse("package:" + context.packageName)
+                              ContextCompat.startActivity(context, intent, null)
+                          }
                         }) {
-                            androidx.compose.material.Icon(
-                                Icons.Default.Settings, contentDescription = "",
-                                modifier = Modifier
-                                    .size(25.dp)
+                            Text(
+                                "Tap to allow access ",
+                                style = MaterialTheme.typography.labelSmall.copy(color = Color.Gray)
                             )
                         }
                     }
