@@ -3,6 +3,7 @@ import android.appwidget.AppWidgetManager
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -24,6 +25,7 @@ import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.glance.*
@@ -74,6 +76,8 @@ private val curImage= stringPreferencesKey("curImage")
 private val curDescription = stringPreferencesKey("curDescription")
 private val back = intPreferencesKey("back")
 private val name = stringPreferencesKey("name")
+
+
 @OptIn(ExperimentalFoundationApi::class,
     androidx.compose.animation.ExperimentalAnimationApi::class,
     androidx.compose.material.ExperimentalMaterialApi::class,
@@ -142,7 +146,7 @@ fun MediumBox(){
        return if(Build.VERSION.SDK_INT > 30) {
             GlanceModifier
                 .fillMaxSize()
-                .background(ColorProvider(day = Color(back), night = Color(back)))
+                .background(ColorProvider(day = Color(back).copy(alpha = 0.95f), night = Color(back).copy(alpha = 0.95f )))
                 .cornerRadius(22.dp)
         }
         else{
@@ -183,8 +187,8 @@ fun MediumBox(){
 
                Text((prefs[name] ?: ""), style = TextStyle(
                    fontWeight = FontWeight.Medium,
-                    fontSize = 14.sp,
-               color = ColorProvider(day = Color.White, night = Color.White)))
+                    fontSize = 12.sp,
+               color = ColorProvider(if(Color(back).isDark()) Color.White else Color.Black)))
            }
 
         }
@@ -273,12 +277,28 @@ class UpdateAction : ActionCallback {
            val  description = (data?.data?.weather?.first()?.description ?: "N/A")
             val locationName = data?.name ?: ""
 
+
             val background = getBackColorHex(data?.data?.weather?.first()?.icon ?: "02d")
+            val darkBackground = getBackColorDarkHex(data?.data?.weather?.first()?.icon ?: "02d")
+
+            val colorB:Long = when (context.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)) {
+                Configuration.UI_MODE_NIGHT_YES -> {
+                    darkBackground
+                }
+                Configuration.UI_MODE_NIGHT_NO -> {
+                    background
+                }
+                Configuration.UI_MODE_NIGHT_UNDEFINED -> {
+                    background
+                }
+                else -> {background}
+            }
 
          GlobalScope.launch {
              delay(2000)
              Log.d("Updating widget","Updating")
              updateAppWidgetState(context, PreferencesGlanceStateDefinition, glanceId) {
+
                  it.toMutablePreferences()
                      .apply {
                          this[intPreferencesKey("curTemp")] = temp ?: 0
@@ -287,7 +307,7 @@ class UpdateAction : ActionCallback {
                          this[intPreferencesKey("feelsTemp")] = feel ?: 0
                          this[stringPreferencesKey("curImage")] = image ?: "01d"
                          this[stringPreferencesKey("curDescription")] = description ?: "N/A"
-                         this[intPreferencesKey("back")] = background.toInt()
+                         this[intPreferencesKey("back")] = colorB.toInt()
                          this[stringPreferencesKey("name")] = locationName.toString()
                      }
              }
@@ -392,6 +412,20 @@ class WeatherWidgetReceiver : GlanceAppWidgetReceiver() {
                             val description = (data.weather?.first()?.description ?: "N/A")
                             val background = getBackColorHex(data.weather?.first()?.icon ?: "02d")
                             val locationName = data?.name ?: ""
+                            val darkBackground = getBackColorDarkHex(data.weather?.first()?.icon ?: "02d")
+
+                            val colorB:Long = when (context.resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)) {
+                                Configuration.UI_MODE_NIGHT_YES -> {
+                                    darkBackground
+                                }
+                                Configuration.UI_MODE_NIGHT_NO -> {
+                                    background
+                                }
+                                Configuration.UI_MODE_NIGHT_UNDEFINED -> {
+                                    background
+                                }
+                                else -> {background}
+                            }
 
                             updateAppWidgetState(context, PreferencesGlanceStateDefinition, it) {
                                 it.toMutablePreferences()
@@ -403,7 +437,7 @@ class WeatherWidgetReceiver : GlanceAppWidgetReceiver() {
                                         this[stringPreferencesKey("curImage")] = image ?: "01d"
                                         this[stringPreferencesKey("curDescription")] =
                                             description ?: "N/A"
-                                        this[intPreferencesKey("back")] = background.toInt()
+                                        this[intPreferencesKey("back")] = colorB.toInt()
                                         this[stringPreferencesKey("name")] = locationName.toString()
 
 

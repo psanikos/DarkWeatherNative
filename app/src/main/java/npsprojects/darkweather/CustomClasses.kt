@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.graphics.ColorUtils
+import npsprojects.darkweather.ui.theme.blue_100
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.time.Instant
@@ -448,19 +449,42 @@ fun getBackColor(input:String):Color {
 fun getBackColorHex(input:String):Long {
     return when (input) {
 
-        "01d"-> 0xFFfff8d6
-        "01n"-> 0xFF183050
-        "09d","09n","10d","10n"-> 0xFF305c81
-        "13d"-> 0xFFbadbe3
-        "50d"-> 0xFFc5e1e8
-        "50n"-> 0xFF90a699
-        "04d","04n","03n","03d"-> 0xFF3B5C77
-        "02d"-> 0xFF1d4c70
-        "02n"-> 0xFF1d4c57
-        "13n"->  0xFFc5e1e8
-        "11d"-> 0xFF130c36
-        "11n"->  0xFF1e1640
-        else -> 0xFF18a9c9
+        "01d"-> 0xFF42A5F5 //Day good
+        "01n"-> 0xFF78909C
+        "09d","10d"-> 0xFF1976D2 //Day rain
+        "09n","10n"-> 0xFF455A64
+        "13d"-> 0xFF0D47A1 // Day thunder
+        "50d"-> 0xFFfafcff // Day snow
+        "50n"-> 0xFF05131a
+        "04d","03d"-> 0xFF1E88E5 //Day clouds
+        "04n","03n"-> 0xFF546E7A
+        "02d"-> 0xFF2196F3 // Day partly
+        "02n"-> 0xFF607D8B
+        "13n"->  0xFF263238
+        "11d"-> 0xFF1565C0 // Day heavy rain
+        "11n"->  0xFF37474F
+        else -> 0xFF0288D1
+    }
+
+}
+fun getBackColorDarkHex(input:String):Long {
+    return when (input) {
+
+        "01d"-> 0xFF266487 //Day good
+        "01n"-> 0xFF145175
+        "09d","10d"-> 0xFF416e87 //Day rain
+        "09n","10n"-> 0xFF294d63
+        "13d"-> 0xFF567587// Day thunder
+        "50d"-> 0xFFfafcff // Day snow
+        "50n"-> 0xFF05131a
+        "04d","03d"-> 0xFF366a87//Day clouds
+        "04n","03n"-> 0xFF224b63
+        "02d"-> 0xFF2c688a // Day partly
+        "02n"-> 0xFF1b4a66
+        "13n"->  0xFF3a505e
+        "11d"-> 0xFF4a7187// Day heavy rain
+        "11n"->  0xFF2f4e61
+        else -> 0xFF0288D1
     }
 
 }
