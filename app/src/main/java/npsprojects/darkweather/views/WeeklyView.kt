@@ -35,7 +35,7 @@ fun WeeklyView(days:List<Daily>,inSi:Boolean){
     Box(modifier = Modifier
         .fillMaxWidth()
         .wrapContentHeight()
-        .background(color = MaterialTheme.colorScheme.background, shape = RoundedCornerShape(16.dp))
+      .background(color = MaterialTheme.colorScheme.background, shape = RoundedCornerShape(16.dp))
         .padding(16.dp)){
 
       Column() {
@@ -62,13 +62,13 @@ fun WeeklyItem(day:Daily,inSi: Boolean) {
                 Instant.ofEpochMilli(1000 * day.dt!!),
                 ZoneId.systemDefault()
             )
-        ), style = MaterialTheme.typography.labelMedium.copy(color = Color.Gray), modifier = Modifier.width(90.dp))
+        ), style = MaterialTheme.typography.labelMedium.copy(color = Color.Gray), modifier = Modifier.width(80.dp))
         Image(painter = painterResource(id = getWeatherImage(day.weather.first().icon ?: "02n")), contentDescription = "",
             modifier = Modifier.size(40.dp))
         Row(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             verticalAlignment = Alignment.CenterVertically,
-             modifier = Modifier.width(150.dp)
+             modifier = Modifier.width(170.dp)
         ) {
 
             Text(day.temp!!.max!!.roundToInt().toString() + "°", style = MaterialTheme.typography.bodyLarge.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black))

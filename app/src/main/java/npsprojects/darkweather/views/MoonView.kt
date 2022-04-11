@@ -70,19 +70,17 @@ fun MoonView(phase:Double,moonrise:Long,moonset:Long){
           Image(painter = painterResource(id = moonIcon(phase)), contentDescription = "",
           modifier = Modifier.size(70.dp))
         }
-        Divider(modifier = Modifier
-            .fillMaxWidth(0.7f)
-            .padding(vertical = 5.dp))
+
         Text(stringResource(id = R.string.MoonText) +" ${ DateTimeFormatter.ofPattern("HH:mm").format(
             LocalDateTime.ofInstant(
                 Instant.ofEpochMilli(1000 * moonrise),
                 ZoneId.systemDefault()
-            ))} " + stringResource(id = R.string.MoonText2) + DateTimeFormatter.ofPattern("HH:mm").format(
+            ))} " + stringResource(id = R.string.MoonText2) + " " + DateTimeFormatter.ofPattern("HH:mm").format(
             LocalDateTime.ofInstant(
                 Instant.ofEpochMilli(1000 * moonset),
                 ZoneId.systemDefault()
             )), style = MaterialTheme.typography.labelMedium.copy(color = Color.Gray))
-Spacer(modifier = Modifier.height(1.dp))
+Spacer(modifier = Modifier.height(10.dp))
     }
 }
 

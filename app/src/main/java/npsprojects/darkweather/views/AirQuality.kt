@@ -87,7 +87,6 @@ fun AirQuality(aqi:Int){
                     .size(20.dp).background(color = color, shape = CircleShape))
             }
         }
-        Divider(modifier = Modifier.fillMaxWidth(0.7f).padding(5.dp))
         Text(summary, style = MaterialTheme.typography.labelMedium.copy(color = Color.Gray))
 
     }

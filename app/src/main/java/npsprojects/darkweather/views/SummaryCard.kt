@@ -18,6 +18,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import compose.icons.FontAwesomeIcons
 import compose.icons.fontawesomeicons.Solid
 import compose.icons.fontawesomeicons.solid.Child
@@ -35,63 +36,114 @@ import npsprojects.darkweather.R
 
 @Composable
 fun SummaryCard(current: Current,dayDetails:String){
-   Column(modifier = Modifier
-       .fillMaxWidth()
-       .height(170.dp)
-       .background(
-           color = androidx.compose.material3.MaterialTheme.colorScheme.background,
-           shape = RoundedCornerShape(16.dp)
-       )
-       .padding(12.dp)
+    BoxWithConstraints(modifier = Modifier
+        .fillMaxWidth()
+        .wrapContentHeight()) {
+        val isSmall = this.maxWidth < 360.dp
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(170.dp)
+                .background(
+                    color = androidx.compose.material3.MaterialTheme.colorScheme.background,
+                    shape = RoundedCornerShape(16.dp)
+                )
+                .padding(12.dp)
 
-   ) {
-       Row(modifier = Modifier.fillMaxWidth(),
-       horizontalArrangement = Arrangement.SpaceEvenly,
-       verticalAlignment = Alignment.Top) {
-           Image(painter = painterResource(id = getWeatherImage(current.weather.first().icon!!)),
-               contentDescription ="",
-           modifier = Modifier.size(100.dp))
-           Column(modifier = Modifier.width(100.dp),
-           horizontalAlignment = Alignment.Start,
-           verticalArrangement = Arrangement.spacedBy(5.dp)) {
-            Text(current.weather.first().description!!, style = MaterialTheme.typography.labelMedium.copy(if(isSystemInDarkTheme()) Color.White else Color.Black))
-               Text(current.temp!!.roundToInt().toString() + "°", style = androidx.compose.material3.MaterialTheme.typography.headlineLarge.copy(fontWeight = FontWeight.Black,
-                   color = if(isSystemInDarkTheme()) Color.White else Color.Black))
-               Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
-                   Icon(FontAwesomeIcons.Solid.Umbrella, contentDescription = "",
-                   modifier = Modifier.size(15.dp), tint = Color.Gray)
-                   Text(((current.pop?.times(100)) ?: 0.0).roundToInt().toString() + "%", style = MaterialTheme.typography.labelMedium.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black))
-               }
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.Top
+            ) {
+                Image(
+                    painter = painterResource(id = getWeatherImage(current.weather.first().icon!!)),
+                    contentDescription = "",
+                    modifier = Modifier.size(if(isSmall) 70.dp else 100.dp)
+                )
+                Spacer(modifier = Modifier.width(3.dp))
+                Column(
+                    modifier = Modifier.width(100.dp),
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.spacedBy(5.dp)
+                ) {
+                    Text(
+                        current.weather.first().description!!,
+                        style = if(isSmall) MaterialTheme.typography.labelSmall.copy(if (isSystemInDarkTheme()) Color.White else Color.Black) else  MaterialTheme.typography.labelMedium.copy(if (isSystemInDarkTheme()) Color.White else Color.Black)
+                    )
+                    Text(
+                        current.temp!!.roundToInt().toString() + "°",
+                        style = androidx.compose.material3.MaterialTheme.typography.headlineLarge.copy(
+                            fontWeight = FontWeight.Black,
+                            color = if (isSystemInDarkTheme()) Color.White else Color.Black,
+                            fontSize = if(isSmall) 34.sp else 40.sp
+                        )
+                    )
+                    Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+                        Icon(
+                            FontAwesomeIcons.Solid.Umbrella, contentDescription = "",
+                            modifier = Modifier.size(15.dp), tint = Color.Gray
+                        )
+                        Text(
+                            ((current.pop?.times(100)) ?: 0.0).roundToInt().toString() + "%",
+                            style = MaterialTheme.typography.labelMedium.copy(color = if (isSystemInDarkTheme()) Color.White else Color.Black)
+                        )
+                    }
 
-           }
-           Divider(modifier = Modifier
-               .width(1.dp)
-               .height(100.dp)
-               .padding(2.dp))
-           Column(modifier = Modifier.width(100.dp),
-               horizontalAlignment = Alignment.Start,
-               verticalArrangement = Arrangement.spacedBy(5.dp)) {
-               Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
-                   Icon(FontAwesomeIcons.Solid.Tint, contentDescription = "",
-                       modifier = Modifier.size(15.dp), tint = Color.Gray)
-                   Text(stringResource(id = R.string.humidity), style = MaterialTheme.typography.labelMedium.copy(color = Color.Gray))
-               }
-               Text(current.humidity.toString() + "%", style = MaterialTheme.typography.displayLarge.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black))
-                Divider()
-               Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
-                   Icon(FontAwesomeIcons.Solid.Child, contentDescription = "",
-                       modifier = Modifier.size(15.dp), tint = Color.Gray)
-                   Text(stringResource(id = R.string.Feels), style = MaterialTheme.typography.labelMedium.copy(color = Color.Gray))
-               }
-               Text(current.feels_like!!.roundToInt().toString() + "°", style = MaterialTheme.typography.displayLarge.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black))
-           }
+                }
+                Divider(
+                    modifier = Modifier
+                        .width(1.dp)
+                        .height(if (isSmall) 20.dp else 100.dp)
+                        .padding(2.dp)
+                )
+                Column(
+                    modifier = Modifier.width(100.dp),
+                    horizontalAlignment = Alignment.Start,
+                    verticalArrangement = Arrangement.spacedBy(5.dp)
+                ) {
+                    Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+                        Icon(
+                            FontAwesomeIcons.Solid.Tint, contentDescription = "",
+                            modifier = Modifier.size(15.dp), tint = Color.Gray
+                        )
+                        Text(
+                            stringResource(id = R.string.humidity),
+                            style = if(isSmall) MaterialTheme.typography.labelSmall else  MaterialTheme.typography.labelMedium,
+                            color = Color.Gray
+                        )
+                    }
+                    Text(
+                        current.humidity.toString() + "%",
+                        style = MaterialTheme.typography.displayLarge.copy(color = if (isSystemInDarkTheme()) Color.White else Color.Black)
+                    )
+                    Divider()
+                    Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
+                        Icon(
+                            FontAwesomeIcons.Solid.Child, contentDescription = "",
+                            modifier = Modifier.size(15.dp), tint = Color.Gray
+                        )
+                        Text(
+                            stringResource(id = R.string.Feels),
+                            style = if(isSmall) MaterialTheme.typography.labelSmall else  MaterialTheme.typography.labelMedium,
+                            color = Color.Gray
+                        )
+                    }
+                    Text(
+                        current.feels_like!!.roundToInt().toString() + "°",
+                        style = MaterialTheme.typography.displayLarge.copy(color = if (isSystemInDarkTheme()) Color.White else Color.Black)
+                    )
+                }
 
-       }
-       Text(dayDetails, style = MaterialTheme.typography.labelMedium.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black),
-       modifier = Modifier.padding(10.dp))
+            }
+            Text(
+                dayDetails,
+                style = MaterialTheme.typography.labelMedium.copy(color = if (isSystemInDarkTheme()) Color.White else Color.Black),
+                modifier = Modifier.padding(10.dp)
+            )
 
-   }
-
+        }
+    }
 
 }
 

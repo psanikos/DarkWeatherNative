@@ -43,11 +43,10 @@ fun VerticalHourView(hourly:List<Current>,inSi:Boolean){
     }, modifier = Modifier
         .fillMaxWidth()
         .height(440.dp)
-        .background(color = indigo_500, shape = RoundedCornerShape(16.dp))
-        .clip(RoundedCornerShape(16.dp))
+        .background(color = MaterialTheme.colorScheme.background, shape = RoundedCornerShape(16.dp))
         .padding(16.dp),
         horizontalAlignment =Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(4.dp))
+        verticalArrangement = Arrangement.spacedBy(15.dp))
 
 }
 
@@ -118,7 +117,7 @@ fun HourItem(isFirst:Boolean,hour:Current,inSi: Boolean){
 fun HorizontalHourItem(isFirst:Boolean,hour:Current,inSi: Boolean){
     Row(modifier = Modifier
         .fillMaxWidth()
-        .width(40.dp)
+        .width(50.dp)
         .padding(horizontal = 5.dp)
         ,
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -129,15 +128,15 @@ fun HorizontalHourItem(isFirst:Boolean,hour:Current,inSi: Boolean){
                 LocalDateTime.ofInstant(
                     Instant.ofEpochMilli(1000 * hour.dt!!),
                     ZoneId.systemDefault()
-                )), style = MaterialTheme.typography.labelMedium.copy(color =  Color.LightGray))
+                )), style = MaterialTheme.typography.labelMedium.copy(color =  if(isSystemInDarkTheme()) Color.White else Color.Black))
         Text(hour.temp!!.roundToInt().toString() + "°", style = MaterialTheme.typography.bodyLarge.copy(color = Color.White))
         Image(painter = painterResource(id = getWeatherImage(hour.weather.first().icon!!)), contentDescription ="",
-            modifier = Modifier.size(30.dp))
+            modifier = Modifier.size(40.dp))
         Row(horizontalArrangement = Arrangement.spacedBy(5.dp)) {
             Icon(
                 FontAwesomeIcons.Solid.Umbrella, contentDescription = "",
                 modifier = Modifier.size(15.dp), tint = Color.LightGray)
-            Text(((hour.pop ?: 0.0)*100).roundToInt().toString() + "%", style = MaterialTheme.typography.labelMedium.copy(color =  Color.LightGray))
+            Text(((hour.pop ?: 0.0)*100).roundToInt().toString() + "%", style = MaterialTheme.typography.labelMedium.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black))
         }
         Row(
             horizontalArrangement = Arrangement.spacedBy(5.dp),
@@ -157,7 +156,7 @@ fun HorizontalHourItem(isFirst:Boolean,hour:Current,inSi: Boolean){
 
             Text(
                 text = "${hour.wind_speed!!.roundToInt()} " + if (inSi) "km/h" else "mph" ,
-                style = MaterialTheme.typography.labelMedium.copy(color = Color.LightGray)
+                style = MaterialTheme.typography.labelMedium.copy(color = if(isSystemInDarkTheme()) Color.White else Color.Black)
             )
         }
 

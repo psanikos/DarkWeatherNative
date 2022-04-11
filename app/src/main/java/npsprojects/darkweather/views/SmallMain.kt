@@ -337,7 +337,8 @@ fun SmallMain(model: WeatherViewModel, controller: NavController) {
             },
             sheetPeekHeight = if(locations.isNotEmpty()) (LocalConfiguration.current.screenHeightDp*0.55).dp else 0.dp,
             sheetShape = RoundedCornerShape(12.dp),
-            backgroundColor = MaterialTheme.colorScheme.background
+            backgroundColor = MaterialTheme.colorScheme.background,
+            sheetBackgroundColor = MaterialTheme.colorScheme.tertiaryContainer
 
             ) {
 
