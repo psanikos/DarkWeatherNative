@@ -75,11 +75,11 @@ fun MoonView(phase:Double,moonrise:Long,moonset:Long){
             LocalDateTime.ofInstant(
                 Instant.ofEpochMilli(1000 * moonrise),
                 ZoneId.systemDefault()
-            ))} " + stringResource(id = R.string.MoonText2) + " " + DateTimeFormatter.ofPattern("HH:mm").format(
+            ))} " + stringResource(id = R.string.MoonText2) + " ${ DateTimeFormatter.ofPattern("HH:mm").format(
             LocalDateTime.ofInstant(
                 Instant.ofEpochMilli(1000 * moonset),
                 ZoneId.systemDefault()
-            )), style = MaterialTheme.typography.labelMedium.copy(color = Color.Gray))
+            ))}", style = MaterialTheme.typography.labelMedium.copy(color = Color.Gray))
 Spacer(modifier = Modifier.height(10.dp))
     }
 }
